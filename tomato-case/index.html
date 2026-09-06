@@ -9,7 +9,7 @@
   --steel:#2E5E70; --steel-soft:#DCE9ED;
   --tomato:#C8402F; --tomato-soft:#F7E3E0;
   --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
-  --shadow:0 1px 2px rgba(15,28,33,.06),0 8px 24px -12px rgba(15,28,33,.18);
+  --grid:#C7D4D8;
 }
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
   --ground:#0D1417; --surface:#151F23; --sunk:#101A1D;
@@ -17,7 +17,7 @@
   --steel:#6FB2C6; --steel-soft:#17323B;
   --tomato:#E8705F; --tomato-soft:#361B18;
   --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  --grid:#2C3E45;
 }}
 :root[data-theme="dark"]{
   --ground:#0D1417; --surface:#151F23; --sunk:#101A1D;
@@ -25,22 +25,20 @@
   --steel:#6FB2C6; --steel-soft:#17323B;
   --tomato:#E8705F; --tomato-soft:#361B18;
   --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  --grid:#2C3E45;
 }
 *{box-sizing:border-box}
 body{background:var(--ground);color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   font-size:15px;line-height:1.6;margin:0;padding:0 20px 80px}
-.wrap{max-width:1080px;margin:0 auto}
-h1,h2,h3,.lbl{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
-.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
-
+.wrap{max-width:1140px;margin:0 auto}
+h1,h2,h3,.lbl,th{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
 header{padding:38px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:26px}
 .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--steel);margin:0 0 8px}
 h1{font-size:clamp(30px,5vw,46px);line-height:1.02;margin:0 0 10px;font-weight:700;
   letter-spacing:-.015em;text-wrap:balance}
-.sub{color:var(--muted);max-width:62ch;margin:0}
+.sub{color:var(--muted);max-width:64ch;margin:0}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .chip{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:4px 9px;
   border:1px solid var(--line);border-radius:2px;color:var(--muted);background:var(--surface)}
@@ -50,34 +48,42 @@ section{background:var(--surface);border:1px solid var(--line);margin-bottom:16p
   border-bottom:1px solid transparent;user-select:none}
 .shead[aria-expanded="true"]{border-bottom-color:var(--line)}
 .num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--steel);
-  font-weight:600;min-width:22px}
+  font-weight:600;min-width:24px}
 .shead h2{font-size:20px;margin:0;font-weight:700;flex:1;letter-spacing:-.005em}
 .state{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border-radius:2px;
   background:var(--sunk);color:var(--muted);white-space:nowrap}
 .state.done{background:var(--ok-soft);color:var(--ok)}
 .state.part{background:var(--warn-soft);color:var(--warn)}
-.sbody{padding:4px 20px 22px;display:none}
+.sbody{padding:4px 20px 24px;display:none}
 .sbody.open{display:block}
-.task{margin:12px 0 6px;max-width:70ch}
-.hint{color:var(--muted);font-size:13.5px;margin:0 0 14px;max-width:70ch}
+.task{margin:12px 0 6px;max-width:74ch}
+.hint{color:var(--muted);font-size:13.5px;margin:6px 0 14px;max-width:74ch}
+.hint strong{color:var(--ink)}
 
 .lbl{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--muted);font-weight:700;margin:16px 0 6px}
+  color:var(--muted);font-weight:700;margin:18px 0 6px}
 textarea,input,select{width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);
   background:var(--sunk);border:1px solid var(--line);border-radius:2px;padding:9px 11px}
-textarea{min-height:86px;resize:vertical;line-height:1.55}
+textarea{min-height:82px;resize:vertical;line-height:1.55}
 input.num-in{max-width:170px;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 :focus-visible{outline:2px solid var(--steel);outline-offset:2px}
 
 table{border-collapse:collapse;width:100%;font-size:14px}
 .scroll{overflow-x:auto;border:1px solid var(--line);margin:10px 0}
-th,td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-family:"Archivo Narrow",sans-serif;font-size:12px;letter-spacing:.07em;
-  text-transform:uppercase;color:var(--muted);background:var(--sunk);font-weight:700}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line);vertical-align:top}
+th:last-child,td:last-child{border-right:none}
+th{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  background:var(--sunk);font-weight:700}
+th.oA{color:var(--steel)} th.oB{color:var(--warn)} th.oC{color:var(--tomato)}
+td.rk{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:14px;
+  background:var(--sunk);white-space:nowrap;width:150px}
 td.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right}
 tr:last-child td{border-bottom:none}
-table textarea{min-height:58px;background:transparent;border:none;padding:4px}
+table textarea{min-height:62px;background:transparent;border:none;padding:5px;font-size:13.5px}
 table textarea:focus{background:var(--sunk)}
+table select{background:transparent;border:none;font-size:13.5px;padding:4px}
+table select:focus{background:var(--sunk)}
 
 .btn{font-family:"Archivo Narrow",sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;
   text-transform:uppercase;padding:9px 16px;border:1px solid var(--steel);background:transparent;
@@ -95,31 +101,37 @@ table textarea:focus{background:var(--sunk)}
 .prompt .ph span{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--steel);font-weight:600}
 .prompt pre{margin:0;padding:12px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;
-  line-height:1.55;white-space:pre-wrap;max-height:280px;overflow:auto;color:var(--ink)}
+  line-height:1.55;white-space:pre-wrap;max-height:320px;overflow:auto;color:var(--ink)}
 
 .fb{margin-top:14px;padding:12px 14px;border-left:3px solid var(--line);
   background:var(--sunk);font-size:14px;display:none}
 .fb.show{display:block}
 .fb.good{border-left-color:var(--ok);background:var(--ok-soft)}
 .fb.bad{border-left-color:var(--tomato);background:var(--tomato-soft)}
-.fb ul{margin:6px 0 0;padding-left:20px}
-.fb li{margin:3px 0}
+.fb ul{margin:6px 0 0;padding-left:20px} .fb li{margin:3px 0}
 
-.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
 .cell{border:1px solid var(--line);padding:11px 13px;background:var(--sunk)}
 .cell .k{font-family:"Archivo Narrow",sans-serif;font-size:11.5px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);font-weight:700}
-.cell .v{font-family:"IBM Plex Mono",monospace;font-size:23px;font-weight:600;
-  margin-top:3px;font-variant-numeric:tabular-nums}
-.cell.loss .v{color:var(--tomato)}
-.cell.save .v{color:var(--ok)}
 
 .who{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:6px}
-.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
-.opt{border:1px solid var(--line);padding:12px;cursor:pointer;background:var(--sunk)}
-.opt.sel{border-color:var(--steel);border-width:2px;background:var(--steel-soft);padding:11px}
-.opt .t{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:16px}
-.opt .d{font-size:13px;color:var(--muted);margin-top:3px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:12px 0}
+.opt{border:1px solid var(--line);padding:13px;background:var(--sunk)}
+.opt.pick{cursor:pointer}
+.opt.pick:hover{border-color:var(--steel)}
+.opt.sel{border-color:var(--steel);border-width:2px;background:var(--steel-soft);padding:12px}
+.opt .t{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:17px}
+.opt .d{font-size:13.5px;color:var(--muted);margin-top:4px}
+.opt .pickme{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--steel);margin-top:8px;font-weight:600}
+.opt.sel .pickme::after{content:" \2713 chosen"}
+
+figure{margin:14px 0 6px;border:1px solid var(--line);background:var(--sunk);padding:14px}
+figcaption{font-family:"Archivo Narrow",sans-serif;font-size:12px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px}
+figure .note{font-size:12.5px;color:var(--muted);margin:8px 0 0;line-height:1.5}
+svg text{font-family:"IBM Plex Mono",monospace}
 
 .score{background:var(--ink);color:var(--ground);padding:24px 22px;margin-top:22px}
 .score h2{margin:0 0 4px;font-size:22px;color:var(--ground)}
@@ -129,577 +141,724 @@ table textarea:focus{background:var(--sunk)}
 .bar{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;font-size:13.5px}
 .track{grid-column:1/-1;height:5px;background:rgba(255,255,255,.16)}
 .fill{height:100%;background:var(--ground)}
-footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:72ch}
-footer code{font-family:"IBM Plex Mono",monospace;font-size:11.5px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:74ch}
+@media print{
+  @page{size:A4;margin:16mm 14mm}
+  body{background:#fff;color:#000;padding:0;font-size:10.5pt}
+  header,section,.score,footer{display:none!important}
+  #printout{display:block!important}
+  #printout h1{font-size:19pt;margin:0 0 2mm;border-bottom:1.5pt solid #000;padding-bottom:2mm}
+  #printout h2{font-size:12pt;margin:6mm 0 1.5mm;padding-bottom:1mm;border-bottom:.5pt solid #999}
+  #printout .id{font-size:10pt;margin:0 0 4mm;line-height:1.5}
+  #printout .id b{display:inline-block;min-width:22mm}
+  #printout table{width:100%;border-collapse:collapse;font-size:9pt;margin:2mm 0;page-break-inside:avoid}
+  #printout th,#printout td{border:.5pt solid #999;padding:1.5mm 2mm;text-align:left;vertical-align:top}
+  #printout th{background:#eee;font-weight:700}
+  #printout .rk{background:#f4f4f4;font-weight:700;width:28mm}
+  #printout .q{margin:2.5mm 0 0;font-size:10pt}
+  #printout .q b{display:block;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;color:#444}
+  #printout .foot{margin-top:8mm;font-size:8.5pt;color:#444;border-top:.5pt solid #999;padding-top:2mm}
+}
+#printout{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 <div class="wrap">
 <header>
-  <p class="eyebrow">Marketing Fundamentals &middot; Session 22 &middot; In-class case</p>
   <h1>Cold Chain Decision</h1>
-  <p class="sub">A startup can keep fresh tomatoes at &minus;4&nbsp;&deg;C without freezing them, for six months.
-  It has one patent, little capital and three ways to go to market. Pick one, and defend it with the numbers.</p>
+  <p class="sub">A startup can hold fresh tomatoes at &minus;4&nbsp;&deg;C without freezing them, for more than
+  six months. It has one patent, little capital, and three ways to take it to market. Work the six tasks,
+  then commit to one.</p>
   <div class="meta">
-    <span class="chip">Groups of 4&ndash;5</span>
-    <span class="chip">60 minutes</span>
-    <span class="chip">5 steps</span>
-    <span class="chip" id="chipProg">0 / 5 complete</span>
+    <span class="chip">Group work</span><span class="chip">90 minutes</span>
+    <span class="chip">6 tasks</span><span class="chip" id="chipProg">0 / 6 complete</span>
   </div>
 </header>
 
-<!-- ============================================ WHO -->
+<!-- ===================================================== WHO -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="bw">
     <span class="num">&mdash;</span><h2>Who is submitting</h2><span class="state" id="stW">Fill this in</span>
   </div>
   <div class="sbody open" id="bw">
     <div class="who">
-      <div><span class="lbl" style="margin-top:0">Group</span>
-        <input id="wGroup" data-save placeholder="e.g. Group 4"></div>
-      <div><span class="lbl" style="margin-top:0">Section</span>
-        <input id="wSec" data-save placeholder="e.g. MARKn-NBA.1.S.B"></div>
-      <div><span class="lbl" style="margin-top:0">Date</span>
-        <input id="wDate" data-save type="date"></div>
+      <div><span class="lbl" style="margin-top:0">Group</span><input id="wGroup" placeholder="e.g. Group 4"></div>
+      <div><span class="lbl" style="margin-top:0">Section</span><input id="wSec" placeholder="e.g. MARKn-NBA.1.S.B"></div>
+      <div><span class="lbl" style="margin-top:0">Date</span><input id="wDate" type="date"></div>
     </div>
-    <span class="lbl">Student names &mdash; one per line, everyone who worked on this</span>
-    <textarea id="wNames" data-save style="min-height:96px"
-      placeholder="Surname, First name&#10;Surname, First name&#10;Surname, First name"></textarea>
-    <p class="hint" style="margin-top:10px">Your work saves in this browser as you type, so a refresh will not
-    lose it. It never leaves your computer.</p>
+    <span class="lbl">Student names &mdash; one per line</span>
+    <textarea id="wNames" style="min-height:96px" placeholder="Surname, First name&#10;Surname, First name"></textarea>
+    <p class="hint">Everything you type saves in this browser as you go, so a refresh will not lose your work.
+    Nothing leaves your computer.</p>
   </div>
 </section>
 
-<!-- ============================================ BRIEF -->
+<!-- ===================================================== BRIEF -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="b0">
-    <span class="num">00</span><h2>The brief and the evidence</h2><span class="state">Read first</span>
+    <span class="num">00</span><h2>The case</h2><span class="state">Read first</span>
   </div>
   <div class="sbody open" id="b0">
-    <p class="task"><strong>The technology.</strong> A patented refrigerated container that controls humidity and
-    holds &minus;4&nbsp;&deg;C without freezing the load. Fresh tomatoes stay saleable past six months.</p>
-    <p class="task"><strong>The choice.</strong> The team is split three ways and cannot fund more than one.</p>
+    <p class="task"><strong>Background.</strong> A startup has developed a patented refrigerated container
+    system that keeps fresh tomatoes in perfect condition for more than six months. The system controls
+    humidity and holds a temperature as low as &minus;4&nbsp;&deg;C without freezing the load. The team has
+    strong R&amp;D and the patent. It has no factory, no global service network, and little capital.</p>
 
+    <p class="task"><strong>The three paths.</strong> The team is debating which one to fund. It can afford one.</p>
     <div class="opts">
       <div class="opt"><div class="t">A &middot; License</div>
-        <div class="d">Sell the IP to reefer makers &mdash; CIMC, Singamas, Carrier. Royalties, no factory.</div></div>
+        <div class="d">License the technology to established reefer container manufacturers.
+        Royalties scale with the OEM. No factory, no service network, no control.</div></div>
       <div class="opt"><div class="t">B &middot; Manufacture</div>
-        <div class="d">Build the container and sell it to logistics firms. Own the margin, own the capex.</div></div>
+        <div class="d">Build the container and sell it directly to logistics companies.
+        Own the margin, own the capital cost, compete with CIMC and Singamas.</div></div>
       <div class="opt"><div class="t">C &middot; Ship tomatoes</div>
-        <div class="d">Run an international tomato delivery service using your own containers.</div></div>
+        <div class="d">Operate a tomato delivery service internationally using the new containers.
+        Highest potential return, highest working capital, and you become a customer's competitor.</div></div>
     </div>
 
-    <span class="lbl">Exhibit 1 &middot; Tomato exports, 2023</span>
-    <div class="scroll"><table>
-      <tr><th>Exporter</th><th style="text-align:right">Export value</th><th>Note</th></tr>
-      <tr><td>Mexico</td><td class="n">$3.0B</td><td>Largest exporter; ships mainly to the United States</td></tr>
-      <tr><td>Netherlands</td><td class="n">$1.9B</td><td>Short hauls, already strong cold chain</td></tr>
-      <tr><td>Spain</td><td class="n">$1.2B</td><td>Serves Germany and France</td></tr>
-      <tr><td>Morocco</td><td class="n">$1.1B</td><td>Growing fast; weaker cold chain</td></tr>
-    </table></div>
+    <p class="task"><strong>Market context.</strong> Tomatoes are one of the most produced vegetables in the
+    world. Around 13&ndash;14% of all food is lost between harvest and retail; in fruit and vegetables moving
+    through a weak cold chain the loss runs far higher. The reefer industry has two layers: container makers
+    (<strong>CIMC</strong>, <strong>Singamas</strong>) and refrigeration unit makers
+    (<strong>Star Cool</strong>, <strong>Thermo King</strong>, <strong>Carrier Transicold</strong>).
+    Buyers are concentrated in every one of the three models.</p>
 
-    <span class="lbl">Exhibit 2 &middot; Loss and price assumptions</span>
-    <div class="scroll"><table>
-      <tr><th>Assumption</th><th style="text-align:right">Value</th><th>Source in the case</th></tr>
-      <tr><td>Food lost harvest &rarr; retail, global average</td><td class="n">13&ndash;14%</td><td>Case background</td></tr>
-      <tr><td>Spoilage on a weak cold chain, fruit &amp; veg</td><td class="n">30%</td><td>Working assumption</td></tr>
-      <tr><td>Spoilage with the new container</td><td class="n">5%</td><td>Working assumption</td></tr>
-      <tr><td>Farm-gate tomato price</td><td class="n">$1&ndash;2 / kg</td><td>Case background</td></tr>
-    </table></div>
+    <figure>
+      <figcaption>Exhibit 1 &middot; Tomato exports by country, 2023 (US$ billion)</figcaption>
+      <div class="scroll"><svg viewBox="0 0 700 210" width="100%" style="max-width:700px;height:auto" role="img"
+        aria-label="Bar chart of 2023 tomato exports: Mexico 3.0, Netherlands 1.9, Spain 1.2, Morocco 1.1 billion dollars">
+        <line x1="120" y1="12" x2="120" y2="180" stroke="var(--grid)" stroke-width="1"/>
+        <g stroke="var(--grid)" stroke-width="1" stroke-dasharray="2 3">
+          <line x1="288" y1="12" x2="288" y2="180"/><line x1="456" y1="12" x2="456" y2="180"/>
+          <line x1="624" y1="12" x2="624" y2="180"/></g>
+        <g font-size="11" fill="var(--muted)" text-anchor="middle">
+          <text x="120" y="196">0</text><text x="288" y="196">1.0</text>
+          <text x="456" y="196">2.0</text><text x="624" y="196">3.0</text></g>
+        <g font-size="12" fill="var(--ink)" text-anchor="end">
+          <text x="112" y="34">Mexico</text><text x="112" y="76">Netherlands</text>
+          <text x="112" y="118">Spain</text><text x="112" y="160">Morocco</text></g>
+        <rect x="120" y="20" width="504" height="20" fill="var(--tomato)"/>
+        <rect x="120" y="62" width="319" height="20" fill="var(--steel)"/>
+        <rect x="120" y="104" width="202" height="20" fill="var(--steel)"/>
+        <rect x="120" y="146" width="185" height="20" fill="var(--steel)"/>
+        <g font-size="12" font-weight="600" fill="var(--ink)">
+          <text x="634" y="35">$3.0B</text><text x="449" y="77">$1.9B</text>
+          <text x="332" y="119">$1.2B</text><text x="315" y="161">$1.1B</text></g>
+      </svg></div>
+      <p class="note">Top importers: United States, Germany, France. Mexico ships mainly to the US;
+      Spain serves Germany and France; Morocco is growing fastest and has the weakest cold chain.</p>
+    </figure>
 
-    <span class="lbl">Exhibit 3 &middot; What is moving in the industry</span>
-    <ul>
-      <li>Red Sea rerouting adds roughly <strong>10&ndash;14 days</strong> to affected voyages. Longer voyage, more spoilage.</li>
-      <li>IMO decarbonisation rules (EEXI / CII) push carriers towards energy-efficient reefer units.</li>
-      <li>Container makers: CIMC, Singamas. Refrigeration units: Star Cool, Thermo King, Carrier Transicold.</li>
-      <li>Buyers are concentrated in every model &mdash; a handful of OEMs, a handful of shipping lines, a handful of retail importers.</li>
-    </ul>
+    <figure>
+      <figcaption>Exhibit 2 &middot; Where the product is lost (% of volume)</figcaption>
+      <div class="scroll"><svg viewBox="0 0 700 200" width="100%" style="max-width:700px;height:auto" role="img"
+        aria-label="Bar chart of loss rates: all food 13.5 percent, fruit and vegetables on a weak cold chain 30 percent, with the new container 5 percent">
+        <line x1="60" y1="150" x2="680" y2="150" stroke="var(--grid)" stroke-width="1"/>
+        <g stroke="var(--grid)" stroke-width="1" stroke-dasharray="2 3">
+          <line x1="60" y1="110" x2="680" y2="110"/><line x1="60" y1="70" x2="680" y2="70"/>
+          <line x1="60" y1="30" x2="680" y2="30"/></g>
+        <g font-size="11" fill="var(--muted)" text-anchor="end">
+          <text x="52" y="154">0%</text><text x="52" y="114">10%</text>
+          <text x="52" y="74">20%</text><text x="52" y="34">30%</text></g>
+        <rect x="120" y="96" width="110" height="54" fill="var(--steel)"/>
+        <rect x="310" y="30" width="110" height="120" fill="var(--tomato)"/>
+        <rect x="500" y="130" width="110" height="20" fill="var(--ok)"/>
+        <g font-size="13" font-weight="600" fill="var(--ink)" text-anchor="middle">
+          <text x="175" y="88">13.5%</text><text x="365" y="22">30%</text><text x="555" y="122">5%</text></g>
+        <g font-size="11.5" fill="var(--muted)" text-anchor="middle">
+          <text x="175" y="170">All food,</text><text x="175" y="184">global average</text>
+          <text x="365" y="170">Fruit &amp; veg,</text><text x="365" y="184">weak cold chain</text>
+          <text x="555" y="170">With the new</text><text x="555" y="184">container</text></g>
+      </svg></div>
+      <p class="note">The 13&ndash;14% figure is from the case. The 30% and 5% are the working assumptions you
+      will use in Task 3 &mdash; change them if you can justify a different number.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Exhibit 3 &middot; What is moving in the industry</figcaption>
+      <div class="scroll"><table>
+        <tr><th style="width:210px">Force</th><th>What it does to demand for efficient reefers</th></tr>
+        <tr><td class="rk">Red Sea rerouting</td><td>Adds roughly <strong>10&ndash;14 days</strong> to affected
+          voyages. Longer time at sea means more spoilage on exactly the routes that matter.</td></tr>
+        <tr><td class="rk">IMO EEXI / CII</td><td>Decarbonisation rules push carriers towards
+          energy-efficient reefer systems. A unit that runs colder for less power gets easier to sell.</td></tr>
+        <tr><td class="rk">Buyer concentration</td><td>A handful of OEMs, a handful of shipping lines,
+          a handful of retail importers. Whichever path you pick, you sell to very few, very large buyers.</td></tr>
+      </table></div>
+      <p class="note">The case gives this trend qualitatively, so there is no series to plot.
+      Do not invent one &mdash; argue from the direction and the named drivers.</p>
+    </figure>
   </div>
 </section>
 
-<!-- ============================================ STEP 1 -->
+<!-- ===================================================== TASK 1 · PESTLE -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="false" data-t="b1">
-    <span class="num">01</span><h2>Size the prize</h2><span class="state" id="st1">Not started</span>
+    <span class="num">01</span><h2>PESTLE, for each option</h2><span class="state" id="st1">Not started</span>
   </div>
   <div class="sbody" id="b1">
-    <p class="task">Before arguing about strategy, find out whether the problem is worth solving.
-    Pick one exporter and work out how much value spoils today, and how much the container saves.</p>
-    <p class="hint">Everything you need is in Exhibit 1 and Exhibit 2. Change the assumptions if you can justify it.</p>
-
-    <div class="row" style="margin-top:6px">
-      <div><span class="lbl" style="margin-top:0">Exporter</span>
-        <select id="ex">
-          <option value="3.0">Mexico &mdash; $3.0B</option>
-          <option value="1.9">Netherlands &mdash; $1.9B</option>
-          <option value="1.2">Spain &mdash; $1.2B</option>
-          <option value="1.1">Morocco &mdash; $1.1B</option>
-        </select></div>
-      <div><span class="lbl" style="margin-top:0">Spoilage today %</span>
-        <input class="num-in" id="sb" type="number" value="30" min="0" max="100" step="1"></div>
-      <div><span class="lbl" style="margin-top:0">Spoilage with system %</span>
-        <input class="num-in" id="sn" type="number" value="5" min="0" max="100" step="1"></div>
-    </div>
-
-    <span class="lbl">Your numbers &mdash; type them, then check</span>
-    <div class="calc">
-      <div class="cell"><div class="k">Value lost today ($M)</div>
-        <input class="num-in" id="a1" type="number" step="1" placeholder="?" style="max-width:100%"></div>
-      <div class="cell"><div class="k">Value lost with system ($M)</div>
-        <input class="num-in" id="a2" type="number" step="1" placeholder="?" style="max-width:100%"></div>
-      <div class="cell"><div class="k">Value saved per year ($M)</div>
-        <input class="num-in" id="a3" type="number" step="1" placeholder="?" style="max-width:100%"></div>
-    </div>
-
-    <span class="lbl">What does that number mean for the decision?</span>
-    <textarea id="t1" placeholder="One or two sentences. Whose money is this saving &mdash; the grower, the carrier, the retailer? That is the party who will pay you."></textarea>
-
-    <div class="row">
-      <button class="btn solid" data-check="1">Check my numbers</button>
-      <button class="btn" data-prompt="1">Generate AI prompt</button>
-    </div>
-    <div class="prompt" id="p1"><div class="ph"><span>Paste this into ChatGPT or Claude</span>
+    <p class="task">The same external world hits the three options differently. Fill one line per factor per option.</p>
+    <p class="hint"><strong>Points to tackle.</strong> How do global trade flows and shipping disruptions affect
+    each option? Which option benefits most from the IMO environmental rules?</p>
+    <div class="scroll"><table>
+      <tr><th style="width:130px">Factor</th><th class="oA">A &middot; License</th>
+        <th class="oB">B &middot; Manufacture</th><th class="oC">C &middot; Logistics</th></tr>
+      <tr><td class="rk">Political</td><td><textarea data-k="pe_pol_a"></textarea></td><td><textarea data-k="pe_pol_b"></textarea></td><td><textarea data-k="pe_pol_c"></textarea></td></tr>
+      <tr><td class="rk">Economic</td><td><textarea data-k="pe_eco_a"></textarea></td><td><textarea data-k="pe_eco_b"></textarea></td><td><textarea data-k="pe_eco_c"></textarea></td></tr>
+      <tr><td class="rk">Social</td><td><textarea data-k="pe_soc_a"></textarea></td><td><textarea data-k="pe_soc_b"></textarea></td><td><textarea data-k="pe_soc_c"></textarea></td></tr>
+      <tr><td class="rk">Technological</td><td><textarea data-k="pe_tec_a"></textarea></td><td><textarea data-k="pe_tec_b"></textarea></td><td><textarea data-k="pe_tec_c"></textarea></td></tr>
+      <tr><td class="rk">Legal</td><td><textarea data-k="pe_leg_a"></textarea></td><td><textarea data-k="pe_leg_b"></textarea></td><td><textarea data-k="pe_leg_c"></textarea></td></tr>
+      <tr><td class="rk">Environmental</td><td><textarea data-k="pe_env_a"></textarea></td><td><textarea data-k="pe_env_b"></textarea></td><td><textarea data-k="pe_env_c"></textarea></td></tr>
+    </table></div>
+    <div class="row"><button class="btn solid" data-check="1">Check my work</button>
+      <button class="btn" data-prompt="1">Refine with AI</button></div>
+    <div class="prompt" id="p1"><div class="ph"><span>Your answers are inside this prompt &mdash; paste it into ChatGPT or Claude</span>
       <button class="btn sm" data-copy="p1">Copy</button></div><pre></pre></div>
     <div class="fb" id="f1"></div>
   </div>
 </section>
 
-<!-- ============================================ STEP 2 -->
+<!-- ===================================================== TASK 2 · PORTER -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="false" data-t="b2">
-    <span class="num">02</span><h2>Read the industry</h2><span class="state" id="st2">Not started</span>
+    <span class="num">02</span><h2>Porter's five forces</h2><span class="state" id="st2">Not started</span>
   </div>
   <div class="sbody" id="b2">
-    <p class="task">Pick the option you are leaning towards, then run Porter's five forces on
-    <em>that one</em>. Analysing all three is how groups run out of time and decide nothing.</p>
-    <div class="opts" id="pick2">
-      <div class="opt" data-v="A"><div class="t">A &middot; License</div><div class="d">Royalties from OEMs</div></div>
-      <div class="opt" data-v="B"><div class="t">B &middot; Manufacture</div><div class="d">Build and sell containers</div></div>
-      <div class="opt" data-v="C"><div class="t">C &middot; Ship tomatoes</div><div class="d">Run the service yourself</div></div>
-    </div>
-    <div class="scroll"><table id="porter">
-      <tr><th style="width:200px">Force</th><th>High, medium or low &mdash; and why</th></tr>
-      <tr><td>Supplier power</td><td><textarea data-k="p_sup"></textarea></td></tr>
-      <tr><td>Buyer power</td><td><textarea data-k="p_buy"></textarea></td></tr>
-      <tr><td>Rivalry</td><td><textarea data-k="p_riv"></textarea></td></tr>
-      <tr><td>Substitutes</td><td><textarea data-k="p_sub"></textarea></td></tr>
-      <tr><td>New entrants</td><td><textarea data-k="p_new"></textarea></td></tr>
+    <p class="task">Rate each force high, medium or low for each option, and say who makes it so.</p>
+    <p class="hint"><strong>Points to tackle.</strong> Who are the buyers in each model &mdash; OEMs, carriers,
+    retailers? How concentrated are they? Are there realistic substitutes, such as modified-atmosphere
+    packaging or edible coatings?</p>
+    <div class="scroll"><table>
+      <tr><th style="width:130px">Force</th><th class="oA">A &middot; License</th>
+        <th class="oB">B &middot; Manufacture</th><th class="oC">C &middot; Logistics</th></tr>
+      <tr><td class="rk">Supplier power</td><td><textarea data-k="po_sup_a"></textarea></td><td><textarea data-k="po_sup_b"></textarea></td><td><textarea data-k="po_sup_c"></textarea></td></tr>
+      <tr><td class="rk">Buyer power</td><td><textarea data-k="po_buy_a"></textarea></td><td><textarea data-k="po_buy_b"></textarea></td><td><textarea data-k="po_buy_c"></textarea></td></tr>
+      <tr><td class="rk">Rivalry</td><td><textarea data-k="po_riv_a"></textarea></td><td><textarea data-k="po_riv_b"></textarea></td><td><textarea data-k="po_riv_c"></textarea></td></tr>
+      <tr><td class="rk">Substitutes</td><td><textarea data-k="po_sub_a"></textarea></td><td><textarea data-k="po_sub_b"></textarea></td><td><textarea data-k="po_sub_c"></textarea></td></tr>
+      <tr><td class="rk">New entrants</td><td><textarea data-k="po_new_a"></textarea></td><td><textarea data-k="po_new_b"></textarea></td><td><textarea data-k="po_new_c"></textarea></td></tr>
     </table></div>
-    <div class="row">
-      <button class="btn solid" data-check="2">Check</button>
-      <button class="btn" data-prompt="2">Generate AI prompt</button>
-    </div>
-    <div class="prompt" id="p2"><div class="ph"><span>Paste this into ChatGPT or Claude</span>
+    <div class="row"><button class="btn solid" data-check="2">Check my work</button>
+      <button class="btn" data-prompt="2">Refine with AI</button></div>
+    <div class="prompt" id="p2"><div class="ph"><span>Your answers are inside this prompt</span>
       <button class="btn sm" data-copy="p2">Copy</button></div><pre></pre></div>
     <div class="fb" id="f2"></div>
   </div>
 </section>
 
-<!-- ============================================ STEP 3 -->
+<!-- ===================================================== TASK 3 · UNIT ECONOMICS -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="false" data-t="b3">
-    <span class="num">03</span><h2>Can we actually do it?</h2><span class="state" id="st3">Not started</span>
+    <span class="num">03</span><h2>Unit economics of spoilage</h2><span class="state" id="st3">Not started</span>
   </div>
   <div class="sbody" id="b3">
-    <p class="task">The startup has strong R&amp;D and a patent. It has no factory, no service network and
-    little capital. For your chosen option, mark the gap on each capability and say how you would close it.</p>
-    <div class="scroll"><table>
-      <tr><th style="width:190px">Capability</th><th style="width:150px">Gap</th><th>How you close it &mdash; buy, partner or build</th></tr>
-      <tr><td>R&amp;D and technology</td><td><select data-k="c_rd"><option>&mdash;</option><option>No gap</option><option>Small gap</option><option>Big gap</option></select></td><td><textarea data-k="c_rd_t"></textarea></td></tr>
-      <tr><td>Manufacturing capacity</td><td><select data-k="c_mf"><option>&mdash;</option><option>No gap</option><option>Small gap</option><option>Big gap</option></select></td><td><textarea data-k="c_mf_t"></textarea></td></tr>
-      <tr><td>Global service network</td><td><select data-k="c_sv"><option>&mdash;</option><option>No gap</option><option>Small gap</option><option>Big gap</option></select></td><td><textarea data-k="c_sv_t"></textarea></td></tr>
-      <tr><td>Capital</td><td><select data-k="c_cp"><option>&mdash;</option><option>No gap</option><option>Small gap</option><option>Big gap</option></select></td><td><textarea data-k="c_cp_t"></textarea></td></tr>
-      <tr><td>Certifications</td><td><select data-k="c_rg"><option>&mdash;</option><option>No gap</option><option>Small gap</option><option>Big gap</option></select></td><td><textarea data-k="c_rg_t"></textarea></td></tr>
-    </table></div>
-    <div class="row">
-      <button class="btn solid" data-check="3">Check</button>
-      <button class="btn" data-prompt="3">Generate AI prompt</button>
+    <p class="task">Use Exhibits 1 and 2. Pick an exporter, set the spoilage assumptions, and work out how much
+    value is destroyed today and how much the container saves. This is the only number that tells you whether
+    any of the three options is worth doing.</p>
+    <div class="row" style="margin-top:6px">
+      <div><span class="lbl" style="margin-top:0">Exporter</span>
+        <select id="ex"><option value="3.0">Mexico &mdash; $3.0B</option><option value="1.9">Netherlands &mdash; $1.9B</option>
+        <option value="1.2">Spain &mdash; $1.2B</option><option value="1.1">Morocco &mdash; $1.1B</option></select></div>
+      <div><span class="lbl" style="margin-top:0">Spoilage today %</span>
+        <input class="num-in" id="sb" type="number" value="30" min="0" max="100"></div>
+      <div><span class="lbl" style="margin-top:0">With the system %</span>
+        <input class="num-in" id="sn" type="number" value="5" min="0" max="100"></div>
+      <div><span class="lbl" style="margin-top:0">Price $/kg</span>
+        <input class="num-in" id="pk" type="number" value="1.5" step="0.1" min="0.1"></div>
     </div>
-    <div class="prompt" id="p3"><div class="ph"><span>Paste this into ChatGPT or Claude</span>
+    <span class="lbl">Your figures &mdash; work them out, then check</span>
+    <div class="calc">
+      <div class="cell"><div class="k">Value lost today ($M)</div>
+        <input class="num-in" id="a1" type="number" placeholder="?" style="max-width:100%"></div>
+      <div class="cell"><div class="k">Value lost with system ($M)</div>
+        <input class="num-in" id="a2" type="number" placeholder="?" style="max-width:100%"></div>
+      <div class="cell"><div class="k">Value saved per year ($M)</div>
+        <input class="num-in" id="a3" type="number" placeholder="?" style="max-width:100%"></div>
+    </div>
+    <span class="lbl">Whose money is this, and what would they pay for it?</span>
+    <textarea data-k="ue_who" placeholder="The grower, the carrier or the retailer? That party is who you can charge. Say what share of the saving you could realistically capture."></textarea>
+    <div class="row"><button class="btn solid" data-check="3">Check my numbers</button>
+      <button class="btn" data-prompt="3">Refine with AI</button></div>
+    <div class="prompt" id="p3"><div class="ph"><span>Your figures are inside this prompt</span>
       <button class="btn sm" data-copy="p3">Copy</button></div><pre></pre></div>
     <div class="fb" id="f3"></div>
   </div>
 </section>
 
-<!-- ============================================ STEP 4 -->
+<!-- ===================================================== TASK 4 · CAPABILITIES -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="false" data-t="b4">
-    <span class="num">04</span><h2>SWOT, four entries only</h2><span class="state" id="st4">Not started</span>
+    <span class="num">04</span><h2>Internal capabilities</h2><span class="state" id="st4">Not started</span>
   </div>
   <div class="sbody" id="b4">
-    <p class="task">One entry per box, for your chosen option. Each must be a fact you could source from
-    the brief, not an adjective. Then cross them.</p>
+    <p class="task">What the startup has today, against what each option needs.</p>
+    <p class="hint"><strong>Points to tackle.</strong> Which gaps are biggest? Which option best matches the
+    strengths that already exist?</p>
     <div class="scroll"><table>
-      <tr><th style="width:50%">Strength</th><th>Weakness</th></tr>
-      <tr><td><textarea data-k="s_s"></textarea></td><td><textarea data-k="s_w"></textarea></td></tr>
-      <tr><th>Opportunity</th><th>Threat</th></tr>
-      <tr><td><textarea data-k="s_o"></textarea></td><td><textarea data-k="s_t"></textarea></td></tr>
+      <tr><th style="width:150px">Capability</th><th style="width:130px">Startup today</th>
+        <th class="oA">Needed for A</th><th class="oB">Needed for B</th><th class="oC">Needed for C</th></tr>
+      <tr><td class="rk">R&amp;D / technology</td>
+        <td><select data-k="ca_rd_now"><option>&mdash;</option><option>Strong</option><option>Partial</option><option>None</option></select></td>
+        <td><textarea data-k="ca_rd_a"></textarea></td><td><textarea data-k="ca_rd_b"></textarea></td><td><textarea data-k="ca_rd_c"></textarea></td></tr>
+      <tr><td class="rk">Manufacturing</td>
+        <td><select data-k="ca_mf_now"><option>&mdash;</option><option>Strong</option><option>Partial</option><option>None</option></select></td>
+        <td><textarea data-k="ca_mf_a"></textarea></td><td><textarea data-k="ca_mf_b"></textarea></td><td><textarea data-k="ca_mf_c"></textarea></td></tr>
+      <tr><td class="rk">Service network</td>
+        <td><select data-k="ca_sv_now"><option>&mdash;</option><option>Strong</option><option>Partial</option><option>None</option></select></td>
+        <td><textarea data-k="ca_sv_a"></textarea></td><td><textarea data-k="ca_sv_b"></textarea></td><td><textarea data-k="ca_sv_c"></textarea></td></tr>
+      <tr><td class="rk">Capital</td>
+        <td><select data-k="ca_cp_now"><option>&mdash;</option><option>Strong</option><option>Partial</option><option>None</option></select></td>
+        <td><textarea data-k="ca_cp_a"></textarea></td><td><textarea data-k="ca_cp_b"></textarea></td><td><textarea data-k="ca_cp_c"></textarea></td></tr>
+      <tr><td class="rk">Certifications</td>
+        <td><select data-k="ca_rg_now"><option>&mdash;</option><option>Strong</option><option>Partial</option><option>None</option></select></td>
+        <td><textarea data-k="ca_rg_a"></textarea></td><td><textarea data-k="ca_rg_b"></textarea></td><td><textarea data-k="ca_rg_c"></textarea></td></tr>
     </table></div>
-    <span class="lbl">Cross one strength with one opportunity &mdash; what action does that produce?</span>
-    <textarea data-k="s_cross" placeholder="Because we have X and the market is doing Y, we should do Z."></textarea>
-    <div class="row">
-      <button class="btn solid" data-check="4">Check</button>
-      <button class="btn" data-prompt="4">Generate AI prompt</button>
-    </div>
-    <div class="prompt" id="p4"><div class="ph"><span>Paste this into ChatGPT or Claude</span>
+    <span class="lbl">The biggest gap, and how you close it &mdash; buy, partner or build</span>
+    <textarea data-k="ca_gap"></textarea>
+    <div class="row"><button class="btn solid" data-check="4">Check my work</button>
+      <button class="btn" data-prompt="4">Refine with AI</button></div>
+    <div class="prompt" id="p4"><div class="ph"><span>Your answers are inside this prompt</span>
       <button class="btn sm" data-copy="p4">Copy</button></div><pre></pre></div>
     <div class="fb" id="f4"></div>
   </div>
 </section>
 
-<!-- ============================================ STEP 5 -->
+<!-- ===================================================== TASK 5 · SWOT -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="false" data-t="b5">
-    <span class="num">05</span><h2>The decision</h2><span class="state" id="st5">Not started</span>
+    <span class="num">05</span><h2>SWOT for the path you favour</h2><span class="state" id="st5">Not started</span>
   </div>
   <div class="sbody" id="b5">
-    <p class="task">Commit. Name the option, phase it, and say what would make you wrong.
-    An answer that keeps all three options open scores nothing.</p>
-    <span class="lbl">We choose</span>
+    <p class="task">Pick the option you are leaning towards, then build the SWOT for it. Click a card to choose.</p>
     <div class="opts" id="pick5">
-      <div class="opt" data-v="A"><div class="t">A &middot; License</div></div>
-      <div class="opt" data-v="B"><div class="t">B &middot; Manufacture</div></div>
-      <div class="opt" data-v="C"><div class="t">C &middot; Ship tomatoes</div></div>
+      <div class="opt pick" data-v="A" role="button" tabindex="0"><div class="t">A &middot; License</div>
+        <div class="d">Royalties from OEMs</div><div class="pickme">Click to choose</div></div>
+      <div class="opt pick" data-v="B" role="button" tabindex="0"><div class="t">B &middot; Manufacture</div>
+        <div class="d">Build and sell containers</div><div class="pickme">Click to choose</div></div>
+      <div class="opt pick" data-v="C" role="button" tabindex="0"><div class="t">C &middot; Ship tomatoes</div>
+        <div class="d">Run the service yourself</div><div class="pickme">Click to choose</div></div>
     </div>
-    <span class="lbl">Why this one and not the other two</span>
-    <textarea data-k="d_why" placeholder="Tie it to the number from step 1 and the forces from step 2."></textarea>
-    <span class="lbl">Phase 1 &middot; 0&ndash;12 months &mdash; what do you prove?</span>
-    <textarea data-k="d_p1"></textarea>
-    <span class="lbl">Phase 2 &middot; 12&ndash;24 months &mdash; what do you scale?</span>
-    <textarea data-k="d_p2"></textarea>
-    <span class="lbl">The biggest risk, and how you cut it</span>
-    <textarea data-k="d_risk" placeholder="Imitation? Regulation? A customer who is also a competitor?"></textarea>
-    <span class="lbl">What evidence would change your mind?</span>
-    <textarea data-k="d_kill" placeholder="Name the number or the event that would make you switch options."></textarea>
-    <div class="row">
-      <button class="btn solid" data-check="5">Check</button>
-      <button class="btn" data-prompt="5">Generate AI prompt</button>
-    </div>
-    <div class="prompt" id="p5"><div class="ph"><span>Paste this into ChatGPT or Claude</span>
+    <p class="hint"><strong>Points to tackle.</strong> Use the exhibits to justify strengths and opportunities.
+    Think about the risk of imitation once the patent publishes, and about regulation.</p>
+    <div class="scroll"><table>
+      <tr><th style="width:50%">Strengths</th><th>Weaknesses</th></tr>
+      <tr><td><textarea data-k="sw_s"></textarea></td><td><textarea data-k="sw_w"></textarea></td></tr>
+      <tr><th>Opportunities</th><th>Threats</th></tr>
+      <tr><td><textarea data-k="sw_o"></textarea></td><td><textarea data-k="sw_t"></textarea></td></tr>
+    </table></div>
+    <span class="lbl">Cross one strength with one opportunity &mdash; what action comes out?</span>
+    <textarea data-k="sw_cross" placeholder="Because we have X and the market is doing Y, we should do Z."></textarea>
+    <div class="row"><button class="btn solid" data-check="5">Check my work</button>
+      <button class="btn" data-prompt="5">Refine with AI</button></div>
+    <div class="prompt" id="p5"><div class="ph"><span>Your SWOT is inside this prompt</span>
       <button class="btn sm" data-copy="p5">Copy</button></div><pre></pre></div>
     <div class="fb" id="f5"></div>
   </div>
 </section>
 
-<!-- ============================================ SCORE -->
+<!-- ===================================================== TASK 6 · DECISION -->
+<section>
+  <div class="shead" role="button" tabindex="0" aria-expanded="false" data-t="b6">
+    <span class="num">06</span><h2>Risk mitigation and recommendation</h2><span class="state" id="st6">Not started</span>
+  </div>
+  <div class="sbody" id="b6">
+    <p class="task">Commit to one path and phase it. An answer that keeps all three open scores nothing.</p>
+    <span class="lbl">We recommend &mdash; click to choose</span>
+    <div class="opts" id="pick6">
+      <div class="opt pick" data-v="A" role="button" tabindex="0"><div class="t">A &middot; License</div><div class="pickme">Click to choose</div></div>
+      <div class="opt pick" data-v="B" role="button" tabindex="0"><div class="t">B &middot; Manufacture</div><div class="pickme">Click to choose</div></div>
+      <div class="opt pick" data-v="C" role="button" tabindex="0"><div class="t">C &middot; Ship tomatoes</div><div class="pickme">Click to choose</div></div>
+    </div>
+    <span class="lbl">Why this one and not the other two</span>
+    <textarea data-k="de_why" placeholder="Tie it to your number from Task 3 and the forces from Task 2."></textarea>
+    <div class="scroll"><table>
+      <tr><th style="width:170px">Phase</th><th>What you do, and what it proves</th><th style="width:30%">Main risk and how you cut it</th></tr>
+      <tr><td class="rk">1 &middot; 0&ndash;12 months</td><td><textarea data-k="de_p1"></textarea></td><td><textarea data-k="de_r1"></textarea></td></tr>
+      <tr><td class="rk">2 &middot; 12&ndash;24 months</td><td><textarea data-k="de_p2"></textarea></td><td><textarea data-k="de_r2"></textarea></td></tr>
+      <tr><td class="rk">3 &middot; 24+ months</td><td><textarea data-k="de_p3"></textarea></td><td><textarea data-k="de_r3"></textarea></td></tr>
+    </table></div>
+    <span class="lbl">What evidence in Phase 1 would make you abandon this path?</span>
+    <textarea data-k="de_kill" placeholder="Name the number or the event. A decision you cannot reverse is a bet, not a plan."></textarea>
+    <div class="row"><button class="btn solid" data-check="6">Check my work</button>
+      <button class="btn" data-prompt="6">Refine with AI</button></div>
+    <div class="prompt" id="p6"><div class="ph"><span>Your recommendation is inside this prompt</span>
+      <button class="btn sm" data-copy="p6">Copy</button></div><pre></pre></div>
+    <div class="fb" id="f6"></div>
+  </div>
+</section>
+
 <div class="score">
   <h2>Where you stand</h2>
   <div class="tot"><span id="tot">0</span><span style="font-size:22px;opacity:.6"> / 100</span></div>
   <div class="bars" id="bars"></div>
   <div class="row">
     <button class="btn solid" id="btnCopy" style="border-color:var(--ground);background:var(--ground);color:var(--ink)">Copy my whole answer</button>
-    <button class="btn" id="btnDl" style="border-color:var(--ground);color:var(--ground)">Download as text</button>
+    <button class="btn" id="btnDl" style="border-color:var(--ground);color:var(--ground)">Save as PDF</button>
   </div>
-  <p style="font-size:13px;opacity:.75;margin:14px 0 0;max-width:66ch">
-    Hand in the copied text. If you used AI, the prompts you generated here are already logged in it &mdash;
-    that is your acknowledgement under the course AI policy.</p>
+  <p style="font-size:13px;opacity:.75;margin:14px 0 0;max-width:68ch">
+    Use <strong>Save as PDF</strong> and hand that in. If you refined anything with AI, say so &mdash; the prompts this page generates
+    are built from your own writing, which is exactly what an AI-use acknowledgement should show.</p>
 </div>
 
 <footer>
-  <p><strong>Scoring.</strong> Step 1 is checked arithmetically against your own assumptions.
-  Steps 2 to 5 are checked for substance, not for agreement &mdash; the page cannot tell whether your judgement is
-  right, and does not pretend to. Your professor grades the judgement.</p>
-  <p><strong>Weights.</strong> Size the prize 20 &middot; Industry 20 &middot; Capabilities 20 &middot; SWOT 15 &middot; Decision 25.</p>
+  <p><strong>How this is checked.</strong> Task 3 is checked arithmetically against your own assumptions.
+  The other five are checked for substance &mdash; whether every cell is filled, whether you name real players
+  from the case rather than writing adjectives, whether you committed. The page cannot tell whether your
+  judgement is right and does not pretend to. Your professor grades the judgement.</p>
+  <p><strong>Weights.</strong> PESTLE 15 &middot; Five forces 20 &middot; Unit economics 20 &middot;
+  Capabilities 15 &middot; SWOT 10 &middot; Recommendation 20.</p>
 </footer>
 </div>
+<div id="printout"></div>
 
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const V={}, PICK={s2:null,s5:null};
-const OPT={A:"License the technology to reefer manufacturers",
-           B:"Manufacture and sell the container to logistics firms",
-           C:"Run an international tomato delivery service"};
-const WEIGHTS={1:20,2:20,3:20,4:15,5:25}, SCORE={1:0,2:0,3:0,4:0,5:0};
+const PICK={s5:null,s6:null};
+const OPT={A:"License the technology to reefer container manufacturers",
+           B:"Manufacture the container and sell it to logistics companies",
+           C:"Operate an international tomato delivery service"};
+const W={1:15,2:20,3:20,4:15,5:10,6:20}, SCORE={1:0,2:0,3:0,4:0,5:0,6:0};
+const NAMES={1:"PESTLE",2:"Five forces",3:"Unit economics",4:"Capabilities",5:"SWOT",6:"Recommendation"};
 
-/* ---------- accordion ---------- */
-$$(".shead").forEach(h=>{
-  const go=()=>{const b=$("#"+h.dataset.t),o=b.classList.toggle("open");
-    h.setAttribute("aria-expanded",o)};
+$$(".shead").forEach(h=>{const go=()=>{const b=$("#"+h.dataset.t);
+  h.setAttribute("aria-expanded",b.classList.toggle("open"))};
   h.addEventListener("click",go);
-  h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}});
-});
+  h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}});});
 
-/* ---------- option pickers ---------- */
 function picker(id,key){
-  $$("#"+id+" .opt").forEach(o=>o.addEventListener("click",()=>{
-    $$("#"+id+" .opt").forEach(x=>x.classList.remove("sel"));
-    o.classList.add("sel"); PICK[key]=o.dataset.v;
-  }));
+  $$("#"+id+" .opt").forEach(o=>{
+    const sel=()=>{$$("#"+id+" .opt").forEach(x=>x.classList.remove("sel"));
+      o.classList.add("sel");PICK[key]=o.dataset.v;persist();};
+    o.addEventListener("click",sel);
+    o.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();sel()}});
+  });
 }
-picker("pick2","s2"); picker("pick5","s5");
+picker("pick5","s5"); picker("pick6","s6");
 
-/* ---------- step 1 live maths ---------- */
-const val=()=>parseFloat($("#ex").value)*1000;          // $M
-const base=()=>parseFloat($("#sb").value)||0;
-const nu=()=>parseFloat($("#sn").value)||0;
-const exName=()=>$("#ex").selectedOptions[0].textContent.split(" —")[0].trim();
+const gv=k=>{const e=document.querySelector('[data-k="'+k+'"]');return e?e.value.trim():""};
+const words=s=>(s||"").trim().split(/\s+/).filter(Boolean).length;
+const val=()=>parseFloat($("#ex").value)*1000, base=()=>+$("#sb").value||0,
+      nu=()=>+$("#sn").value||0, exName=()=>$("#ex").selectedOptions[0].textContent.split(" —")[0].trim();
 
-/* ---------- prompt generation ---------- */
-function ctx(){
-  return `CASE. A startup has a patented refrigerated shipping container that holds fresh tomatoes at -4C `
-  +`without freezing, keeping them saleable for 6+ months. It has one patent, strong R&D, no factory, `
-  +`no global service network and little capital. It must choose ONE route to market:\n`
-  +`  A) License the technology to reefer container makers (CIMC, Singamas, Carrier).\n`
-  +`  B) Manufacture the container and sell it to logistics companies.\n`
-  +`  C) Operate an international tomato delivery service using its own containers.\n\n`
-  +`FACTS. 2023 tomato exports: Mexico $3.0B, Netherlands $1.9B, Spain $1.2B, Morocco $1.1B. `
-  +`13-14% of food is lost harvest-to-retail globally; on a weak cold chain fruit and veg spoilage `
-  +`runs about 30%, and about 5% with this container. Farm-gate tomato price $1-2/kg. `
-  +`Red Sea rerouting adds 10-14 days to affected voyages. IMO EEXI/CII rules push carriers towards `
-  +`efficient reefer units. Buyers are concentrated in all three models.`;
+/* ---------- prompts, built from what the student has actually written ---------- */
+const CTX=`CASE. A startup has a patented refrigerated shipping container that holds fresh tomatoes at -4C `
++`without freezing them, keeping them saleable for 6+ months. It has strong R&D and the patent, but no `
++`factory, no global service network and little capital. It must fund ONE route to market:\n`
++`  A) License the technology to reefer container makers (CIMC, Singamas, Carrier Transicold).\n`
++`  B) Manufacture the container and sell it to logistics companies.\n`
++`  C) Operate an international tomato delivery service with its own containers.\n\n`
++`EXHIBITS. 2023 tomato exports: Mexico $3.0B, Netherlands $1.9B, Spain $1.2B, Morocco $1.1B. Top importers `
++`US, Germany, France. 13-14% of all food is lost harvest-to-retail; fruit and veg on a weak cold chain runs `
++`about 30%, and about 5% with this container. Farm-gate price $1-2/kg. Red Sea rerouting adds 10-14 days to `
++`affected voyages. IMO EEXI/CII rules push carriers to efficient reefers. Buyers are concentrated in all `
++`three models.`;
+const RULES=`\n\nHOW TO HELP ME. Work on what I wrote above, do not replace it. For each entry tell me: is it a `
++`fact I could source, or an adjective? Which entries are interchangeable between the three options — those `
++`are worthless, because they do not discriminate. Give me at most five concrete improvements, then ask me `
++`the one question I have not thought about, then stop.`;
+
+function grid(rows,cols,keys,labels){
+  let out="";
+  rows.forEach((r,i)=>{
+    out+="\n"+r+":";
+    cols.forEach((c,j)=>{ out+="\n  ["+c+"] "+(gv(keys[i][j])||"(blank)"); });
+  });
+  return out;
 }
-const RULES=`\n\nHOW TO ANSWER ME. Do not write my answer for me. Give me at most 5 bullet points of raw `
-  +`material, then ask me the one question I have not thought about, then stop. Challenge any claim I `
-  +`make that is an adjective rather than a fact.`;
-
-const PROMPTS={
- 1:()=>ctx()+`\n\nMY TASK. I am sizing the prize for ${exName()}, assuming ${base()}% spoilage today and `
-   +`${nu()}% with the container. I have calculated the value lost today, the value lost with the system, `
-   +`and the annual value saved.\n\nHelp me pressure-test it: whose money is actually being saved — the `
-   +`grower, the carrier or the retailer? Which of them would pay for the container, and why might they `
-   +`refuse? Is a share of saved spoilage a realistic pricing model?`+RULES,
- 2:()=>ctx()+`\n\nMY TASK. I am running Porter's five forces on option `
-   +`${PICK.s2?PICK.s2+" — "+OPT[PICK.s2]:"(not chosen yet)"} only.\n\n`
-   +`For each force tell me which specific players make it high or low in THIS option, using the named `
-   +`firms in the case. Then tell me which single force is most likely to kill this option.`+RULES,
- 3:()=>ctx()+`\n\nMY TASK. For option ${PICK.s2?PICK.s2+" — "+OPT[PICK.s2]:"(not chosen yet)"}, I am `
-   +`mapping the gap between what the startup has and what the option needs, across R&D, manufacturing, `
-   +`service network, capital and certifications.\n\nFor each gap, tell me realistically whether it is `
-   +`closed by buying, partnering or building, and roughly how long each takes. Flag any gap you think `
-   +`is fatal rather than expensive.`+RULES,
- 4:()=>ctx()+`\n\nMY TASK. I am writing a SWOT with exactly one entry per box for option `
-   +`${PICK.s2?PICK.s2:"(not chosen yet)"}, then crossing one strength with one opportunity to produce an `
-   +`action.\n\nTell me which of my candidate entries are facts and which are adjectives dressed up as `
-   +`facts. A strength nobody outside the company would notice is not a strength.`+RULES,
- 5:()=>ctx()+`\n\nMY TASK. I am committing to option `
-   +`${PICK.s5?PICK.s5+" — "+OPT[PICK.s5]:"(not chosen yet)"} with a phased plan: 0-12 months prove `
-   +`something, 12-24 months scale something.\n\nArgue the strongest case AGAINST my choice. Then tell me `
-   +`what single piece of evidence in the first 12 months should make me abandon it.`+RULES
+const PR={
+ 1:()=>CTX+`\n\nMY TASK. PESTLE for all three options. Here is what I wrote:`
+   +grid(["Political","Economic","Social","Technological","Legal","Environmental"],
+         ["A License","B Manufacture","C Logistics"],
+         [["pe_pol_a","pe_pol_b","pe_pol_c"],["pe_eco_a","pe_eco_b","pe_eco_c"],
+          ["pe_soc_a","pe_soc_b","pe_soc_c"],["pe_tec_a","pe_tec_b","pe_tec_c"],
+          ["pe_leg_a","pe_leg_b","pe_leg_c"],["pe_env_a","pe_env_b","pe_env_c"]])+RULES,
+ 2:()=>CTX+`\n\nMY TASK. Porter's five forces for all three options. Here is what I wrote:`
+   +grid(["Supplier power","Buyer power","Rivalry","Substitutes","New entrants"],
+         ["A License","B Manufacture","C Logistics"],
+         [["po_sup_a","po_sup_b","po_sup_c"],["po_buy_a","po_buy_b","po_buy_c"],
+          ["po_riv_a","po_riv_b","po_riv_c"],["po_sub_a","po_sub_b","po_sub_c"],
+          ["po_new_a","po_new_b","po_new_c"]])
+   +`\n\nAlso tell me which single force is most likely to kill each option.`+RULES,
+ 3:()=>{const V=val(),lb=V*base()/100,ln=V*nu()/100;
+   return CTX+`\n\nMY TASK. Unit economics of spoilage for ${exName()}.\n`
+   +`Exports $${V.toLocaleString()}M. Spoilage today ${base()}%, with the system ${nu()}%, price $${$("#pk").value}/kg.\n`
+   +`I calculated: value lost today $${$("#a1").value||"?"}M, with the system $${$("#a2").value||"?"}M, `
+   +`saved $${$("#a3").value||"?"}M a year.\n`
+   +`Whose money it is, in my words: "${gv("ue_who")||"(blank)"}"\n\n`
+   +`Check my arithmetic. Then pressure-test the business logic: is the saving real or does it just move down `
+   +`the chain? What share of it could the startup actually charge for, and through which of the three options? `
+   +`What would make a grower refuse to pay?`+RULES;},
+ 4:()=>CTX+`\n\nMY TASK. Internal capability gaps. What the startup has today: `
+   +`R&D ${gv("ca_rd_now")||"?"}, manufacturing ${gv("ca_mf_now")||"?"}, service network ${gv("ca_sv_now")||"?"}, `
+   +`capital ${gv("ca_cp_now")||"?"}, certifications ${gv("ca_rg_now")||"?"}.\nWhat I wrote each option needs:`
+   +grid(["R&D","Manufacturing","Service network","Capital","Certifications"],
+         ["A License","B Manufacture","C Logistics"],
+         [["ca_rd_a","ca_rd_b","ca_rd_c"],["ca_mf_a","ca_mf_b","ca_mf_c"],
+          ["ca_sv_a","ca_sv_b","ca_sv_c"],["ca_cp_a","ca_cp_b","ca_cp_c"],
+          ["ca_rg_a","ca_rg_b","ca_rg_c"]])
+   +`\n\nMy biggest gap and how I close it: "${gv("ca_gap")||"(blank)"}"\n\n`
+   +`For each gap tell me realistically whether it closes by buying, partnering or building, and roughly how `
+   +`long. Flag any gap that is fatal rather than merely expensive.`+RULES,
+ 5:()=>CTX+`\n\nMY TASK. SWOT for option ${PICK.s5?PICK.s5+" — "+OPT[PICK.s5]:"(not chosen yet)"}.\n`
+   +`Strengths: "${gv("sw_s")||"(blank)"}"\nWeaknesses: "${gv("sw_w")||"(blank)"}"\n`
+   +`Opportunities: "${gv("sw_o")||"(blank)"}"\nThreats: "${gv("sw_t")||"(blank)"}"\n`
+   +`My strength x opportunity cross: "${gv("sw_cross")||"(blank)"}"\n\n`
+   +`A strength nobody outside the company would notice is not a strength. Tell me which of mine survive that `
+   +`test. Then tell me whether my cross actually produces an action or just restates the two boxes.`+RULES,
+ 6:()=>CTX+`\n\nMY TASK. Final recommendation: option ${PICK.s6?PICK.s6+" — "+OPT[PICK.s6]:"(not chosen yet)"}.\n`
+   +`Why: "${gv("de_why")||"(blank)"}"\n`
+   +`Phase 1 (0-12m): "${gv("de_p1")||"(blank)"}"  | risk: "${gv("de_r1")||"(blank)"}"\n`
+   +`Phase 2 (12-24m): "${gv("de_p2")||"(blank)"}" | risk: "${gv("de_r2")||"(blank)"}"\n`
+   +`Phase 3 (24m+): "${gv("de_p3")||"(blank)"}"   | risk: "${gv("de_r3")||"(blank)"}"\n`
+   +`What would make me abandon it: "${gv("de_kill")||"(blank)"}"\n\n`
+   +`Argue the strongest case AGAINST my choice, using my own PESTLE and five-forces answers where you can. `
+   +`Then tell me whether my Phase 1 actually proves anything, or just spends money.`+RULES
 };
-
 $$("[data-prompt]").forEach(b=>b.addEventListener("click",()=>{
-  const n=b.dataset.prompt, box=$("#p"+n);
-  box.querySelector("pre").textContent=PROMPTS[n]();
+  const n=b.dataset.prompt,box=$("#p"+n);
+  box.querySelector("pre").textContent=PR[n]();
   box.classList.add("open");
+  box.scrollIntoView({behavior:"smooth",block:"nearest"});
 }));
 $$("[data-copy]").forEach(b=>b.addEventListener("click",async()=>{
-  const t=$("#"+b.dataset.copy+" pre").textContent;
-  try{await navigator.clipboard.writeText(t);b.textContent="Copied";
-      setTimeout(()=>b.textContent="Copy",1600)}catch(e){b.textContent="Select and copy"}
+  try{await navigator.clipboard.writeText($("#"+b.dataset.copy+" pre").textContent);
+    b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1600);}
+  catch(e){b.textContent="Select the text and copy";}
 }));
 
 /* ---------- checking ---------- */
-const words=s=>(s||"").trim().split(/\s+/).filter(Boolean).length;
-const gv=k=>{const e=document.querySelector('[data-k="'+k+'"]');return e?e.value:""};
-
-function show(n,cls,head,items){
-  const f=$("#f"+n);
-  f.className="fb show "+cls;
-  f.innerHTML="<strong>"+head+"</strong>"+(items.length?"<ul><li>"+items.join("</li><li>")+"</li></ul>":"");
-}
+function show(n,cls,head,items){const f=$("#f"+n);f.className="fb show "+cls;
+  f.innerHTML="<strong>"+head+"</strong>"+(items.length?"<ul><li>"+items.join("</li><li>")+"</li></ul>":"");}
 function setState(n,pts){
-  SCORE[n]=pts;
-  const el=$("#st"+n), w=WEIGHTS[n];
-  el.textContent=pts+" / "+w;
-  el.className="state "+(pts>=w*0.8?"done":pts>0?"part":"");
-  const done=Object.values(SCORE).filter(v=>v>0).length;
-  $("#chipProg").textContent=done+" / 5 complete";
-  const tot=Object.values(SCORE).reduce((a,b)=>a+b,0);
-  $("#tot").textContent=Math.round(tot);
-  $("#bars").innerHTML=[1,2,3,4,5].map(i=>{
-    const names={1:"Size the prize",2:"Industry",3:"Capabilities",4:"SWOT",5:"Decision"};
-    const pc=Math.round(SCORE[i]/WEIGHTS[i]*100);
-    return `<div class="bar"><span>${names[i]}</span><span class="mono">${SCORE[i]}/${WEIGHTS[i]}</span>`
-          +`<div class="track"><div class="fill" style="width:${pc}%"></div></div></div>`;
-  }).join("");
+  SCORE[n]=Math.max(0,Math.min(pts,W[n]));
+  const el=$("#st"+n);el.textContent=SCORE[n]+" / "+W[n];
+  el.className="state "+(SCORE[n]>=W[n]*0.8?"done":SCORE[n]>0?"part":"");
+  $("#chipProg").textContent=Object.values(SCORE).filter(v=>v>0).length+" / 6 complete";
+  $("#tot").textContent=Math.round(Object.values(SCORE).reduce((a,b)=>a+b,0));
+  $("#bars").innerHTML=[1,2,3,4,5,6].map(i=>{const pc=Math.round(SCORE[i]/W[i]*100);
+    return `<div class="bar"><span>${NAMES[i]}</span><span>${SCORE[i]}/${W[i]}</span>`
+      +`<div class="track"><div class="fill" style="width:${pc}%"></div></div></div>`;}).join("");
+  persist();
 }
-
+const PLAYERS=["cimc","singamas","carrier","thermo","star cool","maersk","msc","cma","oem","retailer",
+  "importer","imo","eexi","cii","red sea","grower"];
+/* a cell that could sit under any of the three options teaches nothing */
+function discriminates(rows){
+  let same=0,seen=0;
+  rows.forEach(r=>{const v=r.map(gv).map(x=>x.toLowerCase().replace(/\W+/g,""));
+    if(v.every(x=>x.length>3)){seen++; if(v[0]===v[1]||v[1]===v[2]||v[0]===v[2]) same++;}});
+  return {seen,same};
+}
+function tableCheck(n,rows,minWords,head){
+  const flat=rows.flat(), filled=flat.filter(k=>words(gv(k))>=minWords).length;
+  const bad=[]; let p=Math.round(filled/flat.length*(W[n]-6));
+  if(filled<flat.length) bad.push(`${flat.length-filled} of ${flat.length} cells still empty or too short.`);
+  const all=flat.map(gv).join(" ").toLowerCase();
+  if(PLAYERS.some(x=>all.includes(x))) p+=3;
+  else bad.push("Name real players from the case &mdash; CIMC, Maersk, the IMO rules, the growers. "
+    +"&ldquo;Buyers are powerful&rdquo; is not analysis.");
+  const d=discriminates(rows);
+  if(d.seen>=2&&d.same===0) p+=3;
+  else if(d.same>0) bad.push(`${d.same} row(s) say almost the same thing across two options. `
+    +"If a cell fits all three paths equally, it cannot help you choose between them.");
+  setState(n,p);
+  show(n,p>=W[n]*0.8?"good":"bad",p>=W[n]*0.8?head:"Not finished yet.",bad);
+}
 const CHECK={
- 1:()=>{
-   const V0=val(), lb=V0*base()/100, ln=V0*nu()/100, sv=lb-ln;
-   const a1=parseFloat($("#a1").value), a2=parseFloat($("#a2").value), a3=parseFloat($("#a3").value);
+ 1:()=>tableCheck(1,[["pe_pol_a","pe_pol_b","pe_pol_c"],["pe_eco_a","pe_eco_b","pe_eco_c"],
+    ["pe_soc_a","pe_soc_b","pe_soc_c"],["pe_tec_a","pe_tec_b","pe_tec_c"],
+    ["pe_leg_a","pe_leg_b","pe_leg_c"],["pe_env_a","pe_env_b","pe_env_c"]],4,
+    "PESTLE done, and it discriminates between the options."),
+ 2:()=>tableCheck(2,[["po_sup_a","po_sup_b","po_sup_c"],["po_buy_a","po_buy_b","po_buy_c"],
+    ["po_riv_a","po_riv_b","po_riv_c"],["po_sub_a","po_sub_b","po_sub_c"],
+    ["po_new_a","po_new_b","po_new_c"]],4,"Solid read of the industry."),
+ 3:()=>{const V=val(),lb=V*base()/100,ln=V*nu()/100,sv=lb-ln;
    const near=(x,y)=>isFinite(x)&&Math.abs(x-y)<=Math.max(2,y*0.02);
-   const bad=[]; let p=0;
-   near(a1,lb)?p+=6:bad.push(`Value lost today should be $${V0.toLocaleString()}M &times; ${base()}% = <strong>$${Math.round(lb).toLocaleString()}M</strong>.`);
-   near(a2,ln)?p+=6:bad.push(`Value lost with the system should be $${V0.toLocaleString()}M &times; ${nu()}% = <strong>$${Math.round(ln).toLocaleString()}M</strong>.`);
+   const a1=+$("#a1").value,a2=+$("#a2").value,a3=+$("#a3").value;
+   const bad=[];let p=0;
+   near(a1,lb)?p+=6:bad.push(`Value lost today: $${V.toLocaleString()}M &times; ${base()}% = <strong>$${Math.round(lb).toLocaleString()}M</strong>.`);
+   near(a2,ln)?p+=5:bad.push(`Value lost with the system: $${V.toLocaleString()}M &times; ${nu()}% = <strong>$${Math.round(ln).toLocaleString()}M</strong>.`);
    near(a3,sv)?p+=5:bad.push(`Value saved is the difference: <strong>$${Math.round(sv).toLocaleString()}M</strong> a year.`);
-   if(words(gv("t1"))>=12) p+=3; else bad.push("Say in a sentence whose money this saves. That party is who pays you.");
-   setState(1,p);
-   show(1,p>=16?"good":"bad",p>=16?"Numbers check out.":"Not there yet.",
-     bad.length?bad:[`$${Math.round(sv).toLocaleString()}M a year for ${exName()} alone. That is the size of the prize.`]);
- },
- 2:()=>{
-   const ks=["p_sup","p_buy","p_riv","p_sub","p_new"], bad=[]; let p=0;
-   if(!PICK.s2) bad.push("Pick the option you are analysing first.");
-   else p+=4;
-   let filled=0;
-   ks.forEach(k=>{ if(words(gv(k))>=6) filled++; });
-   p+=Math.round(filled/ks.length*12);
-   if(filled<5) bad.push(`${5-filled} of the five forces still need a reason, not just a rating.`);
-   const all=ks.map(gv).join(" ").toLowerCase();
-   const named=["cimc","singamas","carrier","thermo","star cool","maersk","msc","cma","oem","retailer","imo"];
-   if(named.some(n=>all.includes(n))) p+=4;
-   else bad.push("Name actual players from the brief. &ldquo;Buyers are powerful&rdquo; is not analysis; &ldquo;three shipping lines control the slots&rdquo; is.");
-   setState(2,Math.min(p,20));
-   show(2,p>=16?"good":"bad",p>=16?"Solid read of the industry.":"Needs more evidence.",bad);
- },
- 3:()=>{
-   const sel=["c_rd","c_mf","c_sv","c_cp","c_rg"], txt=["c_rd_t","c_mf_t","c_sv_t","c_cp_t","c_rg_t"];
-   const bad=[]; let p=0;
-   const rated=sel.filter(k=>gv(k)&&gv(k)!=="—").length;
-   p+=Math.round(rated/5*8);
-   if(rated<5) bad.push(`${5-rated} capabilities still unrated.`);
-   const said=txt.filter(k=>words(gv(k))>=5).length;
-   p+=Math.round(said/5*8);
-   if(said<5) bad.push(`${5-said} still need a way to close the gap.`);
-   const how=txt.map(gv).join(" ").toLowerCase();
-   if(/buy|partner|build|licen|acquir|outsourc|joint/.test(how)) p+=4;
-   else bad.push("Say <em>how</em> each gap closes: buy it, partner for it, or build it.");
-   setState(3,Math.min(p,20));
-   show(3,p>=16?"good":"bad",p>=16?"Honest about the gaps.":"Half-finished.",bad);
- },
- 4:()=>{
-   const ks=["s_s","s_w","s_o","s_t"], bad=[]; let p=0;
-   const filled=ks.filter(k=>words(gv(k))>=4).length;
-   p+=Math.round(filled/4*8);
+   words(gv("ue_who"))>=15?p+=4:bad.push("Say whose money this is and what share you could charge. That is the pricing model.");
+   setState(3,p);
+   show(3,p>=16?"good":"bad",p>=16?"Numbers check out.":"Not there yet.",
+     bad.length?bad:[`$${Math.round(sv).toLocaleString()}M a year for ${exName()} alone.`]);},
+ 4:()=>{const rows=[["ca_rd_a","ca_rd_b","ca_rd_c"],["ca_mf_a","ca_mf_b","ca_mf_c"],
+    ["ca_sv_a","ca_sv_b","ca_sv_c"],["ca_cp_a","ca_cp_b","ca_cp_c"],["ca_rg_a","ca_rg_b","ca_rg_c"]];
+   const flat=rows.flat(),filled=flat.filter(k=>words(gv(k))>=3).length;
+   const now=["ca_rd_now","ca_mf_now","ca_sv_now","ca_cp_now","ca_rg_now"].filter(k=>gv(k)&&gv(k)!=="—").length;
+   const bad=[];let p=Math.round(filled/flat.length*8)+Math.round(now/5*4);
+   if(filled<flat.length) bad.push(`${flat.length-filled} of ${flat.length} requirement cells still empty.`);
+   if(now<5) bad.push(`${5-now} capabilities not rated for the startup today.`);
+   if(/buy|partner|build|licen|acquir|outsourc|joint|hire/i.test(gv("ca_gap"))&&words(gv("ca_gap"))>=10) p+=3;
+   else bad.push("Name the biggest gap and say whether you buy it, partner for it, or build it.");
+   setState(4,p);
+   show(4,p>=12?"good":"bad",p>=12?"Honest about the gaps.":"Half-finished.",bad);},
+ 5:()=>{const ks=["sw_s","sw_w","sw_o","sw_t"],bad=[];let p=0;
+   if(!PICK.s5) bad.push("Choose the option this SWOT is for &mdash; click one of the three cards.");else p+=2;
+   const filled=ks.filter(k=>words(gv(k))>=4).length;p+=Math.round(filled/4*5);
    if(filled<4) bad.push(`${4-filled} SWOT boxes still empty or too thin.`);
-   if(words(gv("s_cross"))>=12) p+=7;
-   else bad.push("The cross is the point of the exercise. Strength &times; opportunity &rarr; one action.");
-   const vague=/\bgood\b|\bstrong\b|\bbad\b|\binnovative\b|\bgreat\b/i;
-   if(ks.some(k=>vague.test(gv(k))&&words(gv(k))<8))
-     bad.push("At least one box is an adjective. Replace it with something you could source from the brief.");
-   setState(4,Math.min(p,15));
-   show(4,p>=12?"good":"bad",p>=12?"That is a usable SWOT.":"Not usable yet.",bad);
- },
- 5:()=>{
-   const bad=[]; let p=0;
-   if(PICK.s5) p+=5; else bad.push("You have not committed to an option.");
-   if(PICK.s5&&PICK.s2&&PICK.s5!==PICK.s2)
-     bad.push(`You analysed option ${PICK.s2} but chose ${PICK.s5}. That can be right &mdash; but say why the analysis pushed you away from it.`);
-   [["d_why",6,"Say why this option and not the other two, using your own number from step 1."],
-    ["d_p1",4,"Phase 1 needs something you can actually prove in 12 months."],
-    ["d_p2",4,"Phase 2 needs a scaling path."],
-    ["d_risk",3,"Name the biggest risk and how you cut it."],
-    ["d_kill",3,"Name the evidence that would change your mind. A decision you cannot reverse is a bet, not a plan."]]
-   .forEach(([k,pts,msg])=>{ if(words(gv(k))>=10) p+=pts; else bad.push(msg); });
-   setState(5,Math.min(p,25));
-   show(5,p>=20?"good":"bad",p>=20?"That is a decision.":"Still hedging.",bad);
- }
+   words(gv("sw_cross"))>=12?p+=3:bad.push("The cross is the point. Strength &times; opportunity &rarr; one action.");
+   if(ks.some(k=>/^\W*(good|strong|bad|great|innovative)\b/i.test(gv(k))))
+     bad.push("At least one box opens with an adjective. Replace it with something sourced from the case.");
+   setState(5,p);
+   show(5,p>=8?"good":"bad",p>=8?"That is a usable SWOT.":"Not usable yet.",bad);},
+ 6:()=>{const bad=[];let p=0;
+   PICK.s6?p+=4:bad.push("You have not committed to a path.");
+   if(PICK.s6&&PICK.s5&&PICK.s6!==PICK.s5)
+     bad.push(`Your SWOT is for option ${PICK.s5} but you recommend ${PICK.s6}. That can be right &mdash; say what changed your mind.`);
+   [["de_why",4,"Say why this path and not the other two, using your Task 3 number."],
+    ["de_p1",3,"Phase 1 needs something you can actually prove in 12 months."],
+    ["de_p2",2,"Phase 2 needs a scaling path."],["de_p3",2,"Phase 3 needs the optional bet."],
+    ["de_kill",3,"Name the evidence that would make you abandon it."]]
+    .forEach(([k,pts,m])=>{words(gv(k))>=8?p+=pts:bad.push(m)});
+   const risks=["de_r1","de_r2","de_r3"].filter(k=>words(gv(k))>=4).length;
+   p+=Math.round(risks/3*2);
+   if(risks<3) bad.push(`${3-risks} phase(s) still without a risk and a mitigation.`);
+   setState(6,p);
+   show(6,p>=16?"good":"bad",p>=16?"That is a recommendation.":"Still hedging.",bad);}
 };
 $$("[data-check]").forEach(b=>b.addEventListener("click",()=>CHECK[b.dataset.check]()));
 
-/* ---------- autosave: a refresh mid-class must not wipe an hour of work ---------- */
-const KEY="mf26-tomato-case";
-function collect(){
-  const d={pick:PICK,score:SCORE,f:{}};
-  $$("input,textarea,select").forEach((el,i)=>{
-    const k=el.id||el.dataset.k||("_"+i);
-    d.f[k]=el.value;
-  });
-  return d;
-}
-function persist(){ try{localStorage.setItem(KEY,JSON.stringify(collect()))}catch(e){} }
-function restore(){
-  let d; try{d=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
-  if(!d) return;
-  $$("input,textarea,select").forEach((el,i)=>{
-    const k=el.id||el.dataset.k||("_"+i);
-    if(d.f&&d.f[k]!==undefined) el.value=d.f[k];
-  });
-  if(d.pick){ Object.assign(PICK,d.pick);
-    [["pick2","s2"],["pick5","s5"]].forEach(([id,key])=>{
-      if(!PICK[key]) return;
+/* ---------- autosave ---------- */
+const KEY="mf26-tomato-v2";
+function persist(){try{const f={};
+  $$("input,textarea,select").forEach((el,i)=>f[el.id||el.dataset.k||("_"+i)]=el.value);
+  localStorage.setItem(KEY,JSON.stringify({f,PICK,SCORE}));}catch(e){}}
+function restore(){let d;try{d=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+  if(!d)return;
+  $$("input,textarea,select").forEach((el,i)=>{const k=el.id||el.dataset.k||("_"+i);
+    if(d.f&&d.f[k]!==undefined)el.value=d.f[k];});
+  if(d.PICK){Object.assign(PICK,d.PICK);
+    [["pick5","s5"],["pick6","s6"]].forEach(([id,key])=>{if(!PICK[key])return;
       const o=document.querySelector("#"+id+' .opt[data-v="'+PICK[key]+'"]');
-      if(o){ $$("#"+id+" .opt").forEach(x=>x.classList.remove("sel")); o.classList.add("sel"); }
-    });
-  }
-  identity();
-}
+      if(o){$$("#"+id+" .opt").forEach(x=>x.classList.remove("sel"));o.classList.add("sel");}});}
+  if(d.SCORE)Object.keys(d.SCORE).forEach(k=>setState(+k,d.SCORE[k]));
+  identity();}
 document.addEventListener("input",()=>{persist();identity()});
 document.addEventListener("change",()=>{persist();identity()});
-
-function identity(){
-  const g=$("#wGroup").value.trim();
-  const n=$("#wNames").value.trim().split(/
-/).filter(x=>x.trim()).length;
-  const el=$("#stW");
-  if(g&&n){ el.textContent=g+" · "+n+" student"+(n===1?"":"s"); el.className="state done"; }
-  else if(g||n){ el.textContent="Incomplete"; el.className="state part"; }
-  else { el.textContent="Fill this in"; el.className="state"; }
-}
+function identity(){const g=$("#wGroup").value.trim();
+  const n=$("#wNames").value.trim().split(/\n/).filter(x=>x.trim()).length;const el=$("#stW");
+  if(g&&n){el.textContent=g+" · "+n+" student"+(n===1?"":"s");el.className="state done";}
+  else if(g||n){el.textContent="Incomplete";el.className="state part";}
+  else{el.textContent="Fill this in";el.className="state";}}
 
 /* ---------- export ---------- */
-function transcript(){
-  const V0=val(), lb=V0*base()/100, ln=V0*nu()/100;
-  const L=[];
-  L.push("COLD CHAIN DECISION — Tomato preservation case");
-  L.push("Marketing Fundamentals 26-27 · Session 22");
-  L.push("Group:   "+($("#wGroup").value||"—")+"     Section: "+($("#wSec").value||"—")
-         +"     Date: "+($("#wDate").value||"—"));
-  L.push("Students:");
-  ($("#wNames").value||"").split(/
-/).filter(x=>x.trim())
-    .forEach(n=>L.push("   - "+n.trim()));
-  if(!($("#wNames").value||"").trim()) L.push("   (none entered)");
-  L.push("");
-  L.push("SCORE (self-check): "+$("#tot").textContent+" / 100");
-  L.push("");
-  L.push("1. SIZE THE PRIZE");
-  L.push("   Exporter: "+exName()+"   Exports: $"+V0.toLocaleString()+"M");
-  L.push("   Spoilage today "+base()+"%  ->  with system "+nu()+"%");
-  L.push("   Value lost today: $"+($("#a1").value||"?")+"M   (correct: $"+Math.round(lb).toLocaleString()+"M)");
-  L.push("   Value lost after: $"+($("#a2").value||"?")+"M   (correct: $"+Math.round(ln).toLocaleString()+"M)");
-  L.push("   Value saved:      $"+($("#a3").value||"?")+"M   (correct: $"+Math.round(lb-ln).toLocaleString()+"M)");
-  L.push("   What it means: "+($("#t1").value||"—"));
-  L.push("");
-  L.push("2. INDUSTRY — option analysed: "+(PICK.s2||"—"));
-  [["Supplier power","p_sup"],["Buyer power","p_buy"],["Rivalry","p_riv"],
-   ["Substitutes","p_sub"],["New entrants","p_new"]].forEach(([n,k])=>L.push("   "+n+": "+(gv(k)||"—")));
-  L.push("");
-  L.push("3. CAPABILITIES");
-  [["R&D","c_rd","c_rd_t"],["Manufacturing","c_mf","c_mf_t"],["Service network","c_sv","c_sv_t"],
-   ["Capital","c_cp","c_cp_t"],["Certifications","c_rg","c_rg_t"]]
-   .forEach(([n,a,b])=>L.push("   "+n+" ["+(gv(a)||"—")+"]: "+(gv(b)||"—")));
-  L.push("");
-  L.push("4. SWOT");
-  L.push("   Strength:    "+(gv("s_s")||"—"));
-  L.push("   Weakness:    "+(gv("s_w")||"—"));
-  L.push("   Opportunity: "+(gv("s_o")||"—"));
-  L.push("   Threat:      "+(gv("s_t")||"—"));
-  L.push("   Cross:       "+(gv("s_cross")||"—"));
-  L.push("");
-  L.push("5. DECISION — we choose option "+(PICK.s5||"—"));
-  [["Why","d_why"],["Phase 1 (0-12m)","d_p1"],["Phase 2 (12-24m)","d_p2"],
-   ["Biggest risk","d_risk"],["What would change our mind","d_kill"]]
-   .forEach(([n,k])=>L.push("   "+n+": "+(gv(k)||"—")));
-  L.push("");
-  L.push("AI USE. Prompts were generated by this tool and used as a sparring partner.");
-  L.push("The analysis and the decision above are the group's own.");
+function T(){
+  const V=val(),lb=V*base()/100,ln=V*nu()/100;
+  const L=["COLD CHAIN DECISION — Tomato preservation case",
+    "Group:   "+($("#wGroup").value||"—")+"     Section: "+($("#wSec").value||"—")
+      +"     Date: "+($("#wDate").value||"—"),"Students:"];
+  const nm=($("#wNames").value||"").split(/\n/).filter(x=>x.trim());
+  nm.length?nm.forEach(x=>L.push("   - "+x.trim())):L.push("   (none entered)");
+  L.push("","SELF-CHECK SCORE: "+$("#tot").textContent+" / 100","");
+  const T3=(rows,labels)=>rows.forEach((r,i)=>{L.push("   "+labels[i]+":");
+    ["A","B","C"].forEach((c,j)=>L.push("      ["+c+"] "+(gv(r[j])||"—")));});
+  L.push("1. PESTLE");
+  T3([["pe_pol_a","pe_pol_b","pe_pol_c"],["pe_eco_a","pe_eco_b","pe_eco_c"],
+      ["pe_soc_a","pe_soc_b","pe_soc_c"],["pe_tec_a","pe_tec_b","pe_tec_c"],
+      ["pe_leg_a","pe_leg_b","pe_leg_c"],["pe_env_a","pe_env_b","pe_env_c"]],
+     ["Political","Economic","Social","Technological","Legal","Environmental"]);
+  L.push("","2. FIVE FORCES");
+  T3([["po_sup_a","po_sup_b","po_sup_c"],["po_buy_a","po_buy_b","po_buy_c"],
+      ["po_riv_a","po_riv_b","po_riv_c"],["po_sub_a","po_sub_b","po_sub_c"],
+      ["po_new_a","po_new_b","po_new_c"]],
+     ["Supplier power","Buyer power","Rivalry","Substitutes","New entrants"]);
+  L.push("","3. UNIT ECONOMICS — "+exName()+", exports $"+V.toLocaleString()+"M",
+    "   Spoilage "+base()+"% -> "+nu()+"%, price $"+$("#pk").value+"/kg",
+    "   Value lost today: $"+($("#a1").value||"?")+"M   (correct $"+Math.round(lb).toLocaleString()+"M)",
+    "   Value lost after: $"+($("#a2").value||"?")+"M   (correct $"+Math.round(ln).toLocaleString()+"M)",
+    "   Value saved:      $"+($("#a3").value||"?")+"M   (correct $"+Math.round(lb-ln).toLocaleString()+"M)",
+    "   Whose money: "+(gv("ue_who")||"—"),"","4. CAPABILITIES",
+    "   Startup today — R&D "+(gv("ca_rd_now")||"—")+", manufacturing "+(gv("ca_mf_now")||"—")
+      +", service "+(gv("ca_sv_now")||"—")+", capital "+(gv("ca_cp_now")||"—")
+      +", certifications "+(gv("ca_rg_now")||"—"));
+  T3([["ca_rd_a","ca_rd_b","ca_rd_c"],["ca_mf_a","ca_mf_b","ca_mf_c"],["ca_sv_a","ca_sv_b","ca_sv_c"],
+      ["ca_cp_a","ca_cp_b","ca_cp_c"],["ca_rg_a","ca_rg_b","ca_rg_c"]],
+     ["R&D","Manufacturing","Service network","Capital","Certifications"]);
+  L.push("   Biggest gap: "+(gv("ca_gap")||"—"));
+  L.push("","5. SWOT — option "+(PICK.s5||"—"),
+    "   Strengths:     "+(gv("sw_s")||"—"),"   Weaknesses:    "+(gv("sw_w")||"—"),
+    "   Opportunities: "+(gv("sw_o")||"—"),"   Threats:       "+(gv("sw_t")||"—"),
+    "   Cross:         "+(gv("sw_cross")||"—"),
+    "","6. RECOMMENDATION — option "+(PICK.s6||"—"),"   Why: "+(gv("de_why")||"—"),
+    "   Phase 1 (0-12m):  "+(gv("de_p1")||"—")+"   | risk: "+(gv("de_r1")||"—"),
+    "   Phase 2 (12-24m): "+(gv("de_p2")||"—")+"   | risk: "+(gv("de_r2")||"—"),
+    "   Phase 3 (24m+):   "+(gv("de_p3")||"—")+"   | risk: "+(gv("de_r3")||"—"),
+    "   Would change our mind: "+(gv("de_kill")||"—"),"",
+    "AI USE. Prompts generated by this page were built from our own answers and used to challenge them.",
+    "The analysis and the decision are the group's own.");
   return L.join("\n");
 }
 $("#btnCopy").addEventListener("click",async e=>{
-  try{await navigator.clipboard.writeText(transcript());
-      e.target.textContent="Copied — now paste it into your submission";
-      setTimeout(()=>e.target.textContent="Copy my whole answer",2600);}
+  try{await navigator.clipboard.writeText(T());e.target.textContent="Copied — paste it into your submission";}
   catch(err){e.target.textContent="Clipboard blocked — use Download";}
-});
-$("#btnDl").addEventListener("click",async e=>{
-  // Downloads work on the course site. Some embedded viewers block them outright,
-  // so fall back to the clipboard rather than leaving a dead button.
-  try{
-    const b=new Blob([transcript()],{type:"text/plain;charset=utf-8"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(b); a.download="cold-chain-decision.txt";
-    a.style.display="none"; document.body.appendChild(a); a.click();
-    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
-    e.target.textContent="Saved to your downloads";
-  }catch(err){
-    try{await navigator.clipboard.writeText(transcript());
-        e.target.textContent="Download blocked here — copied instead";}
-    catch(e2){e.target.textContent="Use Copy, then paste";}
-  }
-  setTimeout(()=>e.target.textContent="Download as text",2800);
-});
-setState(1,0);setState(2,0);setState(3,0);setState(4,0);setState(5,0);
+  setTimeout(()=>e.target.textContent="Copy my whole answer",2800);});
+function esc(x){return (x||"\u2014").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function tbl3(rows,labels){
+  let h='<table><tr><th class="rk">&nbsp;</th><th>A \u00b7 License</th><th>B \u00b7 Manufacture</th>'
+       +'<th>C \u00b7 Logistics</th></tr>';
+  rows.forEach((r,i)=>{h+='<tr><td class="rk">'+labels[i]+'</td>'
+    +r.map(k=>"<td>"+esc(gv(k))+"</td>").join("")+"</tr>";});
+  return h+"</table>";
+}
+function buildPrint(){
+  const V=val(),lb=V*base()/100,ln=V*nu()/100;
+  const nm=($("#wNames").value||"").split(/\n/).filter(x=>x.trim());
+  let h='<h1>Cold Chain Decision</h1><div class="id">'
+    +"<b>Group</b> "+esc($("#wGroup").value)+" &nbsp; <b>Section</b> "+esc($("#wSec").value)
+    +" &nbsp; <b>Date</b> "+esc($("#wDate").value)+"<br><b>Students</b> "
+    +(nm.length?nm.map(x=>esc(x.trim())).join(" &middot; "):"\u2014")
+    +'<br><b>Self-check</b> '+$("#tot").textContent+" / 100</div>";
+  h+="<h2>1 \u00b7 PESTLE</h2>"+tbl3(
+    [["pe_pol_a","pe_pol_b","pe_pol_c"],["pe_eco_a","pe_eco_b","pe_eco_c"],
+     ["pe_soc_a","pe_soc_b","pe_soc_c"],["pe_tec_a","pe_tec_b","pe_tec_c"],
+     ["pe_leg_a","pe_leg_b","pe_leg_c"],["pe_env_a","pe_env_b","pe_env_c"]],
+    ["Political","Economic","Social","Technological","Legal","Environmental"]);
+  h+="<h2>2 \u00b7 Five forces</h2>"+tbl3(
+    [["po_sup_a","po_sup_b","po_sup_c"],["po_buy_a","po_buy_b","po_buy_c"],
+     ["po_riv_a","po_riv_b","po_riv_c"],["po_sub_a","po_sub_b","po_sub_c"],
+     ["po_new_a","po_new_b","po_new_c"]],
+    ["Supplier power","Buyer power","Rivalry","Substitutes","New entrants"]);
+  h+="<h2>3 \u00b7 Unit economics \u2014 "+esc(exName())+"</h2><table>"
+    +"<tr><th class='rk'>Metric</th><th>Our figure</th><th>Correct</th></tr>"
+    +"<tr><td class='rk'>Exports</td><td>$"+V.toLocaleString()+"M</td><td>\u2014</td></tr>"
+    +"<tr><td class='rk'>Spoilage today</td><td>"+base()+"%</td><td>\u2014</td></tr>"
+    +"<tr><td class='rk'>With the system</td><td>"+nu()+"%</td><td>\u2014</td></tr>"
+    +"<tr><td class='rk'>Value lost today</td><td>$"+esc($("#a1").value)+"M</td><td>$"
+      +Math.round(lb).toLocaleString()+"M</td></tr>"
+    +"<tr><td class='rk'>Value lost after</td><td>$"+esc($("#a2").value)+"M</td><td>$"
+      +Math.round(ln).toLocaleString()+"M</td></tr>"
+    +"<tr><td class='rk'>Value saved / yr</td><td>$"+esc($("#a3").value)+"M</td><td>$"
+      +Math.round(lb-ln).toLocaleString()+"M</td></tr></table>"
+    +"<p class='q'><b>Whose money, and what we could charge</b>"+esc(gv("ue_who"))+"</p>";
+  h+="<h2>4 \u00b7 Internal capabilities</h2><p class='q'><b>Startup today</b>R&amp;D "
+    +esc(gv("ca_rd_now"))+" \u00b7 manufacturing "+esc(gv("ca_mf_now"))+" \u00b7 service network "
+    +esc(gv("ca_sv_now"))+" \u00b7 capital "+esc(gv("ca_cp_now"))+" \u00b7 certifications "
+    +esc(gv("ca_rg_now"))+"</p>"
+    +tbl3([["ca_rd_a","ca_rd_b","ca_rd_c"],["ca_mf_a","ca_mf_b","ca_mf_c"],
+      ["ca_sv_a","ca_sv_b","ca_sv_c"],["ca_cp_a","ca_cp_b","ca_cp_c"],["ca_rg_a","ca_rg_b","ca_rg_c"]],
+      ["R&amp;D","Manufacturing","Service network","Capital","Certifications"])
+    +"<p class='q'><b>Biggest gap and how we close it</b>"+esc(gv("ca_gap"))+"</p>";
+  h+="<h2>5 \u00b7 SWOT \u2014 option "+(PICK.s5||"\u2014")+"</h2><table>"
+    +"<tr><th>Strengths</th><th>Weaknesses</th></tr><tr><td>"+esc(gv("sw_s"))+"</td><td>"
+    +esc(gv("sw_w"))+"</td></tr>"
+    +"<tr><th>Opportunities</th><th>Threats</th></tr><tr><td>"+esc(gv("sw_o"))+"</td><td>"
+    +esc(gv("sw_t"))+"</td></tr></table>"
+    +"<p class='q'><b>Strength \u00d7 opportunity \u2192 action</b>"+esc(gv("sw_cross"))+"</p>";
+  h+="<h2>6 \u00b7 Recommendation \u2014 option "+(PICK.s6||"\u2014")+"</h2>"
+    +"<p class='q'><b>Why this path</b>"+esc(gv("de_why"))+"</p><table>"
+    +"<tr><th class='rk'>Phase</th><th>What we do and what it proves</th><th>Risk and mitigation</th></tr>"
+    +"<tr><td class='rk'>0\u201312 months</td><td>"+esc(gv("de_p1"))+"</td><td>"+esc(gv("de_r1"))+"</td></tr>"
+    +"<tr><td class='rk'>12\u201324 months</td><td>"+esc(gv("de_p2"))+"</td><td>"+esc(gv("de_r2"))+"</td></tr>"
+    +"<tr><td class='rk'>24+ months</td><td>"+esc(gv("de_p3"))+"</td><td>"+esc(gv("de_r3"))+"</td></tr></table>"
+    +"<p class='q'><b>What would make us abandon this path</b>"+esc(gv("de_kill"))+"</p>";
+  h+='<p class="foot">AI use: prompts generated by this page were built from our own answers and used to '
+    +'challenge them. The analysis and the decision are the group' + APOS + 's own.</p>';
+  $("#printout").innerHTML=h;
+}
+$("#btnDl").addEventListener("click",()=>{buildPrint();window.print();});
+
+[1,2,3,4,5,6].forEach(i=>setState(i,0));
 restore();
 </script>
