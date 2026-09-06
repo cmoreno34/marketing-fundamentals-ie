@@ -103,6 +103,22 @@ table select:focus{background:var(--sunk)}
 .prompt pre{margin:0;padding:12px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;
   line-height:1.55;white-space:pre-wrap;max-height:320px;overflow:auto;color:var(--ink)}
 
+.purpose{border-left:3px solid var(--steel);background:var(--steel-soft);padding:10px 14px;
+  margin:12px 0 4px;font-size:14px;max-width:74ch}
+.purpose b{font-family:"Archivo Narrow",sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  font-size:11.5px;color:var(--steel);display:block;margin-bottom:2px}
+.help{margin-top:14px;border:1px solid var(--warn);background:var(--warn-soft);display:none}
+.help.open{display:block}
+.help .hh{padding:9px 13px;border-bottom:1px solid var(--warn);
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--warn);font-weight:600}
+.help .hb{padding:12px 14px;font-size:14px}
+.help dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.help dt{font-family:"Archivo Narrow",sans-serif;font-weight:700;white-space:nowrap}
+.help dd{margin:0;color:var(--muted)}
+.help .eg{margin-top:12px;padding-top:10px;border-top:1px solid var(--warn)}
+.help .eg p{margin:3px 0;font-size:13.5px}
+.help .eg .no{color:var(--tomato)} .help .eg .yes{color:var(--ok)}
 .fb{margin-top:14px;padding:12px 14px;border-left:3px solid var(--line);
   background:var(--sunk);font-size:14px;display:none}
 .fb.show{display:block}
@@ -311,8 +327,9 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:74ch}
       <tr><td class="rk">Legal</td><td><textarea data-k="pe_leg_a"></textarea></td><td><textarea data-k="pe_leg_b"></textarea></td><td><textarea data-k="pe_leg_c"></textarea></td></tr>
       <tr><td class="rk">Environmental</td><td><textarea data-k="pe_env_a"></textarea></td><td><textarea data-k="pe_env_b"></textarea></td><td><textarea data-k="pe_env_c"></textarea></td></tr>
     </table></div>
-    <div class="row"><button class="btn solid" data-check="1">Check my work</button>
+    <div class="row"><button class="btn" data-help="1">How to fill this in</button><button class="btn solid" data-check="1">Check my work</button>
       <button class="btn" data-prompt="1">Refine with AI</button></div>
+    <div class="help" id="h1"><div class="hh">What goes in each box</div><div class="hb"></div></div>
     <div class="prompt" id="p1"><div class="ph"><span>Your answers are inside this prompt &mdash; paste it into ChatGPT or Claude</span>
       <button class="btn sm" data-copy="p1">Copy</button></div><pre></pre></div>
     <div class="fb" id="f1"></div>
@@ -338,8 +355,9 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:74ch}
       <tr><td class="rk">Substitutes</td><td><textarea data-k="po_sub_a"></textarea></td><td><textarea data-k="po_sub_b"></textarea></td><td><textarea data-k="po_sub_c"></textarea></td></tr>
       <tr><td class="rk">New entrants</td><td><textarea data-k="po_new_a"></textarea></td><td><textarea data-k="po_new_b"></textarea></td><td><textarea data-k="po_new_c"></textarea></td></tr>
     </table></div>
-    <div class="row"><button class="btn solid" data-check="2">Check my work</button>
+    <div class="row"><button class="btn" data-help="2">How to fill this in</button><button class="btn solid" data-check="2">Check my work</button>
       <button class="btn" data-prompt="2">Refine with AI</button></div>
+    <div class="help" id="h2"><div class="hh">What goes in each box</div><div class="hb"></div></div>
     <div class="prompt" id="p2"><div class="ph"><span>Your answers are inside this prompt</span>
       <button class="btn sm" data-copy="p2">Copy</button></div><pre></pre></div>
     <div class="fb" id="f2"></div>
@@ -377,8 +395,9 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:74ch}
     </div>
     <span class="lbl">Whose money is this, and what would they pay for it?</span>
     <textarea data-k="ue_who" placeholder="The grower, the carrier or the retailer? That party is who you can charge. Say what share of the saving you could realistically capture."></textarea>
-    <div class="row"><button class="btn solid" data-check="3">Check my numbers</button>
+    <div class="row"><button class="btn" data-help="3">How to fill this in</button><button class="btn solid" data-check="3">Check my numbers</button>
       <button class="btn" data-prompt="3">Refine with AI</button></div>
+    <div class="help" id="h3"><div class="hh">What goes in each box</div><div class="hb"></div></div>
     <div class="prompt" id="p3"><div class="ph"><span>Your figures are inside this prompt</span>
       <button class="btn sm" data-copy="p3">Copy</button></div><pre></pre></div>
     <div class="fb" id="f3"></div>
@@ -415,8 +434,9 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:74ch}
     </table></div>
     <span class="lbl">The biggest gap, and how you close it &mdash; buy, partner or build</span>
     <textarea data-k="ca_gap"></textarea>
-    <div class="row"><button class="btn solid" data-check="4">Check my work</button>
+    <div class="row"><button class="btn" data-help="4">How to fill this in</button><button class="btn solid" data-check="4">Check my work</button>
       <button class="btn" data-prompt="4">Refine with AI</button></div>
+    <div class="help" id="h4"><div class="hh">What goes in each box</div><div class="hb"></div></div>
     <div class="prompt" id="p4"><div class="ph"><span>Your answers are inside this prompt</span>
       <button class="btn sm" data-copy="p4">Copy</button></div><pre></pre></div>
     <div class="fb" id="f4"></div>
@@ -448,8 +468,9 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:74ch}
     </table></div>
     <span class="lbl">Cross one strength with one opportunity &mdash; what action comes out?</span>
     <textarea data-k="sw_cross" placeholder="Because we have X and the market is doing Y, we should do Z."></textarea>
-    <div class="row"><button class="btn solid" data-check="5">Check my work</button>
+    <div class="row"><button class="btn" data-help="5">How to fill this in</button><button class="btn solid" data-check="5">Check my work</button>
       <button class="btn" data-prompt="5">Refine with AI</button></div>
+    <div class="help" id="h5"><div class="hh">What goes in each box</div><div class="hb"></div></div>
     <div class="prompt" id="p5"><div class="ph"><span>Your SWOT is inside this prompt</span>
       <button class="btn sm" data-copy="p5">Copy</button></div><pre></pre></div>
     <div class="fb" id="f5"></div>
@@ -479,8 +500,9 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:74ch}
     </table></div>
     <span class="lbl">What evidence in Phase 1 would make you abandon this path?</span>
     <textarea data-k="de_kill" placeholder="Name the number or the event. A decision you cannot reverse is a bet, not a plan."></textarea>
-    <div class="row"><button class="btn solid" data-check="6">Check my work</button>
+    <div class="row"><button class="btn" data-help="6">How to fill this in</button><button class="btn solid" data-check="6">Check my work</button>
       <button class="btn" data-prompt="6">Refine with AI</button></div>
+    <div class="help" id="h6"><div class="hh">What goes in each box</div><div class="hb"></div></div>
     <div class="prompt" id="p6"><div class="ph"><span>Your recommendation is inside this prompt</span>
       <button class="btn sm" data-copy="p6">Copy</button></div><pre></pre></div>
     <div class="fb" id="f6"></div>
@@ -539,6 +561,93 @@ const gv=k=>{const e=document.querySelector('[data-k="'+k+'"]');return e?e.value
 const words=s=>(s||"").trim().split(/\s+/).filter(Boolean).length;
 const val=()=>parseFloat($("#ex").value)*1000, base=()=>+$("#sb").value||0,
       nu=()=>+$("#sn").value||0, exName=()=>$("#ex").selectedOptions[0].textContent.split(" —")[0].trim();
+
+
+/* ---------- what each task is for, and what belongs in each box ----------
+   Deliberately NOT an AI call: this is teaching, and it must not be able to
+   hand over the analysis. It says what shape the answer takes, never the answer. */
+const TASK={
+ 1:{why:"PESTLE tells you which outside forces hit the three routes differently. "
+       +"A factor that hits all three the same way is true, but useless \u2014 it cannot help you choose.",
+    boxes:[["Political","Trade rules, tariffs, and who is exposed when a route closes."],
+      ["Economic","Capital needed before first revenue, and who carries it."],
+      ["Social","Who cares about food waste, and does it move a purchase?"],
+      ["Technological","What has to be built, and by whom \u2014 you or the OEM?"],
+      ["Legal","Which certifications are needed, and who already holds them."],
+      ["Environmental","Spoilage CO\u2082 saved against transport CO\u2082 spent. IMO rules."]],
+    weak:"The economy is uncertain and could affect the business.",
+    strong:"B needs plant capex before a single unit ships; A earns royalties from month one."},
+ 2:{why:"Five forces tells you where the profit leaks in each route. You are looking for the "
+       +"one force strong enough to make an otherwise sensible option unprofitable.",
+    boxes:[["Supplier power","Who you depend on: steel and compressors, carrier slots, or only your own patent."],
+      ["Buyer power","Who actually writes the cheque \u2014 OEMs, shipping lines, retail importers \u2014 and how few of them there are."],
+      ["Rivalry","Who is already there: CIMC and Singamas in containers, Maersk, MSC and CMA in shipping."],
+      ["Substitutes","Other ways to solve spoilage: modified-atmosphere packaging, edible coatings, airfreight."],
+      ["New entrants","What stops the next startup: patent, capital, certification, or nothing."]],
+    weak:"Buyer power is high because buyers have power.",
+    strong:"Three shipping lines control most reefer slots, so in C they set the price and we take it."},
+ 3:{why:"This is the only number in the whole case that says whether any of the three options is "
+       +"worth funding at all. Do it before you argue about strategy.",
+    boxes:[["Pick an exporter","Exhibit 1. Mexico is the biggest; Morocco has the weakest cold chain."],
+      ["Value lost today","Exports \u00d7 today's spoilage rate."],
+      ["Value lost after","Exports \u00d7 the rate with the container."],
+      ["Value saved","The difference. That is the prize, per year."],
+      ["Whose money","Grower, carrier or retailer? Only one of them can be charged, and only for a share."]],
+    weak:"The savings are very large so the product will sell.",
+    strong:"The saving lands with the grower, so we price as a share of avoided loss, not as a box rental."},
+ 4:{why:"Each route demands capabilities the startup may not have. The gap is your cost, your delay "
+       +"and your risk \u2014 and it is usually what decides the case.",
+    boxes:[["R&D / technology","Already strong. Does the option need more, or just maintenance?"],
+      ["Manufacturing","None today. Does the option need a plant, or does someone else build?"],
+      ["Service network","None today. Reefers fail in port; somebody has to fix them."],
+      ["Capital","Low today. Rank the three options by how much they burn before revenue."],
+      ["Certifications","Reefer and food-safety approval in every market you enter."]],
+    weak:"We need more capital for option C.",
+    strong:"C needs a reefer fleet plus 24/7 service in every port \u2014 two capabilities we have none of."},
+ 5:{why:"SWOT is the synthesis, not new research. Every entry should already appear somewhere in "
+       +"tasks 1 to 4. If it does not, you are inventing.",
+    boxes:[["Strengths","From task 4: what you already have that this route uses."],
+      ["Weaknesses","From task 4: the gap you cannot close quickly."],
+      ["Opportunities","From task 1 and the exhibits: what the outside world is doing for you."],
+      ["Threats","From task 2: the force most likely to hurt you."],
+      ["The cross","Strength \u00d7 opportunity, producing one action. This is the point of the tool."]],
+    weak:"Strength: we have a great innovative product.",
+    strong:"Strength: a patent on the only system holding \u22124\u00a0\u00b0C without freezing the load."},
+ 6:{why:"Commit to one route. The phases exist to show you know what has to be proved before more "
+       +"money is spent \u2014 and what evidence would tell you to stop.",
+    boxes:[["Why this path","Tie it to your number in task 3 and the killer force in task 2."],
+      ["Phase 1, 0\u201312m","Something you can actually prove. A pilot, a signed OEM, a route trial."],
+      ["Phase 2, 12\u201324m","What scales once phase 1 works."],
+      ["Phase 3, 24m+","The optional bet you only take if the first two land."],
+      ["Risks","One per phase, each with the thing you do to cut it."],
+      ["What would stop us","The number or event that reverses the decision."]],
+    weak:"We will start small and then grow the business internationally.",
+    strong:"Phase 1: one Mexico\u2013US corridor with one carrier. If loss does not fall below 10%, we stop."}
+};
+const FIELDS={
+ 1:["pe_pol_a","pe_pol_b","pe_pol_c","pe_eco_a","pe_eco_b","pe_eco_c","pe_soc_a","pe_soc_b","pe_soc_c",
+    "pe_tec_a","pe_tec_b","pe_tec_c","pe_leg_a","pe_leg_b","pe_leg_c","pe_env_a","pe_env_b","pe_env_c"],
+ 2:["po_sup_a","po_sup_b","po_sup_c","po_buy_a","po_buy_b","po_buy_c","po_riv_a","po_riv_b","po_riv_c",
+    "po_sub_a","po_sub_b","po_sub_c","po_new_a","po_new_b","po_new_c"],
+ 3:["ue_who"],
+ 4:["ca_rd_a","ca_rd_b","ca_rd_c","ca_mf_a","ca_mf_b","ca_mf_c","ca_sv_a","ca_sv_b","ca_sv_c",
+    "ca_cp_a","ca_cp_b","ca_cp_c","ca_rg_a","ca_rg_b","ca_rg_c","ca_gap"],
+ 5:["sw_s","sw_w","sw_o","sw_t","sw_cross"],
+ 6:["de_why","de_p1","de_p2","de_p3","de_r1","de_r2","de_r3","de_kill"]
+};
+function filledShare(n){
+  const f=FIELDS[n]; let c=f.filter(k=>words(gv(k))>=4).length;
+  if(n===3){ ["a1","a2","a3"].forEach(id=>{ if($("#"+id).value!=="") c++; }); return c/4; }
+  return c/f.length;
+}
+$$("[data-help]").forEach(b=>b.addEventListener("click",()=>{
+  const n=b.dataset.help, t=TASK[n], box=$("#h"+n);
+  box.querySelector(".hb").innerHTML="<dl>"
+    +t.boxes.map(([k,v])=>"<dt>"+k+"</dt><dd>"+v+"</dd>").join("")
+    +'</dl><div class="eg"><p class="no"><strong>Too vague:</strong> \u201c'+t.weak+'\u201d</p>'
+    +'<p class="yes"><strong>Usable:</strong> \u201c'+t.strong+'\u201d</p></div>';
+  box.classList.toggle("open");
+}));
 
 /* ---------- prompts, built from what the student has actually written ---------- */
 const CTX=`CASE. A startup has a patented refrigerated shipping container that holds fresh tomatoes at -4C `
@@ -614,9 +723,28 @@ const PR={
    +`Argue the strongest case AGAINST my choice, using my own PESTLE and five-forces answers where you can. `
    +`Then tell me whether my Phase 1 actually proves anything, or just spends money.`+RULES
 };
+
+/* A prompt that cannot hand over the answer: no case facts, no structure to copy,
+   only questions back. It is what the button emits while the table is still empty. */
+function coachPrompt(n){
+  const t=TASK[n];
+  return "I am working through a business case in class and I am stuck on this part:\n\n  "
+    +t.why+"\n\nThe boxes I have to fill are:\n"
+    +t.boxes.map(([k,v])=>"  - "+k+": "+v).join("\n")
+    +"\n\nI have not written my answers yet, and I do not want you to write them.\n\n"
+    +"Ask me ONE question at a time that helps me work out my own entry, starting with the first box. "
+    +"Wait for my reply before the next question. Do not suggest wording, do not list options, "
+    +"do not fill anything in for me. If my answer is an adjective rather than something I could "
+    +"source, say so and ask again.";
+}
+
 $$("[data-prompt]").forEach(b=>b.addEventListener("click",()=>{
   const n=b.dataset.prompt,box=$("#p"+n);
-  box.querySelector("pre").textContent=PR[n]();
+  const empty=filledShare(n)<0.34;
+  box.querySelector(".ph span").textContent = empty
+    ? "You have not written much yet \u2014 this prompt coaches, it does not answer"
+    : "Built from what you wrote \u2014 paste it into ChatGPT or Claude";
+  box.querySelector("pre").textContent = empty ? coachPrompt(n) : PR[n]();
   box.classList.add("open");
   box.scrollIntoView({behavior:"smooth",block:"nearest"});
 }));
@@ -858,6 +986,16 @@ function buildPrint(){
   $("#printout").innerHTML=h;
 }
 $("#btnDl").addEventListener("click",()=>{buildPrint();window.print();});
+
+
+/* the one-line statement of what each task is for, printed under its heading */
+[1,2,3,4,5,6].forEach(n=>{
+  const body=$("#b"+n); if(!body) return;
+  const d=document.createElement("div");
+  d.className="purpose";
+  d.innerHTML="<b>What this task is for</b>"+TASK[n].why;
+  body.insertBefore(d, body.firstChild);
+});
 
 [1,2,3,4,5,6].forEach(i=>setState(i,0));
 restore();
