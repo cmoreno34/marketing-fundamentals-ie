@@ -88,6 +88,15 @@ tr.tot td{font-weight:600;background:var(--sunk)}
 .btn:hover{background:var(--steel-soft)} .btn.solid{background:var(--steel);color:var(--surface)} .btn.solid:hover{opacity:.88}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
 footer{margin-top:24px;color:var(--muted);font-size:12.5px}
+.check{margin-top:16px;border:1px solid var(--line);display:none}
+.check.open{display:block}
+.check .ch{padding:10px 14px;background:var(--sunk);font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.check .ch span{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600}
+.check ul{list-style:none;margin:0;padding:0}
+.check li{display:grid;grid-template-columns:30px 110px 1fr;gap:8px;padding:8px 14px;border-top:1px solid var(--line);font-size:14px;align-items:baseline}
+.check .ic{font-weight:700;text-align:center;border-radius:2px;font-size:13px;padding:1px 0}
+.check .ok .ic{background:var(--ok-soft);color:var(--ok)} .check .no .ic{background:var(--warn-soft);color:var(--warn)} .check .mi .ic{background:var(--sunk);color:var(--muted)}
+.check .qc{font-family:"IBM Plex Mono",monospace;color:var(--silk);font-size:12.5px}
 #printout{display:none}
 @media print{
   @page{size:A4;margin:14mm 13mm}
@@ -139,7 +148,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12.5px}
         <ol class="steps">
           <li>Read the case. The figures from its exhibits are already loaded here.</li>
           <li>Answer four short parts. Most answers are one click or one line; the page does every calculation.</li>
-          <li>Add your names and download the PDF. That PDF is what you hand in.</li>
+          <li>Press <b>Check my answers</b> for feedback, then add your names and download the PDF. That PDF is what you hand in.</li>
         </ol>
         <p class="hint" style="margin-top:10px"><b>Money:</b> all amounts are in Philippine pesos. <b>PHP</b> is the code of the peso (₱) and <b>PHP m</b> means millions of pesos; one euro is roughly 60-65 pesos.
         The page assumes 100 g of shampoo is about 100 ml, and that the price in the case is what B&amp;T earns per unit.</p>
@@ -269,13 +278,15 @@ footer{margin-top:24px;color:var(--muted);font-size:12.5px}
     <span class="num">&check;</span><h2>Your recommendation and PDF</h2><span class="state" id="st5">3-4 lines</span>
   </div>
   <div class="sbody open" id="b5">
-    <p class="task">In 3-4 lines: launch or not, for whom, where first, and the 2024 target (in pesos and in tubes).</p>
+    <p class="task">In 3-4 lines: launch or not, for whom, where first, and the 2024 target (in pesos and in tubes). Then press <b>Check my answers</b>: it tells you which answers are on track and gives a hint for the others. Fix them before you download the PDF.</p>
     <textarea id="dec" data-k></textarea>
     <div class="row">
+      <button class="btn solid" id="btnCheck">Check my answers</button>
       <button class="btn solid" id="btnPdf">Download PDF</button>
       <button class="btn" id="btnClear">Clear my answers</button>
       <span class="hint" style="margin:0">In the print window choose "Save as PDF".</span>
     </div>
+    <div class="check" id="check"></div>
   </div>
 </section>
 
@@ -412,6 +423,111 @@ function states() {
   s0.className = 'state' + (g && names ? ' done' : '');
 }
 
+
+// ---------------------------------------------------------------- checker
+// Feedback, not marks: "on track" or a hint that points back to the numbers.
+function checkAnswers() {
+  const c = compute();
+  const has = (id, n = 1) => val(id).length >= n;
+  const any = (text, words) => words.some((w) => text.toLowerCase().includes(w));
+  const R = [];
+  const add = (q, st, msg) => R.push({ q, st, msg });   // st: ok | no | mi
+  const pick = (id, q, rules) => {
+    const v = val(id);
+    if (!v) return add(q, 'mi', 'Not answered yet.');
+    const r = rules[v];
+    return r ? add(q, r[0], r[1]) : add(q, 'mi', 'Not answered yet.');
+  };
+  const priceWords = /ml|price|expens|dear|70|peso/i;
+
+  pick('q1', 'Q1', {
+    'much more': ['ok', 'Right: 1.29 pesos per ml against 0.76, about 70% more for the same price.'],
+    'about the same': ['no', 'Same price, but not the same amount of shampoo. Compare the PHP per ml column.'],
+    'less': ['no', 'Compare the PHP per ml column for the tube and the 170 ml bottle.'],
+  });
+  pick('q2', 'Q2', {
+    'The 90 ml and 170 ml bottles': ['ok', 'Right: they added about 141 m pesos while the other three SKUs fell.'],
+    'The 6 ml sachet': ['no', 'Read the "What the numbers say" box in Part 1: which SKUs grew, and which fell?'],
+    'The 400 ml and 675 ml bottles': ['no', 'Read the "What the numbers say" box in Part 1: which SKUs grew, and which fell?'],
+    'All SKUs about the same': ['no', 'Not the same: two SKUs grew strongly and the other three fell. See the box in Part 1.'],
+  });
+  const q3wrong = ['no', 'Think of the smallest and cheapest format: one wash, into any bag.'];
+  pick('q3', 'Q3', {
+    '6 ml sachet': ['ok', 'Right: a single wash for 3 pesos already fits in any bag, so "travel-friendly" alone does not set the tube apart.'],
+    '90 ml bottle': q3wrong, '170 ml bottle': q3wrong, '400 ml bottle': q3wrong, '675 ml bottle': q3wrong,
+  });
+  pick('q4', 'Q4', {
+    'Sachet buyers who travel': ['ok', 'Good: they already buy for the travel occasion, and switching raises B&T revenue per ml.'],
+    '90 ml bottle buyers': ['ok', 'Defensible: similar size and easier to carry, for 60 pesos more per purchase.'],
+    'New customers (Sid is right)': ['no', 'The case gives no evidence of new customers. Who already buys for travel today?'],
+    '170 ml bottle buyers (Rex is right)': ['no', 'Would they switch if they compare? Same price, 70 ml less shampoo. Look at the switching table.'],
+  });
+  pick('q5', 'Q5', {
+    'Launch with conditions': ['ok', 'Strongest answer: test it, and say what result would make you stop.'],
+    'Launch': ['ok', 'Defensible, but the tube is 70% dearer per ml. What would make you stop? Consider adding conditions.'],
+    "Don't launch": priceWords.test(val('q6'))
+      ? ['ok', 'Defensible, because you argue from the price per ml.']
+      : ['no', 'Defensible only if Q6 argues from the numbers, for example the price per ml.'],
+  });
+  if (!has('q6')) add('Q6', 'mi', 'Not answered yet.');
+  else if (any(val('q6'), ['ml', 'price', '%', 'travel', 'sachet', 'expens', 'dear', 'cheap', 'customer', 'switch', 'cannibal', 'growth', 'peso'])) add('Q6', 'ok', 'On track: your reason uses a fact from the case.');
+  else add('Q6', 'no', 'Back it with a fact from the tables: price per ml, who travels, or who would switch.');
+
+  if (!has('q7')) add('Q7', 'mi', 'Not answered yet.');
+  else if (val('q7').length < 12 || /^(everyone|everybody|all|people|customers|consumers)\b/i.test(val('q7'))) add('Q7', 'no', 'Too broad. Name a specific group: who travels, how often, and why.');
+  else add('Q7', 'ok', 'On track: a specific target.');
+  pick('q8', 'Q8', {
+    'Concentrated': ['ok', 'Good: one travel segment first.'],
+    'Differentiated': ['ok', 'Good: the tube for travel, the bottles for home.'],
+    'Undifferentiated': ['no', 'The tube is made for one occasion, travel. Should it speak to everyone the same way?'],
+    'Micro-marketing': ['no', 'Too narrow for a national launch. Think of one segment, or one offer per segment.'],
+  });
+  pick('q9', 'Q9', {
+    'Visayas': ['ok', 'Strongest choice: the fastest-growing region (+9.5%) and full of tourists.'],
+    'Mindanao': ['ok', 'Defensible: +7.6% and a fragmented market, with room against P&G and Unilever.'],
+    'Luzon': ['no', 'Luzon is the biggest, but it grew least (+3.8%) and P&G and Unilever are strongest there. Where is the travel occasion?'],
+    'All three regions at once': ['no', 'The tube still has to prove itself. Where would you test it first? Read the clues at the top of Part 3.'],
+  });
+  if (!has('p_need') || !has('p_benefit') || !has('p_alt')) add('Q10', 'mi', 'Fill in all three blanks.');
+  else if (any(val('p_alt'), ['sachet', 'bottle', 'p&g', 'unilever', 'pantene', 'head', 'sunsilk', 'dove', 'clear', 'cream silk'])) add('Q10', 'ok', 'On track: you name the real alternative.');
+  else add('Q10', 'no', 'After "unlike", name what the target really uses today: the sachet, a travel-size bottle, or a competitor brand.');
+
+  const cn = num('q11');
+  if (!Number.isFinite(cn)) add('Q11', 'mi', 'Not answered yet.');
+  else if (cn < 10) add('Q11', 'no', 'Very optimistic: some sachet and 90 ml buyers will switch (see Q4). Most groups land between 10% and 40%.');
+  else if (cn > 40) add('Q11', 'no', 'Then most tube sales are old money. Would you still launch? Check it against Q4 and Q5.');
+  else add('Q11', 'ok', 'On track: at ' + f(cn, 0) + '% you need ' + f(c.tubes, 2) + ' million tubes.');
+
+  const sp = REG.map((r) => num('s_' + r.k));
+  const sum = sp.reduce((a, x) => a + (Number.isFinite(x) ? x : 0), 0);
+  if (!sp.every(Number.isFinite)) add('Q12', 'mi', 'Give a share to each region.');
+  else if (Math.abs(sum - 100) > 0.5) add('Q12', 'no', 'The shares add up to ' + f(sum, 0) + '%, not 100%.');
+  else {
+    const share23 = REG.map((r) => (r.rev / T) * 100);
+    const copied = sp.every((x, i) => Math.abs(x - share23[i]) <= 3);
+    if (copied) add('Q12', 'no', 'You copied the 2023 sales shares (50 / 21 / 29). Is the travel occasion spread like today\'s sales?');
+    else if (sp[1] <= share23[1]) add('Q12', 'no', 'Visayas gets no more than its 21% share of today\'s sales, yet it has the tourists. Reconsider.');
+    else add('Q12', 'ok', 'On track: the split follows the travel occasion, not last year\'s sales.');
+  }
+  if (!has('q13')) add('Q13', 'mi', 'Not answered yet.');
+  else if (any(val('q13'), ['tour', 'travel', 'grow', 'competit', 'p&g', 'unilever', 'fragment', '%'])) add('Q13', 'ok', 'On track: your reason uses the regional clues or the growth figures.');
+  else add('Q13', 'no', 'Use the clues: tourism in Visayas, competition in Luzon, fragmentation in Mindanao.');
+
+  const dec = val('dec');
+  if (dec.length < 40) add('Recommendation', 'mi', 'Write 3-4 lines.');
+  else if (!/\d/.test(dec)) add('Recommendation', 'no', 'Include your 2024 target in numbers: pesos and tubes.');
+  else add('Recommendation', 'ok', 'On track: it has numbers. Check it also says who and where first.');
+
+  const ok = R.filter((r) => r.st === 'ok').length;
+  const icon = { ok: '✓', no: '!', mi: '–' };
+  const box = $('#check');
+  box.innerHTML = '<div class="ch">Your answers <span>' + ok + ' of ' + R.length + ' on track</span></div><ul>'
+    + R.map((r) => '<li class="' + r.st + '"><span class="ic">' + icon[r.st] + '</span><span class="qc">' + r.q + '</span><span>' + esc(r.msg) + '</span></li>').join('')
+    + '</ul>';
+  box.classList.add('open');
+  return { ok, total: R.length, R };
+}
+
 // ---------------------------------------------------------------- save / restore
 const fields = () => [...document.querySelectorAll('[data-k]')];
 function persist() { const o = {}; fields().forEach((el) => { o[el.id] = el.value; }); try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { /* blocked */ } }
@@ -450,14 +566,15 @@ function buildPrint() {
 
 // ---------------------------------------------------------------- wiring
 restore();
-document.addEventListener('input', (e) => { if (e.target.matches('[data-k]')) { render(); persist(); } });
-document.addEventListener('change', (e) => { if (e.target.matches('[data-k]')) { render(); persist(); } });
+document.addEventListener('input', (e) => { if (e.target.matches('[data-k]')) { render(); persist(); if ($('#check').classList.contains('open')) checkAnswers(); } });
+document.addEventListener('change', (e) => { if (e.target.matches('[data-k]')) { render(); persist(); if ($('#check').classList.contains('open')) checkAnswers(); } });
 document.querySelectorAll('.shead').forEach((h) => {
   const toggle = () => { const b = document.getElementById(h.dataset.t); const open = b.classList.toggle('open'); h.setAttribute('aria-expanded', open); };
   h.addEventListener('click', toggle);
   h.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
 });
 $('#btnPdf').addEventListener('click', () => { buildPrint(); window.print(); });
+$('#btnCheck').addEventListener('click', () => { checkAnswers(); $('#check').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
 window.addEventListener('beforeprint', buildPrint);
 $('#btnClear').addEventListener('click', () => {
   if (!confirm('Clear all your answers on this page?')) return;
