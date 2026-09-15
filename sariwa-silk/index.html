@@ -35,13 +35,13 @@
 }
 *{box-sizing:border-box}
 body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  font-size:15px;line-height:1.6;margin:0;padding:0 20px 80px}
-.wrap{max-width:1140px;margin:0 auto}
+  font-size:15px;line-height:1.6;margin:0;padding:0 clamp(16px,2.5vw,40px) 80px}
+.wrap{width:100%;margin:0}
 h1,h2,h3,.lbl,th{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
 header{padding:38px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:26px}
 .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--silk);margin:0 0 8px}
 h1{font-size:clamp(30px,5vw,46px);line-height:1.02;margin:0 0 10px;font-weight:700;letter-spacing:-.015em;text-wrap:balance}
-.sub{color:var(--muted);max-width:70ch;margin:0}
+.sub{color:var(--muted);margin:0}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .chip{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:4px 9px;border:1px solid var(--line);border-radius:2px;color:var(--muted);background:var(--surface)}
 section{background:var(--surface);border:1px solid var(--line);margin-bottom:16px}
@@ -54,14 +54,14 @@ section{background:var(--surface);border:1px solid var(--line);margin-bottom:16p
 .sbody{padding:4px 20px 24px;display:none} .sbody.open{display:block}
 h3{font-size:17px;margin:22px 0 4px}
 h3 .code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--silk);margin-right:8px}
-.task{margin:4px 0 8px;max-width:78ch}
-.hint{color:var(--muted);font-size:13.5px;margin:4px 0 10px;max-width:78ch}
+.task{margin:4px 0 8px}
+.hint{color:var(--muted);font-size:13.5px;margin:4px 0 10px}
 .lbl{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:14px 0 6px}
 textarea,input,select{width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:2px;padding:8px 10px}
 textarea{min-height:120px;resize:vertical;line-height:1.55}
 :focus-visible{outline:2px solid var(--steel);outline-offset:2px}
-.line{max-width:78ch}
-.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;max-width:900px}
+.line{width:100%}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 .scroll{overflow-x:auto;border:1px solid var(--line);margin:8px 0}
 th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:middle}
@@ -79,19 +79,19 @@ tr.tot td{font-weight:600;background:var(--sunk)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 0}
 .sw{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:5px;border:1px solid var(--line)}
 .sw.in{background:var(--in-soft);border-color:var(--in)} .sw.out{background:var(--surface)}
-.facts{border-left:3px solid var(--steel);background:var(--steel-soft);padding:10px 14px;margin:10px 0;font-size:14px;max-width:88ch}
+.facts{border-left:3px solid var(--steel);background:var(--steel-soft);padding:10px 14px;margin:10px 0;font-size:14px}
 .facts b{font-family:"IBM Plex Mono",monospace;font-weight:600}
 .facts .k{font-family:"Archivo Narrow",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px;color:var(--steel);display:block;margin-bottom:2px;font-weight:700}
 .chk{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:2px 7px;border-radius:2px;white-space:nowrap}
 .chk.ok{background:var(--ok-soft);color:var(--ok)} .chk.bad{background:var(--bad-soft);color:var(--bad)} .chk.wait{background:var(--sunk);color:var(--muted)}
-.brief{border-left:3px solid var(--silk);background:var(--silk-soft);padding:12px 16px;margin:10px 0;max-width:80ch}
+.brief{border-left:3px solid var(--silk);background:var(--silk-soft);padding:12px 16px;margin:10px 0}
 .steps{margin:8px 0 0;padding-left:22px} .steps li{margin:4px 0}
-.preview{border:1px dashed var(--silk);padding:10px 14px;margin:10px 0;font-style:italic;max-width:88ch}
+.preview{border:1px dashed var(--silk);padding:10px 14px;margin:10px 0;font-style:italic}
 .btn{font-family:"Archivo Narrow",sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--steel);background:transparent;color:var(--steel);border-radius:2px;cursor:pointer}
 .btn:hover{background:var(--steel-soft)} .btn.solid{background:var(--steel);color:var(--surface)} .btn.solid:hover{opacity:.88}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
 .who{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:6px}
-footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:78ch}
+footer{margin-top:28px;color:var(--muted);font-size:12.5px}
 #printout{display:none}
 @media print{
   @page{size:A4;margin:14mm 13mm}
@@ -198,7 +198,7 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:78ch}
     </table></div>
 
     <p class="task">From the text of the case: how much did the two mid-size bottles grow in 2023?</p>
-    <div class="scroll" style="max-width:520px"><table>
+    <div class="scroll"><table>
       <tbody>
         <tr><td class="rk">90 ml bottle, 2023 growth (%)</td><td class="in"><input id="g90" inputmode="decimal" data-k></td></tr>
         <tr><td class="rk">170 ml bottle, 2023 growth (%)</td><td class="in"><input id="g170" inputmode="decimal" data-k></td></tr>
@@ -340,7 +340,7 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;max-width:78ch}
 
     <h3><span class="code">D4</span>Rex's question: change the 90 ml and 170 ml targets?</h3>
     <p class="task">Where does the spend taken by the tube come from? Type the shares (they must add up to 100%).</p>
-    <div class="scroll" style="max-width:620px"><table>
+    <div class="scroll"><table>
       <thead><tr><th>Taken from</th><th>Share (%)</th></tr></thead>
       <tbody>
         <tr><td class="rk">170 ml bottle</td><td class="in"><input id="d4_170" inputmode="decimal" data-k></td></tr>
