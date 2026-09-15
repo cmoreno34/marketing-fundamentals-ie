@@ -36,67 +36,74 @@
 }
 *{box-sizing:border-box}
 body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  font-size:15px;line-height:1.6;margin:0;padding:0 clamp(16px,2.5vw,40px) 80px}
+  font-size:17px;line-height:1.6;margin:0;padding:0 clamp(16px,3vw,48px) 90px}
 .wrap{width:100%;margin:0}
-h1,h2,h3,.lbl,th{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
-header{padding:34px 0 20px;border-bottom:2px solid var(--ink);margin-bottom:22px}
-.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--silk);margin:0 0 8px}
-h1{font-size:clamp(30px,5vw,46px);line-height:1.02;margin:0 0 10px;font-weight:700;letter-spacing:-.015em}
-.sub{color:var(--muted);margin:0;font-size:16px}
-.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.chip{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:4px 9px;border:1px solid var(--line);border-radius:2px;color:var(--muted);background:var(--surface)}
-section{background:var(--surface);border:1px solid var(--line);margin-bottom:14px}
-.shead{display:flex;align-items:baseline;gap:14px;padding:14px 20px;cursor:pointer;border-bottom:1px solid transparent;user-select:none}
+h1,h2,h3{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
+header{padding:36px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:24px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--silk);margin:0 0 8px;font-weight:600}
+h1{font-size:clamp(34px,5vw,54px);line-height:1.05;margin:0 0 12px;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--ink);margin:0;font-size:20px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:13.5px;padding:5px 11px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:var(--surface)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-bottom:18px}
+.shead{display:flex;align-items:center;gap:14px;padding:16px 24px;cursor:pointer;border-bottom:1px solid transparent;user-select:none}
 .shead[aria-expanded="true"]{border-bottom-color:var(--line)}
-.num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--silk);font-weight:600;min-width:24px}
-.shead h2{font-size:20px;margin:0;font-weight:700;flex:1}
-.state{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border-radius:2px;background:var(--sunk);color:var(--muted);white-space:nowrap}
-.state.done{background:var(--ok-soft);color:var(--ok)} .state.part{background:var(--warn-soft);color:var(--warn)}
-.sbody{padding:4px 20px 22px;display:none} .sbody.open{display:block}
-.task{margin:6px 0 8px}
-.hint{color:var(--muted);font-size:13.5px;margin:4px 0 8px}
-.lbl{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:12px 0 5px}
-.lbl .qn{font-family:"IBM Plex Mono",monospace;color:var(--silk);margin-right:6px;letter-spacing:0}
-textarea,input,select{width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);background:var(--in-soft);border:1px solid var(--line);border-radius:2px;padding:8px 10px}
-textarea{min-height:110px;resize:vertical;line-height:1.55}
-:focus-visible{outline:2px solid var(--steel);outline-offset:2px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:4px 16px}
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
-table{border-collapse:collapse;width:100%;font-size:14px}
-.scroll{overflow-x:auto;border:1px solid var(--line);margin:8px 0}
-th,td{padding:6px 9px;text-align:left;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:middle}
+.num{font-family:"Archivo Narrow",sans-serif;font-size:18px;color:#fff;background:var(--silk);font-weight:700;min-width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.shead h2{font-size:26px;margin:0;font-weight:700;flex:1}
+.state{font-family:"IBM Plex Mono",monospace;font-size:13.5px;padding:4px 10px;border-radius:4px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.state.done{background:var(--ok-soft);color:var(--ok);font-weight:600} .state.part{background:var(--warn-soft);color:var(--warn);font-weight:600}
+.sbody{padding:8px 24px 26px;display:none} .sbody.open{display:block}
+.task{margin:8px 0 10px}
+.hint{color:var(--muted);font-size:16px;margin:6px 0 10px}
+.lbl{display:block;font-size:17px;line-height:1.4;color:var(--ink);font-weight:600;margin:18px 0 8px}
+.lbl .qn{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;color:#fff;background:var(--silk);border-radius:4px;padding:1px 7px;margin-right:8px;vertical-align:1px}
+textarea,input,select{width:100%;font-family:inherit;font-size:17px;color:var(--ink);background-color:var(--surface);border:1.5px solid #9DB0B7;border-radius:6px;padding:11px 14px;min-height:48px;transition:border-color .15s,background-color .15s}
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:44px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M3 6l5 5 5-5' fill='none' stroke='%232E5E70' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;background-size:16px}
+select option{font-size:17px;color:#0F1C21;background:#fff}
+select:not(.filled){color:#6B7C82}
+input::placeholder,textarea::placeholder{color:#8A9AA0}
+.filled{border-color:var(--in);background-color:var(--in-soft)}
+textarea{min-height:120px;resize:vertical;line-height:1.55}
+input:focus,select:focus,textarea:focus{outline:3px solid rgba(46,94,112,.35);outline-offset:1px;border-color:var(--steel)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:4px 22px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:20px}
+table{border-collapse:collapse;width:100%;font-size:16px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;margin:10px 0}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:middle}
 th:last-child,td:last-child{border-right:none}
-th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--sunk);font-weight:700}
+th{font-family:"IBM Plex Sans",sans-serif;font-size:14px;color:var(--ink);background:var(--sunk);font-weight:600}
 tr:last-child td{border-bottom:none}
-td.rk{font-family:"Archivo Narrow",sans-serif;font-weight:700;background:var(--sunk);white-space:nowrap}
-td.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.rk{font-weight:600;background:var(--sunk);white-space:nowrap}
+td.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:16px}
 td.cs{background:var(--steel-soft)}
-td.in{background:var(--in-soft);padding:2px}
-td.in input{background:transparent;border:1px solid transparent;font-family:"IBM Plex Mono",monospace;text-align:right;padding:5px 8px}
-td.in input:focus{border-color:var(--in);background:var(--surface)}
-tr.tot td{font-weight:600;background:var(--sunk)}
-.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 0}
-.sw{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:5px;border:1px solid var(--line)}
+td.in{background:var(--in-soft);padding:3px}
+td.in input{font-family:"IBM Plex Mono",monospace;text-align:right;padding:8px 10px;min-height:42px}
+tr.tot td{font-weight:700;background:var(--sunk)}
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:15px;color:var(--muted);margin:10px 0 0}
+.sw{display:inline-block;width:16px;height:16px;vertical-align:-3px;margin-right:6px;border:1px solid var(--line);border-radius:3px}
 .sw.cs{background:var(--steel-soft);border-color:var(--steel)} .sw.in{background:var(--in-soft);border-color:var(--in)} .sw.out{background:var(--surface)}
-.facts{border-left:3px solid var(--steel);background:var(--steel-soft);padding:9px 14px;margin:10px 0;font-size:14px}
+.facts{border-left:4px solid var(--steel);background:var(--steel-soft);padding:12px 18px;margin:14px 0;font-size:17px;border-radius:0 6px 6px 0}
 .facts b{font-family:"IBM Plex Mono",monospace;font-weight:600}
-.facts .k{font-family:"Archivo Narrow",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px;color:var(--steel);display:block;margin-bottom:2px;font-weight:700}
-.brief{border-left:3px solid var(--silk);background:var(--silk-soft);padding:11px 16px;margin:10px 0}
-.steps{margin:6px 0 0;padding-left:22px} .steps li{margin:3px 0}
-.preview{border:1px dashed var(--silk);padding:9px 14px;margin:10px 0;font-style:italic}
-.btn{font-family:"Archivo Narrow",sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--steel);background:transparent;color:var(--steel);border-radius:2px;cursor:pointer}
-.btn:hover{background:var(--steel-soft)} .btn.solid{background:var(--steel);color:var(--surface)} .btn.solid:hover{opacity:.88}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
-footer{margin-top:24px;color:var(--muted);font-size:12.5px}
-.check{margin-top:16px;border:1px solid var(--line);display:none}
+.facts .k{font-size:13.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:4px;font-weight:700}
+.brief{border-left:4px solid var(--silk);background:var(--silk-soft);padding:14px 20px;margin:12px 0;font-size:18px;border-radius:0 6px 6px 0}
+.steps{margin:6px 0 0;padding-left:24px} .steps li{margin:5px 0}
+.preview{border:2px dashed var(--silk);border-radius:6px;padding:12px 16px;margin:14px 0;font-style:italic;font-size:18px}
+.btn{font-family:"IBM Plex Sans",sans-serif;font-size:17px;font-weight:600;padding:12px 22px;border:1.5px solid var(--steel);background:var(--surface);color:var(--steel);border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--steel-soft)} .btn.solid{background:var(--steel);color:#fff} .btn.solid:hover{opacity:.9}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px}
+footer{margin-top:28px;color:var(--muted);font-size:14.5px}
+.check{margin-top:20px;border:1px solid var(--line);border-radius:6px;display:none;overflow:hidden}
 .check.open{display:block}
-.check .ch{padding:10px 14px;background:var(--sunk);font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.check .ch span{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600}
+.check .ch{padding:12px 18px;background:var(--sunk);font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:21px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.check .ch span{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:600}
 .check ul{list-style:none;margin:0;padding:0}
-.check li{display:grid;grid-template-columns:30px 110px 1fr;gap:8px;padding:8px 14px;border-top:1px solid var(--line);font-size:14px;align-items:baseline}
-.check .ic{font-weight:700;text-align:center;border-radius:2px;font-size:13px;padding:1px 0}
+.check li{display:grid;grid-template-columns:34px 130px 1fr;gap:10px;padding:10px 18px;border-top:1px solid var(--line);font-size:16.5px;align-items:baseline}
+.check .ic{font-weight:700;text-align:center;border-radius:4px;font-size:15px;padding:2px 0}
 .check .ok .ic{background:var(--ok-soft);color:var(--ok)} .check .no .ic{background:var(--warn-soft);color:var(--warn)} .check .mi .ic{background:var(--sunk);color:var(--muted)}
-.check .qc{font-family:"IBM Plex Mono",monospace;color:var(--silk);font-size:12.5px}
+.check .qc{font-family:"IBM Plex Mono",monospace;color:var(--silk);font-size:15px;font-weight:600}
+@media (max-width:560px){.two,.grid{grid-template-columns:1fr}.check li{grid-template-columns:30px 1fr}.check li>span:last-child{grid-column:1/-1}}
 #printout{display:none}
 @media print{
   @page{size:A4;margin:14mm 13mm}
@@ -191,9 +198,9 @@ footer{margin-top:24px;color:var(--muted);font-size:12.5px}
     <div class="facts" id="f1"></div>
     <div class="grid">
       <div><label class="lbl" for="q1"><span class="qn">Q1</span>Per ml, the tube costs… than the 170 ml bottle</label>
-        <select id="q1" data-k><option value=""></option><option>less</option><option>about the same</option><option>much more</option></select></div>
+        <select id="q1" data-k><option value="">Choose…</option><option>less</option><option>about the same</option><option>much more</option></select></div>
       <div><label class="lbl" for="q2"><span class="qn">Q2</span>Which SKUs drove the line's growth in 2023?</label>
-        <select id="q2" data-k><option value=""></option><option>The 90 ml and 170 ml bottles</option><option>The 6 ml sachet</option><option>The 400 ml and 675 ml bottles</option><option>All SKUs about the same</option></select></div>
+        <select id="q2" data-k><option value="">Choose…</option><option>The 90 ml and 170 ml bottles</option><option>The 6 ml sachet</option><option>The 400 ml and 675 ml bottles</option><option>All SKUs about the same</option></select></div>
     </div>
   </div>
 </section>
@@ -211,11 +218,11 @@ footer{margin-top:24px;color:var(--muted);font-size:12.5px}
     </table></div>
     <div class="grid">
       <div><label class="lbl" for="q3"><span class="qn">Q3</span>Which SKU already serves travellers?</label>
-        <select id="q3" data-k><option value=""></option><option>6 ml sachet</option><option>90 ml bottle</option><option>170 ml bottle</option><option>400 ml bottle</option><option>675 ml bottle</option></select></div>
+        <select id="q3" data-k><option value="">Choose…</option><option>6 ml sachet</option><option>90 ml bottle</option><option>170 ml bottle</option><option>400 ml bottle</option><option>675 ml bottle</option></select></div>
       <div><label class="lbl" for="q4"><span class="qn">Q4</span>Who is most likely to buy the tube?</label>
-        <select id="q4" data-k><option value=""></option><option>New customers (Sid is right)</option><option>Sachet buyers who travel</option><option>90 ml bottle buyers</option><option>170 ml bottle buyers (Rex is right)</option></select></div>
+        <select id="q4" data-k><option value="">Choose…</option><option>New customers (Sid is right)</option><option>Sachet buyers who travel</option><option>90 ml bottle buyers</option><option>170 ml bottle buyers (Rex is right)</option></select></div>
       <div><label class="lbl" for="q5"><span class="qn">Q5</span>Your decision</label>
-        <select id="q5" data-k><option value=""></option><option>Launch</option><option>Launch with conditions</option><option>Don't launch</option></select></div>
+        <select id="q5" data-k><option value="">Choose…</option><option>Launch</option><option>Launch with conditions</option><option>Don't launch</option></select></div>
       <div><label class="lbl" for="q6"><span class="qn">Q6</span>Why? One line</label><input id="q6" data-k></div>
     </div>
   </div>
@@ -231,9 +238,9 @@ footer{margin-top:24px;color:var(--muted);font-size:12.5px}
     <div class="grid">
       <div><label class="lbl" for="q7"><span class="qn">Q7</span>Target customer: who exactly? One line</label><input id="q7" data-k placeholder="e.g. young professionals who travel for work"></div>
       <div><label class="lbl" for="q8"><span class="qn">Q8</span>Targeting strategy</label>
-        <select id="q8" data-k><option value=""></option><option>Undifferentiated</option><option>Differentiated</option><option>Concentrated</option><option>Micro-marketing</option></select></div>
+        <select id="q8" data-k><option value="">Choose…</option><option>Undifferentiated</option><option>Differentiated</option><option>Concentrated</option><option>Micro-marketing</option></select></div>
       <div><label class="lbl" for="q9"><span class="qn">Q9</span>Launch first in…</label>
-        <select id="q9" data-k><option value=""></option><option>Luzon</option><option>Visayas</option><option>Mindanao</option><option>All three regions at once</option></select></div>
+        <select id="q9" data-k><option value="">Choose…</option><option>Luzon</option><option>Visayas</option><option>Mindanao</option><option>All three regions at once</option></select></div>
     </div>
     <p class="lbl"><span class="qn">Q10</span>Positioning statement: fill in the three blanks</p>
     <div class="grid">
@@ -378,6 +385,7 @@ function compute() {
 
 function render() {
   const c = compute();
+  document.querySelectorAll('[data-k]').forEach((el) => el.classList.toggle('filled', el.value.trim() !== ''));
   const okC = Number.isFinite(c.cann) && c.cann >= 0 && c.cann < 1;
   c.rows.forEach((r, i) => {
     const ok = okC && Number.isFinite(c.split[i]);
