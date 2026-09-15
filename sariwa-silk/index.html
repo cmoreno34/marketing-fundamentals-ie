@@ -9,10 +9,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <!--
-  Sariwa Silk homework tool (Quick Case 8477-HTM-ENG).
-  The case and its exhibits are NOT reproduced here: students read the case from the
-  syllabus link and type the exhibit figures into the green cells. Everything else is
-  calculated in the browser. Nothing is uploaded; work is saved in localStorage.
+  Sariwa Silk homework, short version (Quick Case 8477-HTM-ENG).
+  The case text is not reproduced: students read it from the syllabus link. The exhibit
+  figures are built in, at Cesar's request, so the homework is analysis, not typing.
+  Four short parts, most answers one click or one line. Everything is calculated in the
+  browser; nothing is uploaded; work is saved in localStorage and exported as a PDF.
 -->
 <style>
 :root{
@@ -38,60 +39,55 @@ body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",syste
   font-size:15px;line-height:1.6;margin:0;padding:0 clamp(16px,2.5vw,40px) 80px}
 .wrap{width:100%;margin:0}
 h1,h2,h3,.lbl,th{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
-header{padding:38px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:26px}
+header{padding:34px 0 20px;border-bottom:2px solid var(--ink);margin-bottom:22px}
 .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--silk);margin:0 0 8px}
-h1{font-size:clamp(30px,5vw,46px);line-height:1.02;margin:0 0 10px;font-weight:700;letter-spacing:-.015em;text-wrap:balance}
-.sub{color:var(--muted);margin:0}
-.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.02;margin:0 0 10px;font-weight:700;letter-spacing:-.015em}
+.sub{color:var(--muted);margin:0;font-size:16px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .chip{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:4px 9px;border:1px solid var(--line);border-radius:2px;color:var(--muted);background:var(--surface)}
-section{background:var(--surface);border:1px solid var(--line);margin-bottom:16px}
-.shead{display:flex;align-items:baseline;gap:14px;padding:16px 20px;cursor:pointer;border-bottom:1px solid transparent;user-select:none}
+section{background:var(--surface);border:1px solid var(--line);margin-bottom:14px}
+.shead{display:flex;align-items:baseline;gap:14px;padding:14px 20px;cursor:pointer;border-bottom:1px solid transparent;user-select:none}
 .shead[aria-expanded="true"]{border-bottom-color:var(--line)}
 .num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--silk);font-weight:600;min-width:24px}
 .shead h2{font-size:20px;margin:0;font-weight:700;flex:1}
 .state{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border-radius:2px;background:var(--sunk);color:var(--muted);white-space:nowrap}
 .state.done{background:var(--ok-soft);color:var(--ok)} .state.part{background:var(--warn-soft);color:var(--warn)}
-.sbody{padding:4px 20px 24px;display:none} .sbody.open{display:block}
-h3{font-size:17px;margin:22px 0 4px}
-h3 .code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--silk);margin-right:8px}
-.task{margin:4px 0 8px}
-.hint{color:var(--muted);font-size:13.5px;margin:4px 0 10px}
-.lbl{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:14px 0 6px}
-textarea,input,select{width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:2px;padding:8px 10px}
-textarea{min-height:120px;resize:vertical;line-height:1.55}
+.sbody{padding:4px 20px 22px;display:none} .sbody.open{display:block}
+.task{margin:6px 0 8px}
+.hint{color:var(--muted);font-size:13.5px;margin:4px 0 8px}
+.lbl{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:12px 0 5px}
+.lbl .qn{font-family:"IBM Plex Mono",monospace;color:var(--silk);margin-right:6px;letter-spacing:0}
+textarea,input,select{width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);background:var(--in-soft);border:1px solid var(--line);border-radius:2px;padding:8px 10px}
+textarea{min-height:110px;resize:vertical;line-height:1.55}
 :focus-visible{outline:2px solid var(--steel);outline-offset:2px}
-.line{width:100%}
-.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:4px 16px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 .scroll{overflow-x:auto;border:1px solid var(--line);margin:8px 0}
-th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:middle}
+th,td{padding:6px 9px;text-align:left;border-bottom:1px solid var(--line);border-right:1px solid var(--line);vertical-align:middle}
 th:last-child,td:last-child{border-right:none}
 th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--sunk);font-weight:700}
 tr:last-child td{border-bottom:none}
 td.rk{font-family:"Archivo Narrow",sans-serif;font-weight:700;background:var(--sunk);white-space:nowrap}
 td.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.cs{background:var(--steel-soft)}
 td.in{background:var(--in-soft);padding:2px}
-td.in input{background:transparent;border:1px solid transparent;font-family:"IBM Plex Mono",monospace;text-align:right;padding:6px 8px}
+td.in input{background:transparent;border:1px solid transparent;font-family:"IBM Plex Mono",monospace;text-align:right;padding:5px 8px}
 td.in input:focus{border-color:var(--in);background:var(--surface)}
-td.tx{padding:2px} td.tx input,td.tx select{background:transparent;border:1px solid transparent;padding:6px 8px;font-size:13.5px}
-td.tx input:focus,td.tx select:focus{border-color:var(--steel);background:var(--sunk)}
 tr.tot td{font-weight:600;background:var(--sunk)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 0}
 .sw{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:5px;border:1px solid var(--line)}
-.sw.in{background:var(--in-soft);border-color:var(--in)} .sw.out{background:var(--surface)}
-.facts{border-left:3px solid var(--steel);background:var(--steel-soft);padding:10px 14px;margin:10px 0;font-size:14px}
+.sw.cs{background:var(--steel-soft);border-color:var(--steel)} .sw.in{background:var(--in-soft);border-color:var(--in)} .sw.out{background:var(--surface)}
+.facts{border-left:3px solid var(--steel);background:var(--steel-soft);padding:9px 14px;margin:10px 0;font-size:14px}
 .facts b{font-family:"IBM Plex Mono",monospace;font-weight:600}
 .facts .k{font-family:"Archivo Narrow",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px;color:var(--steel);display:block;margin-bottom:2px;font-weight:700}
-.chk{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:2px 7px;border-radius:2px;white-space:nowrap}
-.chk.ok{background:var(--ok-soft);color:var(--ok)} .chk.bad{background:var(--bad-soft);color:var(--bad)} .chk.wait{background:var(--sunk);color:var(--muted)}
-.brief{border-left:3px solid var(--silk);background:var(--silk-soft);padding:12px 16px;margin:10px 0}
-.steps{margin:8px 0 0;padding-left:22px} .steps li{margin:4px 0}
-.preview{border:1px dashed var(--silk);padding:10px 14px;margin:10px 0;font-style:italic}
+.brief{border-left:3px solid var(--silk);background:var(--silk-soft);padding:11px 16px;margin:10px 0}
+.steps{margin:6px 0 0;padding-left:22px} .steps li{margin:3px 0}
+.preview{border:1px dashed var(--silk);padding:9px 14px;margin:10px 0;font-style:italic}
 .btn{font-family:"Archivo Narrow",sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--steel);background:transparent;color:var(--steel);border-radius:2px;cursor:pointer}
 .btn:hover{background:var(--steel-soft)} .btn.solid{background:var(--steel);color:var(--surface)} .btn.solid:hover{opacity:.88}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
-.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:6px}
-footer{margin-top:28px;color:var(--muted);font-size:12.5px}
+footer{margin-top:24px;color:var(--muted);font-size:12.5px}
 #printout{display:none}
 @media print{
   @page{size:A4;margin:14mm 13mm}
@@ -106,9 +102,8 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px}
   #printout th,#printout td{border:.5pt solid #999;padding:1.2mm 1.6mm;text-align:left;vertical-align:top}
   #printout th{background:#eee;font-weight:700;text-transform:none;letter-spacing:0;font-size:8.5pt;color:#000}
   #printout td.n{text-align:right;font-family:"IBM Plex Mono",monospace}
-  #printout .q{margin:2mm 0 0;font-size:9.5pt;page-break-inside:avoid}
+  #printout .q{margin:1.8mm 0 0;font-size:9.5pt;page-break-inside:avoid}
   #printout .q .ql{display:block;font-size:8pt;text-transform:uppercase;letter-spacing:.05em;color:#444;font-weight:700}
-  #printout .f b{font-weight:700}
   #printout .f{font-size:8.5pt;color:#333;margin:1mm 0}
   #printout .foot{margin-top:6mm;font-size:8pt;color:#444;border-top:.5pt solid #999;padding-top:2mm}
 }
@@ -120,489 +115,309 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px}
 <header>
   <p class="eyebrow">Homework · group case</p>
   <h1>Sariwa Silk: squeezing in a new format</h1>
-  <p class="sub">B&amp;T Goods International wants to launch its Sariwa Silk shampoo in a 100 g tube in the Philippines.
-  The line grew 6% in 2023 and the company wants 15% in 2024. Sid, the president, expects the tube to bring new
-  customers; Rex, the head of marketing, fears it will take sales from the bottles.</p>
+  <p class="sub">Should B&amp;T launch its Sariwa Silk shampoo in a 100 g tube in the Philippines? For whom? And with what sales targets for 2024?</p>
   <div class="meta">
     <span class="chip">Quick Case 8477-HTM-ENG · read it from the syllabus link</span>
     <span class="chip">Groups of 4-5</span>
-    <span class="chip" id="chipProg">0 / 5 parts complete</span>
+    <span class="chip">4 short parts</span>
+    <span class="chip" id="chipProg">0 / 5 done</span>
   </div>
 </header>
 
 <!-- ============================================================ START -->
 <section>
   <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="b0">
-    <span class="num">&mdash;</span><h2>Before you start</h2><span class="state" id="st0">Read this</span>
+    <span class="num">&mdash;</span><h2>Before you start</h2><span class="state" id="st0">Add your names</span>
   </div>
   <div class="sbody open" id="b0">
-    <div class="brief">
-      <b>The brief.</b> B&amp;T Goods International, a premium personal-care company, plans to launch Sariwa Silk shampoo
-      in a 100 g tube in the Philippines, first of its kind in the market, sold for precise dosing and travel. The Sariwa
-      Silk line grew 6% in 2023 and B&amp;T wants 15% growth in 2024 with the launch. Sid Mendoza, the president, is
-      convinced the tube will bring new customers. Rex Lim, the head of marketing, is not: he thinks existing buyers
-      may switch from the bottles, and he wants to know whether the target should be the same in Luzon, Visayas and
-      Mindanao.
-    </div>
-    <p class="task"><b>Your job:</b> decide whether B&amp;T should launch the tube, for whom and positioned against what,
-    and what the 2024 sales targets should be, region by region, in value and in volume.</p>
-    <p class="lbl">How this page works</p>
-    <ol class="steps">
-      <li>Read the case from the link in the syllabus. Keep Exhibits 1 and 2 open.</li>
-      <li>Copy the numbers from the case into the <b>green cells</b>. The tool builds every table and does every calculation.</li>
-      <li>Answer the questions in Parts A to D. Most answers are a choice from a list or one line of text.</li>
-      <li>In Part D you choose two things (how much of the tube's sales comes from existing buyers, and how to split the tube across regions); the tool turns them into 2024 targets.</li>
-      <li>Write the decision, add your names, and download the PDF. That PDF is what you hand in.</li>
-    </ol>
-    <div class="legend"><span><span class="sw in"></span>you type it, from the case</span><span><span class="sw out"></span>calculated by the tool</span></div>
-    <p class="lbl">Everyone uses the same three assumptions</p>
-    <ul class="steps">
-      <li>The price in Exhibit 1 is what B&amp;T earns for each unit sold.</li>
-      <li>100 g of shampoo is about 100 ml.</li>
-      <li>Sariwa Silk's 2023 revenue is the total of Exhibit 2.</li>
-    </ul>
-    <p class="hint">Your answers are saved in this browser as you type. Nothing is sent anywhere.</p>
-    <p class="lbl">Who is submitting</p>
-    <div class="who">
-      <div><label class="lbl" for="wGroup">Group</label><input id="wGroup" data-k></div>
-      <div><label class="lbl" for="wSec">Section</label><input id="wSec" data-k></div>
-      <div><label class="lbl" for="wDate">Date</label><input id="wDate" type="date" data-k></div>
-    </div>
-    <label class="lbl" for="wNames">Student names, one per line</label>
-    <textarea id="wNames" data-k style="min-height:90px"></textarea>
-  </div>
-</section>
-
-<!-- ============================================================ A -->
-<section>
-  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="bA">
-    <span class="num">A</span><h2>The numbers</h2><span class="state" id="stA">Fill this in</span>
-  </div>
-  <div class="sbody open" id="bA">
-    <h3><span class="code">A1</span>Copy the exhibits</h3>
-    <p class="task">Exhibit 2: revenue and growth by region.</p>
-    <div class="scroll"><table>
-      <thead><tr><th>Region</th><th>2023 revenue (PHP m)</th><th>2023 growth (%)</th></tr></thead>
-      <tbody>
-        <tr><td class="rk">Luzon</td><td class="in"><input id="r_lu" inputmode="decimal" data-k></td><td class="in"><input id="g_lu" inputmode="decimal" data-k></td></tr>
-        <tr><td class="rk">Visayas</td><td class="in"><input id="r_vi" inputmode="decimal" data-k></td><td class="in"><input id="g_vi" inputmode="decimal" data-k></td></tr>
-        <tr><td class="rk">Mindanao</td><td class="in"><input id="r_mi" inputmode="decimal" data-k></td><td class="in"><input id="g_mi" inputmode="decimal" data-k></td></tr>
-        <tr class="tot"><td>Line total</td><td class="n" id="o_T">—</td><td class="n" id="o_gLine">—</td></tr>
-      </tbody>
-    </table></div>
-
-    <p class="task">Exhibit 1: price and share of the line's revenue for each SKU. The rest of the table fills itself in.</p>
-    <div class="scroll"><table>
-      <thead><tr><th>SKU</th><th>Price (PHP)</th><th>Share of revenue (%)</th><th>2023 revenue (PHP m)</th><th>Units sold (m)</th><th>PHP per ml</th><th>Share of litres</th></tr></thead>
-      <tbody id="skuBody"></tbody>
-    </table></div>
-
-    <p class="task">From the text of the case: how much did the two mid-size bottles grow in 2023?</p>
-    <div class="scroll"><table>
-      <tbody>
-        <tr><td class="rk">90 ml bottle, 2023 growth (%)</td><td class="in"><input id="g90" inputmode="decimal" data-k></td></tr>
-        <tr><td class="rk">170 ml bottle, 2023 growth (%)</td><td class="in"><input id="g170" inputmode="decimal" data-k></td></tr>
-      </tbody>
-    </table></div>
-    <div class="row" id="chkA"></div>
-
-    <h3><span class="code">A2</span>Price per ml</h3>
-    <div class="facts" id="a2facts"><span class="k">What the numbers say</span>Fill in A1 first.</div>
-    <div class="pair">
-      <div><label class="lbl" for="a2_same">The tube costs the same as…</label>
-        <select id="a2_same" data-k><option value=""></option><option>675 ml bottle</option><option>400 ml bottle</option><option>170 ml bottle</option><option>90 ml bottle</option><option>6 ml sachet</option></select></div>
-      <div><label class="lbl" for="a2_line">Is the tube good value for money? One line.</label><input id="a2_line" class="line" data-k></div>
-    </div>
-
-    <h3><span class="code">A3</span>What drove 2023</h3>
-    <div class="facts" id="a3facts"><span class="k">What the numbers say</span>Fill in A1 first.</div>
-    <div class="pair">
-      <div><label class="lbl" for="a3_drivers">Which SKUs drove the line's growth in 2023?</label>
-        <select id="a3_drivers" data-k><option value=""></option><option>The 90 ml and 170 ml bottles</option><option>The 6 ml sachet</option><option>The 400 ml and 675 ml bottles</option><option>All SKUs grew about the same</option></select></div>
-      <div><label class="lbl" for="a3_growth">The case gives two growth figures for 2023 (6% and 11%). Which one do the exhibits support?</label>
-        <select id="a3_growth" data-k><option value=""></option><option>6%</option><option>11%</option></select></div>
+    <div class="brief"><b>The brief.</b> B&amp;T Goods International wants to launch Sariwa Silk shampoo in a 100 g tube, sold for
+    travel and precise dosing. The Sariwa Silk line grew 6% in 2023 and B&amp;T wants 15% growth in 2024. Sid, the president,
+    expects the tube to bring new customers. Rex, the head of marketing, fears existing buyers will simply switch from the bottles.</div>
+    <div class="two">
+      <div>
+        <p class="lbl">How it works</p>
+        <ol class="steps">
+          <li>Read the case. The figures from its exhibits are already loaded here.</li>
+          <li>Answer four short parts. Most answers are one click or one line; the page does every calculation.</li>
+          <li>Add your names and download the PDF. That PDF is what you hand in.</li>
+        </ol>
+        <p class="hint" style="margin-top:10px"><b>Money:</b> all amounts are in Philippine pesos. <b>PHP</b> is the code of the peso (₱) and <b>PHP m</b> means millions of pesos; one euro is roughly 60-65 pesos.
+        The page assumes 100 g of shampoo is about 100 ml, and that the price in the case is what B&amp;T earns per unit.</p>
+        <div class="legend"><span><span class="sw cs"></span>figure from the case</span><span><span class="sw in"></span>your answer</span><span><span class="sw out"></span>calculated</span></div>
+      </div>
+      <div>
+        <div class="grid">
+          <div><label class="lbl" for="wGroup">Group</label><input id="wGroup" data-k></div>
+          <div><label class="lbl" for="wSec">Section</label><input id="wSec" data-k></div>
+        </div>
+        <label class="lbl" for="wNames">Student names, one per line</label>
+        <textarea id="wNames" data-k style="min-height:96px"></textarea>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================ B -->
+<!-- ============================================================ 1 -->
 <section>
-  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="bB">
-    <span class="num">B</span><h2>Should B&amp;T launch the tube?</h2><span class="state" id="stB">Fill this in</span>
+  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="b1">
+    <span class="num">1</span><h2>Read the numbers</h2><span class="state" id="st1">2 answers</span>
   </div>
-  <div class="sbody open" id="bB">
-    <h3><span class="code">B1</span>The travel occasion</h3>
-    <div class="pair">
-      <div><label class="lbl" for="b1_sku">Which SKU already serves the traveller and the single wash?</label>
-        <select id="b1_sku" data-k><option value=""></option><option>675 ml bottle</option><option>400 ml bottle</option><option>170 ml bottle</option><option>90 ml bottle</option><option>6 ml sachet</option></select></div>
-      <div><label class="lbl" for="b1_line">So what does "travel-friendly" mean for the tube? One line.</label><input id="b1_line" class="line" data-k></div>
+  <div class="sbody open" id="b1">
+    <div class="two">
+      <div>
+        <p class="task"><b>Sales by region</b> (Exhibit 2)</p>
+        <div class="scroll"><table>
+          <thead><tr><th>Region</th><th>2023 revenue (PHP m)</th><th>Growth 2023</th></tr></thead>
+          <tbody id="regBody"></tbody>
+        </table></div>
+      </div>
+      <div>
+        <p class="task"><b>The range</b> (Exhibit 1). The last three columns are calculated.</p>
+        <div class="scroll"><table>
+          <thead><tr><th>SKU</th><th>Price (PHP)</th><th>Share of revenue</th><th>Units sold (m)</th><th>PHP per ml</th><th>Share of litres</th></tr></thead>
+          <tbody id="skuBody"></tbody>
+        </table></div>
+      </div>
     </div>
-
-    <h3><span class="code">B2</span>Who could switch to the tube?</h3>
-    <p class="task">For each buyer, pick the chance of switching and give one reason. The tool shows what each switch does to B&amp;T.</p>
-    <div class="scroll"><table>
-      <thead><tr><th>Today buys</th><th>Chance of switching</th><th>Why (one line)</th><th>Revenue per switch</th><th>Shampoo sold per switch</th></tr></thead>
-      <tbody>
-        <tr><td class="rk">6 ml sachet</td><td class="tx"><select id="b2_ch_6" data-k><option value=""></option><option>High</option><option>Medium</option><option>Low</option></select></td><td class="tx"><input id="b2_why_6" data-k></td><td class="n" id="o_b2r_6">—</td><td class="n" id="o_b2v_6">—</td></tr>
-        <tr><td class="rk">90 ml bottle</td><td class="tx"><select id="b2_ch_90" data-k><option value=""></option><option>High</option><option>Medium</option><option>Low</option></select></td><td class="tx"><input id="b2_why_90" data-k></td><td class="n" id="o_b2r_90">—</td><td class="n" id="o_b2v_90">—</td></tr>
-        <tr><td class="rk">170 ml bottle</td><td class="tx"><select id="b2_ch_170" data-k><option value=""></option><option>High</option><option>Medium</option><option>Low</option></select></td><td class="tx"><input id="b2_why_170" data-k></td><td class="n" id="o_b2r_170">—</td><td class="n" id="o_b2v_170">—</td></tr>
-      </tbody>
-    </table></div>
-    <p class="hint">Sachet row: compared for the same 100 ml of shampoo. Bottle rows: one purchase against one purchase.</p>
-    <div class="pair">
-      <div><label class="lbl" for="b2_view">Whose view does the data support?</label>
-        <select id="b2_view" data-k><option value=""></option><option>Sid: mostly new customers</option><option>Rex: existing buyers will switch</option><option>Neither is proven yet</option></select></div>
-      <div><label class="lbl" for="b2_hurt">If buyers switch, B&amp;T loses mainly in…</label>
-        <select id="b2_hurt" data-k><option value=""></option><option>Value (revenue)</option><option>Volume (ml of shampoo sold)</option><option>Both</option><option>Neither</option></select></div>
-    </div>
-
-    <h3><span class="code">B3</span>The launch decision</h3>
-    <div class="pair">
-      <div><label class="lbl" for="b3_dec">Decision</label>
-        <select id="b3_dec" data-k><option value=""></option><option>Launch</option><option>Launch with conditions</option><option>Don't launch</option></select></div>
-      <div><label class="lbl" for="b3_kill">One result in the first three months that would make you stop. One line.</label><input id="b3_kill" class="line" data-k></div>
+    <div class="facts" id="f1"></div>
+    <div class="grid">
+      <div><label class="lbl" for="q1"><span class="qn">Q1</span>Per ml, the tube costs… than the 170 ml bottle</label>
+        <select id="q1" data-k><option value=""></option><option>less</option><option>about the same</option><option>much more</option></select></div>
+      <div><label class="lbl" for="q2"><span class="qn">Q2</span>Which SKUs drove the line's growth in 2023?</label>
+        <select id="q2" data-k><option value=""></option><option>The 90 ml and 170 ml bottles</option><option>The 6 ml sachet</option><option>The 400 ml and 675 ml bottles</option><option>All SKUs about the same</option></select></div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================ C -->
+<!-- ============================================================ 2 -->
 <section>
-  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="bC">
-    <span class="num">C</span><h2>Segmentation, targeting, positioning</h2><span class="state" id="stC">Fill this in</span>
+  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="b2">
+    <span class="num">2</span><h2>Launch or not?</h2><span class="state" id="st2">4 answers</span>
   </div>
-  <div class="sbody open" id="bC">
-    <h3><span class="code">C1</span>Three segments</h3>
-    <p class="task">Combine one behavioural base (where and when the shampoo is used) with one geographic base (the regions).</p>
+  <div class="sbody open" id="b2">
+    <p class="task">What happens to B&amp;T when a buyer of each SKU switches to the tube:</p>
     <div class="scroll"><table>
-      <thead><tr><th style="width:18%">Segment name</th><th>Who they are</th><th>What they need</th><th style="width:16%">What they buy today</th><th style="width:11%">Fit with the tube</th></tr></thead>
-      <tbody id="segBody"></tbody>
+      <thead><tr><th>Today buys</th><th>Revenue for B&amp;T</th><th>Shampoo sold</th></tr></thead>
+      <tbody id="swBody"></tbody>
     </table></div>
-    <datalist id="buys"><option>6 ml sachet</option><option>90 ml bottle</option><option>170 ml bottle</option><option>400 ml bottle</option><option>675 ml bottle</option><option>A competitor's shampoo</option><option>Nothing yet</option></datalist>
-
-    <h3><span class="code">C2</span>Targeting</h3>
-    <div class="pair">
-      <div><label class="lbl" for="c2_strat">Targeting strategy</label>
-        <select id="c2_strat" data-k><option value=""></option><option>Undifferentiated</option><option>Differentiated</option><option>Concentrated</option><option>Micro-marketing</option></select></div>
+    <div class="grid">
+      <div><label class="lbl" for="q3"><span class="qn">Q3</span>Which SKU already serves travellers?</label>
+        <select id="q3" data-k><option value=""></option><option>6 ml sachet</option><option>90 ml bottle</option><option>170 ml bottle</option><option>400 ml bottle</option><option>675 ml bottle</option></select></div>
+      <div><label class="lbl" for="q4"><span class="qn">Q4</span>Who is most likely to buy the tube?</label>
+        <select id="q4" data-k><option value=""></option><option>New customers (Sid is right)</option><option>Sachet buyers who travel</option><option>90 ml bottle buyers</option><option>170 ml bottle buyers (Rex is right)</option></select></div>
+      <div><label class="lbl" for="q5"><span class="qn">Q5</span>Your decision</label>
+        <select id="q5" data-k><option value=""></option><option>Launch</option><option>Launch with conditions</option><option>Don't launch</option></select></div>
+      <div><label class="lbl" for="q6"><span class="qn">Q6</span>Why? One line</label><input id="q6" data-k></div>
     </div>
-    <p class="hint">Target in each region, in a few words. Rex's clues: Luzon sells the most shampoo but P&amp;G and Unilever are strong there; Visayas has many tourist destinations; Mindanao is more fragmented.</p>
-    <div class="pair">
-      <div><label class="lbl" for="c2_lu">Luzon</label><input id="c2_lu" data-k></div>
-      <div><label class="lbl" for="c2_vi">Visayas</label><input id="c2_vi" data-k></div>
-      <div><label class="lbl" for="c2_mi">Mindanao</label><input id="c2_mi" data-k></div>
-    </div>
-
-    <h3><span class="code">C3</span>Positioning statement</h3>
-    <p class="task">Fill in the blanks; the statement writes itself below.</p>
-    <div class="pair">
-      <div><label class="lbl" for="c3_target">For [target]</label><input id="c3_target" data-k></div>
-      <div><label class="lbl" for="c3_need">who [need]</label><input id="c3_need" data-k></div>
-      <div><label class="lbl" for="c3_benefit">the Sariwa Silk tube provides [benefit]</label><input id="c3_benefit" data-k></div>
-      <div><label class="lbl" for="c3_alt">unlike [what they use today]</label><input id="c3_alt" list="buys" data-k></div>
-      <div><label class="lbl" for="c3_reason">because [reason to believe]</label><input id="c3_reason" data-k></div>
-    </div>
-    <div class="preview" id="c3prev">Your statement will appear here.</div>
-    <label class="lbl" for="c3_home">And the bottles? How do they stay positioned for use at home. One line.</label>
-    <input id="c3_home" class="line" data-k>
   </div>
 </section>
 
-<!-- ============================================================ D -->
+<!-- ============================================================ 3 -->
 <section>
-  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="bD">
-    <span class="num">D</span><h2>2024 targets, in value and in volume</h2><span class="state" id="stD">Fill this in</span>
+  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="b3">
+    <span class="num">3</span><h2>Target and positioning</h2><span class="state" id="st3">6 answers</span>
   </div>
-  <div class="sbody open" id="bD">
-    <h3><span class="code">D1</span>The baseline: 2024 if every region repeats its 2023 growth</h3>
-    <div class="scroll"><table>
-      <thead><tr><th>Region</th><th>2023 revenue (PHP m)</th><th>2023 growth</th><th>2024 baseline (PHP m)</th></tr></thead>
-      <tbody id="d1Body"></tbody>
-    </table></div>
-
-    <h3><span class="code">D2</span>The gap, and how many tubes close it</h3>
-    <div class="pair">
-      <div><label class="lbl" for="tg">Growth target for the line in 2024 (%)</label>
-        <table><tr><td class="in"><input id="tg" value="15" inputmode="decimal" data-k></td></tr></table></div>
-      <div><label class="lbl" for="d2_c">Cannibalisation: share of tube sales that would otherwise have been spent on bottles or sachets (%)</label>
-        <table><tr><td class="in"><input id="d2_c" inputmode="decimal" data-k></td></tr></table></div>
+  <div class="sbody open" id="b3">
+    <p class="hint">Rex's clues: Luzon sells the most shampoo but P&amp;G and Unilever are strong there; Visayas has many tourist destinations; Mindanao is more fragmented.</p>
+    <div class="grid">
+      <div><label class="lbl" for="q7"><span class="qn">Q7</span>Target customer: who exactly? One line</label><input id="q7" data-k placeholder="e.g. young professionals who travel for work"></div>
+      <div><label class="lbl" for="q8"><span class="qn">Q8</span>Targeting strategy</label>
+        <select id="q8" data-k><option value=""></option><option>Undifferentiated</option><option>Differentiated</option><option>Concentrated</option><option>Micro-marketing</option></select></div>
+      <div><label class="lbl" for="q9"><span class="qn">Q9</span>Launch first in…</label>
+        <select id="q9" data-k><option value=""></option><option>Luzon</option><option>Visayas</option><option>Mindanao</option><option>All three regions at once</option></select></div>
     </div>
-    <label class="lbl" for="d2_why">Why that cannibalisation rate? One line, using B2.</label>
-    <input id="d2_why" class="line" data-k>
-    <div class="facts" id="d2facts"><span class="k">What the numbers say</span>Fill in A1 and the two cells above.</div>
-
-    <h3><span class="code">D3</span>Split the tube across the regions</h3>
-    <p class="task">Type the share of tube sales each region takes (it must add up to 100%). It does not have to follow each region's share of 2023 revenue.</p>
-    <div class="scroll"><table>
-      <thead><tr><th>Region</th><th>Tube share (%)</th><th>2024 existing SKUs (PHP m)</th><th>2024 tube (PHP m)</th><th>Tubes (000)</th><th>2024 total (PHP m)</th><th>Growth vs 2023</th></tr></thead>
-      <tbody id="d3Body"></tbody>
-    </table></div>
-    <label class="lbl" for="d3_why">Why this split? One line.</label>
-    <input id="d3_why" class="line" data-k>
-
-    <h3><span class="code">D4</span>Rex's question: change the 90 ml and 170 ml targets?</h3>
-    <p class="task">Where does the spend taken by the tube come from? Type the shares (they must add up to 100%).</p>
-    <div class="scroll"><table>
-      <thead><tr><th>Taken from</th><th>Share (%)</th></tr></thead>
-      <tbody>
-        <tr><td class="rk">170 ml bottle</td><td class="in"><input id="d4_170" inputmode="decimal" data-k></td></tr>
-        <tr><td class="rk">90 ml bottle</td><td class="in"><input id="d4_90" inputmode="decimal" data-k></td></tr>
-        <tr><td class="rk">6 ml sachet and other SKUs</td><td class="in"><input id="d4_6" inputmode="decimal" data-k></td></tr>
-      </tbody>
-    </table></div>
-    <div class="facts" id="d4facts"><span class="k">What the numbers say</span>Fill in A1, D2 and the shares above.</div>
-    <div class="pair">
-      <div><label class="lbl" for="d4_change">Change the 90 ml and 170 ml targets?</label>
-        <select id="d4_change" data-k><option value=""></option><option>Yes, lower them</option><option>No, keep them</option></select></div>
-      <div><label class="lbl" for="d4_line">Why? One line.</label><input id="d4_line" data-k></div>
+    <p class="lbl"><span class="qn">Q10</span>Positioning statement: fill in the three blanks</p>
+    <div class="grid">
+      <div><label class="lbl" for="p_need">who [need]</label><input id="p_need" data-k></div>
+      <div><label class="lbl" for="p_benefit">the tube provides [benefit]</label><input id="p_benefit" data-k></div>
+      <div><label class="lbl" for="p_alt">unlike [what they use today]</label><input id="p_alt" list="alts" data-k></div>
     </div>
+    <datalist id="alts"><option>the 6 ml sachet</option><option>the 90 ml bottle</option><option>the 170 ml bottle</option><option>P&amp;G and Unilever shampoos</option></datalist>
+    <div class="preview" id="prev">Your statement will appear here.</div>
+  </div>
+</section>
 
-    <h3><span class="code">D5</span>Value against volume</h3>
-    <div class="facts" id="d5facts"><span class="k">What the numbers say</span>Fill in A1 and D2 first.</div>
-    <div class="pair">
-      <div><label class="lbl" for="d5_sel">The litres of shampoo sold grow…</label>
-        <select id="d5_sel" data-k><option value=""></option><option>Less than revenue</option><option>More than revenue</option><option>About the same as revenue</option></select></div>
-      <div><label class="lbl" for="d5_line">Why? One line.</label><input id="d5_line" data-k></div>
+<!-- ============================================================ 4 -->
+<section>
+  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="b4">
+    <span class="num">4</span><h2>2024 targets</h2><span class="state" id="st4">5 answers</span>
+  </div>
+  <div class="sbody open" id="b4">
+    <div class="facts" id="f4"></div>
+    <div class="two">
+      <div>
+        <label class="lbl" for="q11"><span class="qn">Q11</span>Of every 100 pesos spent on the tube, how many would otherwise have been spent on bottles or sachets?</label>
+        <div class="scroll" style="margin-top:0"><table><tr><td class="rk">Cannibalisation (%)</td><td class="in"><input id="q11" inputmode="decimal" data-k placeholder="e.g. 20"></td></tr></table></div>
+      </div>
+      <div>
+        <p class="lbl" style="margin-top:12px"><span class="qn">Q12</span>Split the tube's sales between the regions (must add up to 100%)</p>
+        <div class="scroll" style="margin-top:0"><table>
+          <thead><tr><th>Region</th><th>Tube share (%)</th><th>2024 target (PHP m)</th><th>Tubes (000)</th><th>Growth vs 2023</th></tr></thead>
+          <tbody id="tgBody"></tbody>
+        </table></div>
+        <label class="lbl" for="q13"><span class="qn">Q13</span>Why this split between regions? One line</label>
+        <input id="q13" data-k>
+      </div>
     </div>
+    <div class="facts" id="f4b"></div>
   </div>
 </section>
 
 <!-- ============================================================ DECISION -->
 <section>
-  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="bE">
-    <span class="num">&check;</span><h2>The decision and your PDF</h2><span class="state" id="stE">Fill this in</span>
+  <div class="shead" role="button" tabindex="0" aria-expanded="true" data-t="b5">
+    <span class="num">&check;</span><h2>Your recommendation and PDF</h2><span class="state" id="st5">3-4 lines</span>
   </div>
-  <div class="sbody open" id="bE">
-    <p class="task">One paragraph, in your own words: launch or not; for whom and against what; the 2024 target for the line by region, in value and in volume; and the one number you would watch first.</p>
+  <div class="sbody open" id="b5">
+    <p class="task">In 3-4 lines: launch or not, for whom, where first, and the 2024 target (in pesos and in tubes).</p>
     <textarea id="dec" data-k></textarea>
     <div class="row">
       <button class="btn solid" id="btnPdf">Download PDF</button>
-      <button class="btn" id="btnClear">Clear everything</button>
+      <button class="btn" id="btnClear">Clear my answers</button>
       <span class="hint" style="margin:0">In the print window choose "Save as PDF".</span>
     </div>
   </div>
 </section>
 
-<footer>Based on the Quick Case "Can Sariwa Silk Squeeze In a New Segment?" (8477-HTM-ENG, Harvard Business Publishing). The case and its exhibits are not reproduced here: use your copy from the syllabus link.</footer>
+<footer>Based on the Quick Case "Can Sariwa Silk Squeeze In a New Segment?" (8477-HTM-ENG, Harvard Business Publishing). The case text is not reproduced here: read it from the syllabus link.</footer>
 
 <div id="printout"></div>
 </div>
 
 <script>
 const $ = (s) => document.querySelector(s);
-const KEY = 'sariwa-silk.v1';
-const SKU = [
-  { k: '675', name: '675 ml bottle', ml: 675 },
-  { k: '400', name: '400 ml bottle', ml: 400 },
-  { k: '170', name: '170 ml bottle', ml: 170 },
-  { k: '90', name: '90 ml bottle', ml: 90 },
-  { k: '6', name: '6 ml sachet', ml: 6 },
-];
-const REG = [{ k: 'lu', name: 'Luzon' }, { k: 'vi', name: 'Visayas' }, { k: 'mi', name: 'Mindanao' }];
-const TUBE_ML = 100;
+const KEY = 'sariwa-silk.v2';
 
-// ---------------------------------------------------------------- build rows
-$('#skuBody').innerHTML = SKU.map((s) => `<tr><td class="rk">${s.name}</td>
-  <td class="in"><input id="p_${s.k}" inputmode="decimal" data-k></td>
-  <td class="in"><input id="s_${s.k}" inputmode="decimal" data-k></td>
-  <td class="n" id="o_rev_${s.k}">—</td><td class="n" id="o_u_${s.k}">—</td><td class="n" id="o_ppm_${s.k}">—</td><td class="n" id="o_lit_${s.k}">—</td></tr>`).join('')
-  + `<tr><td class="rk">100 g tube (new)</td><td class="in"><input id="p_tube" inputmode="decimal" data-k></td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n" id="o_ppm_tube">—</td><td class="n">—</td></tr>
-  <tr class="tot"><td>Line total</td><td class="n">—</td><td class="n" id="o_shareSum">—</td><td class="n" id="o_T2">—</td><td class="n">—</td><td class="n" id="o_ppl">—</td><td class="n" id="o_L">—</td></tr>`;
-$('#segBody').innerHTML = [1, 2, 3].map((i) => `<tr>
-  <td class="tx"><input id="c1_n${i}" data-k></td><td class="tx"><input id="c1_who${i}" data-k></td><td class="tx"><input id="c1_need${i}" data-k></td>
-  <td class="tx"><input id="c1_buy${i}" list="buys" data-k></td>
-  <td class="tx"><select id="c1_fit${i}" data-k><option value=""></option><option>High</option><option>Medium</option><option>Low</option></select></td></tr>`).join('');
-$('#d1Body').innerHTML = REG.map((r) => `<tr><td class="rk">${r.name}</td><td class="n" id="o_d1r_${r.k}">—</td><td class="n" id="o_d1g_${r.k}">—</td><td class="n" id="o_d1b_${r.k}">—</td></tr>`).join('')
-  + `<tr class="tot"><td>Total</td><td class="n" id="o_d1r_t">—</td><td class="n" id="o_d1g_t">—</td><td class="n" id="o_d1b_t">—</td></tr>`;
-$('#d3Body').innerHTML = REG.map((r) => `<tr><td class="rk">${r.name}</td><td class="in"><input id="d3_${r.k}" inputmode="decimal" data-k></td>
-  <td class="n" id="o_d3ex_${r.k}">—</td><td class="n" id="o_d3t_${r.k}">—</td><td class="n" id="o_d3u_${r.k}">—</td><td class="n" id="o_d3tot_${r.k}">—</td><td class="n" id="o_d3g_${r.k}">—</td></tr>`).join('')
-  + `<tr class="tot"><td>Total</td><td class="n" id="o_splitSum">—</td><td class="n" id="o_d3ex_t">—</td><td class="n" id="o_d3t_t">—</td><td class="n" id="o_d3u_t">—</td><td class="n" id="o_d3tot_t">—</td><td class="n" id="o_d3g_t">—</td></tr>`;
+// ---------------------------------------------------------------- figures from the case
+const REG = [
+  { k: 'lu', name: 'Luzon', rev: 1008.7, g: 0.038 },
+  { k: 'vi', name: 'Visayas', rev: 410.7, g: 0.095 },
+  { k: 'mi', name: 'Mindanao', rev: 581.4, g: 0.076 },
+];
+const SKU = [
+  { k: '675', name: '675 ml bottle', ml: 675, p: 399, sh: 0.07 },
+  { k: '400', name: '400 ml bottle', ml: 400, p: 239, sh: 0.14 },
+  { k: '170', name: '170 ml bottle', ml: 170, p: 129, sh: 0.19 },
+  { k: '90', name: '90 ml bottle', ml: 90, p: 69, sh: 0.31 },
+  { k: '6', name: '6 ml sachet', ml: 6, p: 3, sh: 0.29 },
+];
+const TUBE = { p: 129, ml: 100 };
+const G90 = 0.18, G170 = 0.14, TARGET = 0.15;
 
 // ---------------------------------------------------------------- helpers
-const num = (id) => {
-  const el = document.getElementById(id);
-  if (!el) return NaN;
-  const v = String(el.value).trim().replace(/%/g, '').replace(/,(?=\d{1,2}$)/, '.').replace(/,/g, '');
-  return v === '' ? NaN : Number(v);
-};
 const val = (id) => (document.getElementById(id) ? document.getElementById(id).value.trim() : '');
-const fin = (...xs) => xs.every(Number.isFinite);
+const num = (id) => { const v = val(id).replace('%', '').replace(',', '.'); return v === '' ? NaN : Number(v); };
 const f = (x, d = 1) => (Number.isFinite(x) ? x.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—');
 const pc = (x, d = 1) => (Number.isFinite(x) ? (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d) + '%' : '—');
-const sg = (x, d = 0) => (Number.isFinite(x) ? (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—');
-const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+const sg = (x) => (Number.isFinite(x) ? (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—');
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const chk = (good, okText, badText) => `<span class="chk ${good === null ? 'wait' : good ? 'ok' : 'bad'}">${good === null ? badText : good ? okText : badText}</span>`;
+const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
 
-// ---------------------------------------------------------------- model
+// ---------------------------------------------------------------- the model (fixed part)
+const T = REG.reduce((a, r) => a + r.rev, 0);
+const T22 = REG.reduce((a, r) => a + r.rev / (1 + r.g), 0);
+SKU.forEach((s) => { s.rev = T * s.sh; s.units = s.rev / s.p; s.ppm = s.p / s.ml; s.lit = s.units * s.ml / 1000; });
+const L = SKU.reduce((a, s) => a + s.lit, 0);
+const by = (k) => SKU.find((s) => s.k === k);
+const tubePpm = TUBE.p / TUBE.ml;
+const r90 = by('90').rev, r170 = by('170').rev;
+const add2 = (r90 - r90 / (1 + G90)) + (r170 - r170 / (1 + G170));
+const rest23 = T - r90 - r170, rest22 = T22 - r90 / (1 + G90) - r170 / (1 + G170);
+const BASE = REG.map((r) => ({ ...r, b: r.rev * (1 + r.g) }));
+const baseT = BASE.reduce((a, r) => a + r.b, 0);
+const target = T * (1 + TARGET), gap = target - baseT;
+
+// ---------------------------------------------------------------- static tables
+$('#regBody').innerHTML = REG.map((r) => `<tr><td class="rk">${r.name}</td><td class="n cs">${f(r.rev)}</td><td class="n cs">${pc(r.g)}</td></tr>`).join('')
+  + `<tr class="tot"><td>Total</td><td class="n">${f(T)}</td><td class="n">${pc(T / T22 - 1)}</td></tr>`;
+$('#skuBody').innerHTML = SKU.map((s) => `<tr><td class="rk">${s.name}</td><td class="n cs">${s.p}</td><td class="n cs">${f(s.sh * 100, 0)}%</td>
+  <td class="n">${f(s.units, s.units >= 100 ? 1 : 2)}</td><td class="n">${f(s.ppm, 2)}</td><td class="n">${f(s.lit / L * 100, 0)}%</td></tr>`).join('')
+  + `<tr><td class="rk">100 g tube (new)</td><td class="n cs">${TUBE.p}</td><td class="n">—</td><td class="n">—</td><td class="n"><b>${f(tubePpm, 2)}</b></td><td class="n">—</td></tr>`;
+$('#f1').innerHTML = '<span class="k">What the numbers say</span>'
+  + `The tube costs PHP ${TUBE.p}, the same as the 170 ml bottle, but holds 100 ml: <b>${f(tubePpm, 2)}</b> per ml against <b>${f(by('170').ppm, 2)}</b>, so <b>${pc(tubePpm / by('170').ppm - 1, 0)}</b> per ml (and ${pc(tubePpm / by('6').ppm - 1, 0)} against the sachet). `
+  + `In 2023 the 90 ml (+18%) and 170 ml (+14%) bottles added <b>+${f(add2)}</b> m pesos, while the other three SKUs fell <b>${pc(rest23 / rest22 - 1)}</b>.`;
+const SW = [
+  ['6 ml sachet', `${sg(TUBE.p - by('6').ppm * 100)} pesos per 100 ml`, 'the same'],
+  ['90 ml bottle', `${sg(TUBE.p - by('90').p)} pesos per purchase`, `${sg(TUBE.ml - 90)} ml`],
+  ['170 ml bottle', `${sg(TUBE.p - by('170').p)} pesos per purchase`, `${sg(TUBE.ml - 170)} ml`],
+];
+$('#swBody').innerHTML = SW.map((r) => `<tr><td class="rk">${r[0]}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('');
+$('#tgBody').innerHTML = REG.map((r) => `<tr><td class="rk">${r.name}</td><td class="in"><input id="s_${r.k}" inputmode="decimal" data-k></td>
+  <td class="n" id="o_t_${r.k}">—</td><td class="n" id="o_u_${r.k}">—</td><td class="n" id="o_g_${r.k}">—</td></tr>`).join('')
+  + `<tr class="tot"><td>Total</td><td class="n" id="o_s_t">—</td><td class="n" id="o_t_t">—</td><td class="n" id="o_u_t">—</td><td class="n" id="o_g_t">—</td></tr>`;
+$('#f4').innerHTML = '<span class="k">What the numbers say</span>'
+  + `If every region repeats its 2023 growth, 2024 revenue is <b>${f(baseT)}</b> m (${pc(baseT / T - 1)}). B&amp;T wants +15%: <b>${f(target)}</b> m. `
+  + `The tube has to fill the gap of <b>${f(gap)}</b> m pesos: <b>${f(gap / TUBE.p, 2)}</b> million tubes if every tube is new money.`;
+
+// ---------------------------------------------------------------- the model (your answers)
 function compute() {
   const c = {};
-  c.reg = REG.map((r) => ({ ...r, rev: num('r_' + r.k), g: num('g_' + r.k) / 100 }));
-  c.regOk = c.reg.every((r) => fin(r.rev, r.g));
-  c.T = c.regOk ? c.reg.reduce((a, r) => a + r.rev, 0) : NaN;
-  c.T22 = c.regOk ? c.reg.reduce((a, r) => a + r.rev / (1 + r.g), 0) : NaN;
-  c.gLine = c.T / c.T22 - 1;
-  c.sku = SKU.map((s) => {
-    const p = num('p_' + s.k); const sh = num('s_' + s.k) / 100;
-    const rev = c.T * sh; const units = rev / p;
-    return { ...s, p, sh, rev, units, ppm: p / s.ml, lit: units * s.ml / 1000 };
-  });
-  c.skuOk = c.sku.every((s) => fin(s.p, s.sh));
-  c.shareSum = c.sku.reduce((a, s) => a + (Number.isFinite(s.sh) ? s.sh : 0), 0);
-  c.L = c.sku.reduce((a, s) => a + s.lit, 0);
-  c.ppl = c.T / c.L;                                  // PHP per litre (PHP m / million litres)
-  c.tubeP = num('p_tube'); c.tubePpm = c.tubeP / TUBE_ML;
-  const by = (k) => c.sku.find((s) => s.k === k);
-  const s6 = by('6'); const s90 = by('90'); const s170 = by('170');
-  c.same = c.sku.filter((s) => s.k !== '6' && fin(s.p, c.tubeP) && Math.abs(s.p - c.tubeP) < 0.5);
-  c.g90 = num('g90') / 100; c.g170 = num('g170') / 100;
-  c.r90 = s90.rev; c.r170 = s170.rev;
-  c.r90_22 = c.r90 / (1 + c.g90); c.r170_22 = c.r170 / (1 + c.g170);
-  c.rest23 = c.T - c.r90 - c.r170; c.rest22 = c.T22 - c.r90_22 - c.r170_22; c.gRest = c.rest23 / c.rest22 - 1;
-  c.add2 = (c.r90 - c.r90_22) + (c.r170 - c.r170_22); c.lost = c.rest22 - c.rest23;
-  c.b2 = {
-    6: { rev: c.tubeP - s6.p * TUBE_ML / s6.ml, vol: 0 },
-    90: { rev: c.tubeP - s90.p, vol: TUBE_ML - 90 },
-    170: { rev: c.tubeP - s170.p, vol: TUBE_ML - 170 },
-  };
-  c.base = c.reg.map((r) => ({ ...r, b: r.rev * (1 + r.g) }));
-  c.baseT = c.base.reduce((a, r) => a + r.b, 0);
-  c.tg = num('tg') / 100; c.target = c.T * (1 + c.tg); c.gap = c.target - c.baseT; c.tubes0 = c.gap / c.tubeP;
-  c.cann = num('d2_c') / 100;
-  c.tubeRev = c.gap / (1 - c.cann); c.tubes = c.tubeRev / c.tubeP; c.displaced = c.tubeRev * c.cann;
-  c.split = REG.map((r) => num('d3_' + r.k) / 100);
+  c.cann = num('q11') / 100;
+  c.tubeRev = gap / (1 - c.cann); c.tubes = c.tubeRev / TUBE.p; c.displaced = c.tubeRev * c.cann;
+  c.split = REG.map((r) => num('s_' + r.k) / 100);
   c.splitSum = c.split.reduce((a, x) => a + (Number.isFinite(x) ? x : 0), 0);
-  c.d3 = c.base.map((r, i) => {
-    const t = c.tubeRev * c.split[i]; const ex = r.b - c.displaced * c.split[i];
-    return { ...r, ex, t, tu: (t / c.tubeP) * 1000, tot: ex + t, gr: (ex + t) / r.rev - 1 };
+  c.rows = BASE.map((r, i) => {
+    const t = c.tubeRev * c.split[i]; const tot = r.b - c.displaced * c.split[i] + t;
+    return { ...r, t, tu: (t / TUBE.p) * 1000, tot, gr: tot / r.rev - 1 };
   });
-  c.from = { f170: num('d4_170') / 100, f90: num('d4_90') / 100, f6: num('d4_6') / 100 };
-  c.fromSum = Object.values(c.from).reduce((a, x) => a + (Number.isFinite(x) ? x : 0), 0);
-  c.m90 = c.r90 * (1 + c.g90); c.m170 = c.r170 * (1 + c.g170);
-  c.n90 = c.m90 - c.displaced * c.from.f90; c.n170 = c.m170 - c.displaced * c.from.f170;
-  c.litBase = c.L * c.baseT / c.T; c.litLost = c.displaced / c.ppl; c.litTube = c.tubes * TUBE_ML / 1000;
-  c.lit24 = c.litBase - c.litLost + c.litTube; c.gLit = c.lit24 / c.L - 1;
+  const ppl = T / L;
+  c.lit24 = L * baseT / T - c.displaced / ppl + c.tubes * TUBE.ml / 1000;
   return c;
 }
 
-// ---------------------------------------------------------------- render
 function render() {
   const c = compute();
-  set('o_T', f(c.T)); set('o_gLine', pc(c.gLine)); set('o_T2', f(c.T));
-  c.sku.forEach((s) => {
-    set('o_rev_' + s.k, f(s.rev)); set('o_u_' + s.k, Number.isFinite(s.units) ? f(s.units, s.units >= 100 ? 1 : 2) : '—');
-    set('o_ppm_' + s.k, f(s.ppm, 3)); set('o_lit_' + s.k, pc(s.lit / c.L).replace('+', ''));
+  const okC = Number.isFinite(c.cann) && c.cann >= 0 && c.cann < 1;
+  c.rows.forEach((r, i) => {
+    const ok = okC && Number.isFinite(c.split[i]);
+    set('o_t_' + r.k, ok ? f(r.tot) : '—'); set('o_u_' + r.k, ok ? f(r.tu, 0) : '—'); set('o_g_' + r.k, ok ? pc(r.gr) : '—');
   });
-  set('o_ppm_tube', f(c.tubePpm, 3));
-  set('o_shareSum', Number.isFinite(c.shareSum) && c.sku.some((s) => Number.isFinite(s.sh)) ? f(c.shareSum * 100, 0) + '%' : '—');
-  set('o_ppl', Number.isFinite(c.ppl) ? f(c.ppl / 1000, 3) + ' avg' : '—'); set('o_L', Number.isFinite(c.L) ? f(c.L, 2) + ' m litres' : '—');
-  const aDone = c.regOk && c.skuOk && fin(c.tubeP, c.g90, c.g170);
-  $('#chkA').innerHTML = chk(c.skuOk ? Math.abs(c.shareSum - 1) < 0.006 : null, 'Shares add up to 100%', c.skuOk ? 'Shares do not add up to 100% - check Exhibit 1' : 'Waiting for Exhibit 1')
-    + ' ' + chk(c.regOk ? true : null, 'Exhibit 2 complete', 'Waiting for Exhibit 2')
-    + ' ' + chk(fin(c.tubeP, c.g90, c.g170) ? true : null, 'Tube price and bottle growth entered', 'Waiting for the tube price and the two growth rates');
-
-  // A2
-  const s6 = c.sku.find((s) => s.k === '6');
-  if (c.skuOk && Number.isFinite(c.tubeP)) {
-    const same = c.same[0];
-    $('#a2facts').innerHTML = '<span class="k">What the numbers say</span>'
-      + `The tube sells 100 ml for PHP <b>${f(c.tubeP, 0)}</b>: <b>${f(c.tubePpm, 2)}</b> per ml. `
-      + (same ? `The ${same.name} costs the same and gives ${same.ml} ml: <b>${f(same.ppm, 2)}</b> per ml, so the tube is <b>${pc(c.tubePpm / same.ppm - 1, 0)}</b> per ml. ` : 'No bottle has exactly the same price. ')
-      + `Against the sachet (<b>${f(s6.ppm, 2)}</b> per ml) the tube is <b>${pc(c.tubePpm / s6.ppm - 1, 0)}</b> per ml.`;
-  }
-  // A3
-  if (aDone) {
-    $('#a3facts').innerHTML = '<span class="k">What the numbers say</span>'
-      + `Line revenue 2022 (from Exhibit 2): <b>${f(c.T22)}</b>; 2023: <b>${f(c.T)}</b>, growth <b>${pc(c.gLine)}</b>. `
-      + `The 90 ml and 170 ml bottles added <b>${sg(c.add2, 1)}</b> m. The other three SKUs went from <b>${f(c.rest22)}</b> to <b>${f(c.rest23)}</b>: <b>${pc(c.gRest)}</b>.`;
-  }
-  // B2
-  ['6', '90', '170'].forEach((k) => {
-    const e = c.b2[k];
-    set('o_b2r_' + k, Number.isFinite(e.rev) ? `PHP ${sg(e.rev)}` + (k === '6' ? ' per 100 ml' : '') : '—');
-    set('o_b2v_' + k, Number.isFinite(c.tubeP) ? (e.vol === 0 ? 'same ml' : `${sg(e.vol)} ml`) : '—');
-  });
-  // C3
-  const parts = ['c3_target', 'c3_need', 'c3_benefit', 'c3_alt', 'c3_reason'].map(val);
-  $('#c3prev').textContent = parts.some(Boolean)
-    ? `For ${parts[0] || '[target]'} who ${parts[1] || '[need]'}, the Sariwa Silk tube provides ${parts[2] || '[benefit]'} unlike ${parts[3] || '[what they use today]'}, because ${parts[4] || '[reason to believe]'}.`
+  const all = okC && c.split.every(Number.isFinite);
+  set('o_s_t', c.split.some(Number.isFinite) ? f(c.splitSum * 100, 0) + '%' + (all && Math.abs(c.splitSum - 1) > 0.005 ? ' ≠ 100' : '') : '—');
+  set('o_t_t', all ? f(c.rows.reduce((a, r) => a + r.tot, 0)) : '—');
+  set('o_u_t', all ? f(c.rows.reduce((a, r) => a + r.tu, 0), 0) : '—');
+  set('o_g_t', all ? pc(c.rows.reduce((a, r) => a + r.tot, 0) / T - 1) : '—');
+  $('#f4b').innerHTML = okC
+    ? '<span class="k">With your cannibalisation rate</span>'
+      + `The tube must sell <b>${f(c.tubeRev)}</b> m pesos: <b>${f(c.tubes, 2)}</b> million tubes, of which <b>${f(c.displaced)}</b> m is money taken from bottles and sachets. `
+      + `Revenue grows +15%, but litres of shampoo sold grow only <b>${pc(c.lit24 / L - 1)}</b>: the tube sells the most expensive ml of the range.`
+    : '<span class="k">With your cannibalisation rate</span>Type it in Q11 to see how many tubes you need.';
+  const pn = ['p_need', 'p_benefit', 'p_alt'].map(val);
+  $('#prev').textContent = (val('q7') || pn.some(Boolean))
+    ? `For ${val('q7') || '[target]'} who ${pn[0] || '[need]'}, the Sariwa Silk tube provides ${pn[1] || '[benefit]'} unlike ${pn[2] || '[what they use today]'}.`
     : 'Your statement will appear here.';
-  // D1
-  c.base.forEach((r) => { set('o_d1r_' + r.k, f(r.rev)); set('o_d1g_' + r.k, pc(r.g)); set('o_d1b_' + r.k, f(r.b)); });
-  set('o_d1r_t', f(c.T)); set('o_d1g_t', pc(c.gLine)); set('o_d1b_t', Number.isFinite(c.baseT) ? `${f(c.baseT)} (${pc(c.baseT / c.T - 1)})` : '—');
-  // D2
-  if (aDone && Number.isFinite(c.tg)) {
-    $('#d2facts').innerHTML = '<span class="k">What the numbers say</span>'
-      + `2024 target: <b>${f(c.T)}</b> × ${f(1 + c.tg, 2)} = <b>${f(c.target)}</b> m. The baseline reaches <b>${f(c.baseT)}</b>, so the gap is <b>${f(c.gap)}</b> m`
-      + ` = <b>${f(c.tubes0, 2)}</b> million tubes at PHP ${f(c.tubeP, 0)} if every tube is new money.`
-      + (Number.isFinite(c.cann) && c.cann < 1 ? ` With ${f(c.cann * 100, 0)}% cannibalisation the tube must sell <b>${f(c.tubeRev)}</b> m: <b>${f(c.tubes, 2)}</b> million tubes, of which <b>${f(c.displaced)}</b> m is spend taken from existing SKUs.` : ' Type a cannibalisation rate to see the tubes needed.');
-  }
-  // D3
-  const d3ok = aDone && fin(c.tg, c.cann);
-  c.d3.forEach((r, i) => {
-    const okRow = d3ok && Number.isFinite(c.split[i]);
-    set('o_d3ex_' + r.k, okRow ? f(r.ex) : '—'); set('o_d3t_' + r.k, okRow ? f(r.t) : '—'); set('o_d3u_' + r.k, okRow ? f(r.tu, 0) : '—');
-    set('o_d3tot_' + r.k, okRow ? f(r.tot) : '—'); set('o_d3g_' + r.k, okRow ? pc(r.gr) : '—');
-  });
-  const allSplit = c.split.every(Number.isFinite);
-  set('o_splitSum', c.split.some(Number.isFinite) ? f(c.splitSum * 100, 0) + '%' + (allSplit && Math.abs(c.splitSum - 1) > 0.005 ? ' ≠ 100' : '') : '—');
-  const tot = (key) => c.d3.reduce((a, r) => a + r[key], 0);
-  const d3all = d3ok && allSplit;
-  set('o_d3ex_t', d3all ? f(tot('ex')) : '—'); set('o_d3t_t', d3all ? f(tot('t')) : '—'); set('o_d3u_t', d3all ? f(tot('tu'), 0) : '—');
-  set('o_d3tot_t', d3all ? f(tot('tot')) : '—'); set('o_d3g_t', d3all ? pc(tot('tot') / c.T - 1) : '—');
-  // D4
-  if (aDone && fin(c.tg, c.cann) && Object.values(c.from).every(Number.isFinite)) {
-    $('#d4facts').innerHTML = '<span class="k">What the numbers say</span>'
-      + (Math.abs(c.fromSum - 1) > 0.005 ? `<span class="chk bad">Shares add up to ${f(c.fromSum * 100, 0)}%, not 100%</span> ` : '')
-      + `At their 2023 growth the 90 ml would reach <b>${f(c.m90)}</b> m and the 170 ml <b>${f(c.m170)}</b> m. `
-      + `After the tube takes its share, the targets become <b>90 ml ${f(c.n90)} m (${pc(c.n90 / c.r90 - 1)})</b> and <b>170 ml ${f(c.n170)} m (${pc(c.n170 / c.r170 - 1)})</b>.`;
-  }
-  // D5
-  if (aDone && fin(c.tg, c.cann)) {
-    $('#d5facts').innerHTML = '<span class="k">What the numbers say</span>'
-      + `Litres sold in 2023: <b>${f(c.L, 2)}</b> m. In 2024: baseline <b>${f(c.litBase, 2)}</b> m, minus <b>${f(c.litLost, 3)}</b> m taken by the tube, plus <b>${f(c.litTube, 3)}</b> m in tubes`
-      + ` = <b>${f(c.lit24, 2)}</b> m litres: <b>${pc(c.gLit)}</b> in volume, against <b>${pc(c.tg)}</b> in revenue.`;
-  }
-  states(c, aDone);
+  states();
   return c;
 }
 
 // ---------------------------------------------------------------- progress
-function state(id, need, have) {
-  const el = document.getElementById(id);
-  const done = have === need; const some = have > 0;
-  el.textContent = done ? 'Done' : some ? `${have} / ${need}` : 'Fill this in';
-  el.className = 'state' + (done ? ' done' : some ? ' part' : '');
-  return done;
-}
 const filled = (ids) => ids.filter((id) => val(id) !== '').length;
-function states(c, aDone) {
-  const A = ['a2_same', 'a2_line', 'a3_drivers', 'a3_growth'];
-  const B = ['b1_sku', 'b1_line', 'b2_ch_6', 'b2_why_6', 'b2_ch_90', 'b2_why_90', 'b2_ch_170', 'b2_why_170', 'b2_view', 'b2_hurt', 'b3_dec', 'b3_kill'];
-  const C = ['c1_n1', 'c1_n2', 'c1_n3', 'c2_strat', 'c2_lu', 'c2_vi', 'c2_mi', 'c3_target', 'c3_need', 'c3_benefit', 'c3_alt', 'c3_reason', 'c3_home'];
-  const D = ['d2_c', 'd2_why', 'd3_lu', 'd3_vi', 'd3_mi', 'd3_why', 'd4_170', 'd4_90', 'd4_6', 'd4_change', 'd4_line', 'd5_sel', 'd5_line'];
+function state(id, ids) {
+  const el = document.getElementById(id); const have = filled(ids); const need = ids.length;
+  el.textContent = have === need ? 'Done' : have ? `${have} / ${need}` : `${need} answers`;
+  el.className = 'state' + (have === need ? ' done' : have ? ' part' : '');
+  return have === need;
+}
+function states() {
   const n = [
-    state('stA', A.length + 1, filled(A) + (aDone ? 1 : 0)),
-    state('stB', B.length, filled(B)),
-    state('stC', C.length, filled(C)),
-    state('stD', D.length, filled(D)),
-    state('stE', 1, val('dec').length >= 40 ? 1 : 0),
-  ].filter(Boolean).length;
-  set('chipProg', `${n} / 5 parts complete`);
+    state('st1', ['q1', 'q2']),
+    state('st2', ['q3', 'q4', 'q5', 'q6']),
+    state('st3', ['q7', 'q8', 'q9', 'p_need', 'p_benefit', 'p_alt']),
+    state('st4', ['q11', 's_lu', 's_vi', 's_mi', 'q13']),
+  ].filter(Boolean).length + (val('dec').length >= 40 ? 1 : 0);
+  const s5 = $('#st5'); s5.textContent = val('dec').length >= 40 ? 'Done' : '3-4 lines'; s5.className = 'state' + (val('dec').length >= 40 ? ' done' : '');
+  set('chipProg', `${n} / 5 done`);
   const g = val('wGroup'); const names = val('wNames').split(/\n/).filter((x) => x.trim()).length;
-  const s0 = $('#st0');
-  s0.textContent = g && names ? `${g} · ${names} student${names === 1 ? '' : 's'}` : 'Read this';
+  const s0 = $('#st0'); s0.textContent = g && names ? `${g} · ${names} student${names === 1 ? '' : 's'}` : 'Add your names';
   s0.className = 'state' + (g && names ? ' done' : '');
 }
 
 // ---------------------------------------------------------------- save / restore
 const fields = () => [...document.querySelectorAll('[data-k]')];
-function persist() {
-  const o = {}; fields().forEach((el) => { o[el.id] = el.value; });
-  try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { /* storage blocked */ }
-}
+function persist() { const o = {}; fields().forEach((el) => { o[el.id] = el.value; }); try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { /* blocked */ } }
 function restore() {
   let o = null; try { o = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { o = null; }
-  if (!o) return;
-  fields().forEach((el) => { if (o[el.id] !== undefined) el.value = o[el.id]; });
+  if (o) fields().forEach((el) => { if (o[el.id] !== undefined) el.value = o[el.id]; });
 }
 
 // ---------------------------------------------------------------- printout
@@ -613,36 +428,23 @@ function buildPrint() {
   const q = (label, body) => `<div class="q"><span class="ql">${label}</span>${body}</div>`;
   const facts = (id) => `<div class="f">${document.getElementById(id).innerHTML.replace(/<span class="k">.*?<\/span>/, '')}</div>`;
   let h = `<h1>Sariwa Silk: squeezing in a new format</h1>
-  <div class="id"><b>Group</b>${V('wGroup')} &nbsp; <b>Section</b>${V('wSec')} &nbsp; <b>Date</b>${V('wDate')}<br>
-  <b>Students</b>${names.length ? names.map(esc).join(', ') : '(none entered)'}</div>`;
-  h += '<h2>A. The numbers</h2><table><tr><th>Region</th><th>2023 revenue (PHP m)</th><th>2023 growth</th><th>2024 baseline (PHP m)</th></tr>'
-    + c.base.map((r) => `<tr><td>${r.name}</td><td class="n">${f(r.rev)}</td><td class="n">${pc(r.g)}</td><td class="n">${f(r.b)}</td></tr>`).join('')
-    + `<tr><td><b>Total</b></td><td class="n">${f(c.T)}</td><td class="n">${pc(c.gLine)}</td><td class="n">${f(c.baseT)}</td></tr></table>`;
-  h += '<table><tr><th>SKU</th><th>Price</th><th>Share</th><th>Revenue (PHP m)</th><th>Units (m)</th><th>PHP / ml</th><th>Share of litres</th></tr>'
-    + c.sku.map((s) => `<tr><td>${s.name}</td><td class="n">${f(s.p, 0)}</td><td class="n">${f(s.sh * 100, 0)}%</td><td class="n">${f(s.rev)}</td><td class="n">${f(s.units, s.units >= 100 ? 1 : 2)}</td><td class="n">${f(s.ppm, 3)}</td><td class="n">${pc(s.lit / c.L).replace('+', '')}</td></tr>`).join('')
-    + `<tr><td>100 g tube (new)</td><td class="n">${f(c.tubeP, 0)}</td><td></td><td></td><td></td><td class="n">${f(c.tubePpm, 3)}</td><td></td></tr></table>`;
-  h += q('A2 · Price per ml', facts('a2facts') + `The tube costs the same as: ${V('a2_same')}. Value for money: ${V('a2_line')}`);
-  h += q('A3 · What drove 2023', facts('a3facts') + `Drivers: ${V('a3_drivers')}. Growth figure supported by the exhibits: ${V('a3_growth')}`);
-  h += '<h2>B. Should B&amp;T launch the tube?</h2>';
-  h += q('B1 · The travel occasion', `Already serves travel: ${V('b1_sku')}. ${V('b1_line')}`);
-  h += '<table><tr><th>Today buys</th><th>Chance</th><th>Why</th><th>Revenue per switch</th><th>Shampoo per switch</th></tr>'
-    + [['6', '6 ml sachet'], ['90', '90 ml bottle'], ['170', '170 ml bottle']].map(([k, n]) => `<tr><td>${n}</td><td>${V('b2_ch_' + k)}</td><td>${V('b2_why_' + k)}</td><td class="n">${esc(document.getElementById('o_b2r_' + k).textContent)}</td><td class="n">${esc(document.getElementById('o_b2v_' + k).textContent)}</td></tr>`).join('') + '</table>';
-  h += q('B2 · Conclusion', `Whose view the data supports: ${V('b2_view')}. If buyers switch, B&amp;T loses mainly in: ${V('b2_hurt')}.`);
-  h += q('B3 · Decision', `${V('b3_dec')}. Stop signal: ${V('b3_kill')}`);
-  h += '<h2>C. Segmentation, targeting, positioning</h2><table><tr><th>Segment</th><th>Who they are</th><th>What they need</th><th>Buy today</th><th>Fit</th></tr>'
-    + [1, 2, 3].map((i) => `<tr><td>${V('c1_n' + i)}</td><td>${V('c1_who' + i)}</td><td>${V('c1_need' + i)}</td><td>${V('c1_buy' + i)}</td><td>${V('c1_fit' + i)}</td></tr>`).join('') + '</table>';
-  h += q('C2 · Targeting', `Strategy: ${V('c2_strat')}. Luzon: ${V('c2_lu')} · Visayas: ${V('c2_vi')} · Mindanao: ${V('c2_mi')}`);
-  h += q('C3 · Positioning statement', `${esc($('#c3prev').textContent)}<br>The bottles: ${V('c3_home')}`);
-  h += '<h2>D. 2024 targets</h2>';
-  h += q('D2 · The gap', facts('d2facts') + `Why this cannibalisation rate: ${V('d2_why')}`);
-  h += '<table><tr><th>Region</th><th>Tube share</th><th>Existing SKUs</th><th>Tube</th><th>Tubes (000)</th><th>Total 2024</th><th>Growth</th></tr>'
-    + c.d3.map((r, i) => `<tr><td>${r.name}</td><td class="n">${f(c.split[i] * 100, 0)}%</td><td class="n">${f(r.ex)}</td><td class="n">${f(r.t)}</td><td class="n">${f(r.tu, 0)}</td><td class="n">${f(r.tot)}</td><td class="n">${pc(r.gr)}</td></tr>`).join('')
-    + `<tr><td><b>Total</b></td><td class="n">${f(c.splitSum * 100, 0)}%</td><td class="n">${f(c.d3.reduce((a, r) => a + r.ex, 0))}</td><td class="n">${f(c.tubeRev)}</td><td class="n">${f(c.tubes * 1000, 0)}</td><td class="n">${f(c.d3.reduce((a, r) => a + r.tot, 0))}</td><td class="n">${pc(c.d3.reduce((a, r) => a + r.tot, 0) / c.T - 1)}</td></tr></table>`;
-  h += q('D3 · Why this split', V('d3_why'));
-  h += q('D4 · The 90 ml and 170 ml targets', facts('d4facts') + `Taken from: 170 ml ${V('d4_170')}%, 90 ml ${V('d4_90')}%, sachet and others ${V('d4_6')}%. ${V('d4_change')}: ${V('d4_line')}`);
-  h += q('D5 · Value against volume', facts('d5facts') + `${V('d5_sel')}: ${V('d5_line')}`);
-  h += `<h2>The decision</h2><div class="q">${esc(val('dec') || '—').replace(/\n/g, '<br>')}</div>`;
-  h += '<div class="foot">Sariwa Silk homework · based on Quick Case 8477-HTM-ENG · numbers calculated from the figures typed by the group.</div>';
+  <div class="id"><b>Group</b>${V('wGroup')} &nbsp; <b>Section</b>${V('wSec')}<br><b>Students</b>${names.length ? names.map(esc).join(', ') : '(none entered)'}</div>`;
+  h += '<h2>1. Read the numbers</h2>' + facts('f1');
+  h += q('Q1 · Per ml, the tube costs … than the 170 ml bottle', V('q1')) + q('Q2 · Growth drivers in 2023', V('q2'));
+  h += '<h2>2. Launch or not?</h2>';
+  h += q('Q3 · SKU that already serves travellers', V('q3')) + q('Q4 · Most likely tube buyers', V('q4'));
+  h += q('Q5 · Decision', V('q5')) + q('Q6 · Why', V('q6'));
+  h += '<h2>3. Target and positioning</h2>';
+  h += q('Q7 · Target customer', V('q7')) + q('Q8 · Targeting strategy', V('q8')) + q('Q9 · Launch first in', V('q9'));
+  h += q('Q10 · Positioning statement', esc($('#prev').textContent));
+  h += '<h2>4. 2024 targets</h2>' + facts('f4');
+  h += q('Q11 · Cannibalisation', `${V('q11')}%`) + facts('f4b');
+  h += '<table><tr><th>Region</th><th>Tube share</th><th>2024 target (PHP m)</th><th>Tubes (000)</th><th>Growth vs 2023</th></tr>'
+    + c.rows.map((r, i) => `<tr><td>${r.name}</td><td class="n">${f(c.split[i] * 100, 0)}%</td><td class="n">${f(r.tot)}</td><td class="n">${f(r.tu, 0)}</td><td class="n">${pc(r.gr)}</td></tr>`).join('')
+    + `<tr><td><b>Total</b></td><td class="n">${f(c.splitSum * 100, 0)}%</td><td class="n">${f(c.rows.reduce((a, r) => a + r.tot, 0))}</td><td class="n">${f(c.rows.reduce((a, r) => a + r.tu, 0), 0)}</td><td class="n">${pc(c.rows.reduce((a, r) => a + r.tot, 0) / T - 1)}</td></tr></table>`;
+  h += q('Q13 · Why this split', V('q13'));
+  h += `<h2>Recommendation</h2><div class="q">${esc(val('dec') || '—').replace(/\n/g, '<br>')}</div>`;
+  h += '<div class="foot">Sariwa Silk homework · based on Quick Case 8477-HTM-ENG (Harvard Business Publishing).</div>';
   $('#printout').innerHTML = h;
 }
 
@@ -658,8 +460,8 @@ document.querySelectorAll('.shead').forEach((h) => {
 $('#btnPdf').addEventListener('click', () => { buildPrint(); window.print(); });
 window.addEventListener('beforeprint', buildPrint);
 $('#btnClear').addEventListener('click', () => {
-  if (!confirm('Clear every number and answer on this page?')) return;
-  fields().forEach((el) => { el.value = el.id === 'tg' ? '15' : ''; });
+  if (!confirm('Clear all your answers on this page?')) return;
+  fields().forEach((el) => { el.value = ''; });
   try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
   render();
 });
