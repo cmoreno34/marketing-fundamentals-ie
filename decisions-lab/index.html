@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consumer decisions lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A7%A0%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<!--
+  Consumer decisions lab: six classic behavioural-economics experiments run live in class.
+  Each device is randomly assigned to condition A or B and sees only its own wording; the
+  reveal explains what the other half saw, what the original study found, and what it means
+  for marketing. The teacher panel turns a show of hands into bars, because a static page
+  cannot aggregate answers from 60 phones.
+  Everything runs in the browser; answers are saved in localStorage and exported as a PDF.
+-->
+<style>
+:root{
+  --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
+  --ink:#16161D; --muted:#5B5B6B; --line:#D9D9E3;
+  --ind:#3F3D8C; --ind-soft:#E7E6F5;
+  --a:#1F6F6B; --a-soft:#DDEFED; --b:#A4501E; --b-soft:#F7E7DA;
+  --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#9C9CAD; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+}}
+:root[data-theme="dark"]{
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#9C9CAD; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.6;margin:0;padding:0 clamp(16px,3vw,44px) 90px}
+.wrap{width:100%;max-width:1500px;margin:0 auto}
+h1,h2,h3{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
+header{padding:34px 0 20px;border-bottom:2px solid var(--ink);margin-bottom:22px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ind);margin:0 0 8px;font-weight:600}
+h1{font-size:clamp(34px,5vw,54px);line-height:1.05;margin:0 0 10px;font-weight:700}
+.sub{font-size:20px;margin:0;max-width:95ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:13.5px;padding:5px 11px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:var(--surface)}
+.chip.grp{font-weight:700;color:#fff}
+.chip.grp.A{background:var(--a);border-color:var(--a)} .chip.grp.B{background:var(--b);border-color:var(--b)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;padding:20px 24px}
+h2{font-size:26px;margin:0 0 6px}
+h3{font-size:21px;margin:0 0 4px}
+.q{border-left:5px solid var(--ind);padding-left:16px;margin:14px 0 10px}
+.q .n{font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--ind);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.q .text{font-size:19px;margin-top:2px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
+.opt{border:2px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--surface);cursor:pointer;font-size:17px;text-align:left;line-height:1.45}
+.opt:hover{border-color:var(--ind)}
+.opt.sel{border-color:var(--ind);background:var(--ind-soft);font-weight:600}
+.opt .k{display:block;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);margin-bottom:3px}
+.opt.sel .k{color:var(--ind)}
+input[type=number],input[type=text],textarea{width:100%;font-family:inherit;font-size:17px;color:var(--ink);background:var(--surface);
+  border:1.5px solid #A6A6B5;border-radius:6px;padding:11px 14px;min-height:48px}
+textarea{min-height:88px;resize:vertical}
+input:focus,textarea:focus{outline:3px solid rgba(63,61,140,.3);border-color:var(--ind)}
+.num-row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.num-row input{max-width:220px}
+.unit{font-family:"IBM Plex Mono",monospace;color:var(--muted)}
+.btn{font-family:inherit;font-size:17px;font-weight:600;padding:12px 22px;border:1.5px solid var(--ind);background:var(--surface);color:var(--ind);border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--ind-soft)}
+.btn.solid{background:var(--ind);color:#fff}.btn.solid:hover{opacity:.9}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.hint{color:var(--muted);font-size:16px}
+.reveal{display:none;margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
+.reveal.open{display:block}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:10px 0}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px 16px;background:var(--sunk)}
+.card.A{border-left:5px solid var(--a)} .card.B{border-left:5px solid var(--b)}
+.card .h{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.card.A .h{color:var(--a)} .card.B .h{color:var(--b)}
+.finding{background:var(--ind-soft);border-radius:8px;padding:12px 16px;margin-top:10px}
+.finding .h{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ind);margin-bottom:4px}
+.src{font-size:15px;color:var(--muted);margin-top:6px}
+.bars{margin-top:12px}
+.bar{display:grid;grid-template-columns:120px 1fr 60px;gap:10px;align-items:center;margin:6px 0;font-size:16px}
+.track{display:block;background:var(--sunk);border-radius:4px;height:22px;overflow:hidden}
+.fill{display:block;height:100%;background:var(--ind);min-width:2px}
+.fill.A{background:var(--a)} .fill.B{background:var(--b)}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tally .t{border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.live{border:1px solid var(--ind);background:var(--ind-soft);border-radius:8px;padding:14px 16px;margin:10px 0 16px}
+.code{font-family:"IBM Plex Mono",monospace;font-size:38px;font-weight:600;letter-spacing:.18em;color:var(--ind);
+  background:var(--surface);border:2px solid var(--ind);border-radius:8px;padding:2px 16px}
+.nbadge{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted)}
+.tally label{display:block;font-size:15px;color:var(--muted);margin:8px 0 4px}
+.state{font-family:"IBM Plex Mono",monospace;font-size:14px;padding:4px 10px;border-radius:4px;background:var(--sunk);color:var(--muted)}
+.state.done{background:var(--ok-soft);color:var(--ok);font-weight:600}
+footer{margin-top:26px;color:var(--muted);font-size:14.5px}
+#printout{display:none}
+@media print{
+  @page{size:A4;margin:14mm 13mm}
+  body{background:#fff;color:#000;padding:0;font-size:10pt}
+  .wrap > :not(#printout){display:none!important}
+  #printout{display:block!important}
+  #printout h1{font-size:18pt;margin:0 0 2mm;border-bottom:1.5pt solid #000;padding-bottom:2mm}
+  #printout h2{font-size:12pt;margin:5mm 0 1.5mm;border-bottom:.5pt solid #999;padding-bottom:1mm}
+  #printout .id{font-size:10pt;margin:0 0 3mm}
+  #printout .qq{margin:2.5mm 0;page-break-inside:avoid}
+  #printout .qq b{display:block;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;color:#444}
+  #printout .foot{margin-top:6mm;font-size:8pt;color:#444;border-top:.5pt solid #999;padding-top:2mm}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">In-class experiment</p>
+  <h1>Consumer decisions lab</h1>
+  <p class="sub">Six questions about ordinary choices. Answer them before any explanation: half the room is seeing a different
+  wording of the same question, and the point of the session is what happens when the two halves are compared.</p>
+  <div class="meta">
+    <span class="chip grp" id="grpChip">Group –</span>
+    <span class="chip">6 questions · about 10 minutes</span>
+    <span class="chip" id="prog">0 / 6 answered</span>
+    <button class="btn" id="btnTeacher" style="padding:6px 14px;font-size:15px">Teacher panel</button>
+  </div>
+</header>
+
+<section id="whoBox">
+  <h2>Before you start</h2>
+  <p class="hint">Your name is only used for the PDF at the end. Nothing leaves your phone.</p>
+  <div class="grid2">
+    <div><label class="hint" for="wName">Your name</label><input type="text" id="wName" data-k></div>
+    <div><label class="hint" for="wGroup">Group (if you have one)</label><input type="text" id="wGroup" data-k></div>
+    <div><label class="hint" for="room">Room code (on the professor's screen)</label>
+      <input type="text" id="room" maxlength="6" autocapitalize="characters" placeholder="e.g. K7F2"></div>
+  </div>
+  <p class="hint" id="sendState" style="margin-top:8px">With a room code, your answers join the class results automatically.
+  Only the letter of your condition and your answers travel: no name, no phone number, nothing that identifies you.</p>
+</section>
+
+<div id="qs"></div>
+
+<section id="endBox">
+  <h2>When everyone has answered</h2>
+  <p class="hint">Do not press this until the professor says so: it explains every question.</p>
+  <div class="row">
+    <button class="btn solid" id="btnReveal">Show me what this was about</button>
+    <button class="btn" id="btnPdf">Download PDF</button>
+    <button class="btn" id="btnClear">Start again</button>
+  </div>
+</section>
+
+<section id="teacher" style="display:none">
+  <h2>Teacher panel: results of the room</h2>
+  <div class="live">
+    <div class="row" style="margin:0 0 10px">
+      <button class="btn solid" id="btnLive">Open a room</button>
+      <button class="btn" id="btnNewCode" style="display:none">New code</button>
+      <span class="code" id="roomCode" style="display:none"></span>
+      <span class="chip" id="liveN">no answers yet</span>
+    </div>
+    <p class="hint" id="liveHelp" style="margin:0">Open a room, read the four characters out to the class and ask them to type them
+    into the page. Every phone that finishes sends its answers here on its own, and the bars fill up live.</p>
+  </div>
+  <div id="tally" class="tally"></div>
+  <details style="margin-top:14px"><summary class="hint" style="cursor:pointer">No internet in the room? Type the counts by hand</summary>
+    <div id="manual" class="tally" style="margin-top:12px"></div>
+  </details>
+</section>
+
+<footer id="foot">Classic experiments from behavioural economics, used here for teaching. Sources are shown with each explanation.</footer>
+<div id="printout"></div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const KEY = 'decisions-lab.v1';
+
+// ---------------------------------------------------------------- the six experiments
+const EXP = [
+  {
+    id: 'frame', title: 'A public health decision',
+    stem: 'A region will lose 6,000 jobs unless the government acts. Two programmes are on the table. Which one do you choose?',
+    A: { opts: ['Programme 1: 2,000 jobs will be saved', 'Programme 2: a one-in-three chance that all 6,000 jobs are saved, and a two-in-three chance that none is saved'] },
+    B: { opts: ['Programme 1: 4,000 jobs will be lost', 'Programme 2: a one-in-three chance that no job is lost, and a two-in-three chance that all 6,000 jobs are lost'] },
+    kind: 'choice',
+    effect: 'Framing',
+    finding: 'The two wordings describe exactly the same outcomes. When the options are framed as jobs saved, most people take the safe programme; when the same options are framed as jobs lost, most people take the risky one. People are risk-averse for gains and risk-seeking for losses.',
+    marketing: 'The same offer sounds different as "save 20%" or "avoid paying 20% more". Frame the gain when you want the safe choice, and the loss when you want action.',
+    source: 'Tversky and Kahneman (1981), the Asian disease problem.',
+  },
+  {
+    id: 'decoy', title: 'A coffee to take away',
+    stem: 'You are buying a coffee. Which size do you order?',
+    A: { opts: ['Small, 240 ml, 2.40 euros', 'Large, 400 ml, 3.30 euros'] },
+    B: { opts: ['Small, 240 ml, 2.40 euros', 'Medium, 350 ml, 3.20 euros', 'Large, 400 ml, 3.30 euros'] },
+    kind: 'choice',
+    effect: 'Decoy, and the compromise effect',
+    finding: 'Group B has one extra size, priced just below the large one and clearly worse value. Almost nobody buys it, yet its presence pushes people towards the large size: with three options, the middle-to-large choice looks reasonable rather than extravagant.',
+    marketing: 'A price list is not a list of options: it is a context. The option you never expect to sell changes what looks sensible.',
+    source: 'Huber, Payne and Puto (1982); Simonson (1989).',
+  },
+  {
+    id: 'anchor', title: 'How heavy is a zebra?',
+    stem: '',
+    A: { pre: 'Is an adult zebra heavier or lighter than 100 kilos?', ask: 'Now give your best estimate, in kilos.' },
+    B: { pre: 'Is an adult zebra heavier or lighter than 600 kilos?', ask: 'Now give your best estimate, in kilos.' },
+    kind: 'number', unit: 'kg',
+    effect: 'Anchoring',
+    finding: 'The number in the first question is irrelevant, and everybody knows it is irrelevant. It still drags the estimate: the half that saw 600 kilos gives a much higher average than the half that saw 100. (An adult plains zebra weighs roughly 300 kilos.)',
+    marketing: 'The first number a customer sees becomes the reference for every number after it: the recommended price, the crossed-out price, the largest pack.',
+    source: 'Tversky and Kahneman (1974).',
+  },
+  {
+    id: 'beer', title: 'A cold drink on the beach',
+    stem: '',
+    A: { pre: 'You are lying on the beach on a hot day. A friend is going to get a drink and offers to bring you a beer from the only place nearby: a smart hotel bar. They will buy it only if it costs no more than the price you say.', ask: 'What is the most you would pay?' },
+    B: { pre: 'You are lying on the beach on a hot day. A friend is going to get a drink and offers to bring you a beer from the only place nearby: a small run-down grocery shop. They will buy it only if it costs no more than the price you say.', ask: 'What is the most you would pay?' },
+    kind: 'number', unit: 'euros',
+    effect: 'Mental accounting and reference prices',
+    finding: 'It is the same beer, drunk in the same place on the same beach. People say a much higher price when it comes from the hotel bar, because what feels a fair price depends on where it is bought, not on what is consumed.',
+    marketing: 'Willingness to pay is not a property of the product. The place, the packaging and the company around it move it.',
+    source: 'Thaler (1985), the beer on the beach.',
+  },
+  {
+    id: 'meat', title: 'A ready meal',
+    stem: '',
+    A: { pre: 'A supermarket sells a beef burger labelled "80% lean".', ask: 'How appetising does it sound, from 1 (not at all) to 7 (very)?' },
+    B: { pre: 'A supermarket sells a beef burger labelled "20% fat".', ask: 'How appetising does it sound, from 1 (not at all) to 7 (very)?' },
+    kind: 'number', unit: '1 to 7', min: 1, max: 7,
+    effect: 'Attribute framing',
+    finding: '80% lean and 20% fat are the same burger. The lean label scores higher on taste and quality, and the effect survives even after people taste the meat.',
+    marketing: 'Two labels, same product, different sales: "90% of our customers renew" reads better than "one in ten leaves".',
+    source: 'Levin and Gaeth (1988).',
+  },
+  {
+    id: 'default', title: 'Paying the bill',
+    stem: '',
+    A: { pre: 'You pay a 58-euro restaurant bill on a card machine. The screen says: "We round your bill up to 60 euros and give 2 euros to a local food bank. Continue?"', ask: 'What do you do?', opts: ['Continue: round up and donate', 'Change it: pay 58 euros and do not donate'] },
+    B: { pre: 'You pay a 58-euro restaurant bill on a card machine. The screen says: "Your bill is 58 euros. Would you like to round it up to 60 and give 2 euros to a local food bank?"', ask: 'What do you do?', opts: ['Yes: round up and donate', 'No: pay 58 euros'] },
+    kind: 'choice',
+    effect: 'Defaults',
+    finding: 'The money, the cause and the amount are identical. Far more people donate when donating is what happens if they do nothing. Defaults work because changing one takes a decision, and deciding is effortful.',
+    marketing: 'Whatever your form, your checkout or your subscription does when the customer does nothing is a decision you have made for them. It is also where marketing turns into manipulation if the default is not in their interest.',
+    source: 'Johnson and Goldstein (2003) on organ donation; the same mechanism as opt-in and opt-out.',
+  },
+];
+
+// ---------------------------------------------------------------- helpers
+const val = (id) => (document.getElementById(id) ? document.getElementById(id).value.trim() : '');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null') || {}; } catch (e) { return {}; } };
+let S = load();
+if (!S.grp) { S.grp = Math.random() < 0.5 ? 'A' : 'B'; S.ans = {}; S.note = {}; }
+S.ans = S.ans || {}; S.note = S.note || {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* blocked */ } };
+
+// ---------------------------------------------------------------- build the questions
+function build() {
+  $('#grpChip').textContent = 'Group ' + S.grp;
+  $('#grpChip').className = 'chip grp ' + S.grp;
+  $('#qs').innerHTML = EXP.map((e, i) => {
+    const c = e[S.grp];
+    const opts = c.opts || e.opts;
+    const body = opts
+      ? '<div class="opts">' + opts.map((o, k) => `<button class="opt" data-q="${e.id}" data-v="${k}"><span class="k">Option ${String.fromCharCode(65 + k)}</span>${esc(o)}</button>`).join('') + '</div>'
+      : `<div class="num-row"><input type="number" id="n_${e.id}" data-q="${e.id}" inputmode="decimal" ${e.min ? 'min=' + e.min : ''} ${e.max ? 'max=' + e.max : ''}><span class="unit">${esc(e.unit || '')}</span></div>`;
+    return `<section data-exp="${e.id}">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">
+        <h2>${i + 1}. ${esc(e.title)}</h2><span class="state" id="st_${e.id}">Answer it</span>
+      </div>
+      <div class="q"><span class="n">Question ${i + 1}</span>
+        <div class="text">${esc(e.stem || c.pre)}</div>
+        ${c.pre && e.stem ? `<div class="text">${esc(c.pre)}</div>` : ''}
+        ${c.ask ? `<div class="text" style="margin-top:8px"><b>${esc(c.ask)}</b></div>` : ''}
+      </div>
+      ${body}
+      <div class="reveal" id="rv_${e.id}"></div>
+    </section>`;
+  }).join('');
+  EXP.forEach((e) => {
+    const a = S.ans[e.id];
+    if (a === undefined) return;
+    const inp = document.getElementById('n_' + e.id);
+    if (inp) inp.value = a;
+    else document.querySelectorAll(`[data-q="${e.id}"]`).forEach((b) => b.classList.toggle('sel', String(b.dataset.v) === String(a)));
+  });
+  states();
+}
+
+function states() {
+  let n = 0;
+  EXP.forEach((e) => {
+    const done = S.ans[e.id] !== undefined && S.ans[e.id] !== '';
+    if (done) n++;
+    const el = document.getElementById('st_' + e.id);
+    if (el) { el.textContent = done ? 'Answered' : 'Answer it'; el.className = 'state' + (done ? ' done' : ''); }
+  });
+  $('#prog').textContent = n + ' / ' + EXP.length + ' answered';
+  return n;
+}
+
+// ---------------------------------------------------------------- reveal
+function reveal() {
+  EXP.forEach((e, i) => {
+    const mine = S.grp, other = mine === 'A' ? 'B' : 'A';
+    const wording = (g) => {
+      const c = e[g];
+      const txt = [c.pre || e.stem, c.ask].filter(Boolean).join(' ');
+      const opts = (c.opts || e.opts || []).map((o, k) => String.fromCharCode(65 + k) + ') ' + o).join('  ');
+      return esc(txt) + (opts ? '<br><span class="hint">' + esc(opts) + '</span>' : '');
+    };
+    const box = document.getElementById('rv_' + e.id);
+    box.innerHTML = `<h3>${esc(e.effect)}</h3>
+      <div class="grid2">
+        <div class="card ${mine}"><div class="h">What you saw (group ${mine})</div>${wording(mine)}</div>
+        <div class="card ${other}"><div class="h">What the other half saw (group ${other})</div>${wording(other)}</div>
+      </div>
+      <div class="finding"><div class="h">What usually happens</div>${esc(e.finding)}
+        <div class="src">${esc(e.source)}</div></div>
+      <div class="finding" style="background:var(--ok-soft)"><div class="h" style="color:var(--ok)">For a marketer</div>${esc(e.marketing)}</div>
+      <label class="hint" for="note_${e.id}" style="display:block;margin-top:12px">Where could your group's brand use this, and where would it become manipulation? One line.</label>
+      <textarea id="note_${e.id}" data-note="${e.id}">${esc(S.note[e.id] || '')}</textarea>`;
+    box.classList.add('open');
+  });
+  S.revealed = true; save();
+  $('#btnReveal').textContent = 'Explanations are open';
+  $('#btnReveal').disabled = true;
+}
+
+// ---------------------------------------------------------------- teacher panel
+function teacher() {
+  const t = $('#teacher');
+  t.style.display = t.style.display === 'none' ? 'block' : 'none';
+  if (t.style.display === 'none') return;
+  $('#tally').innerHTML = EXP.map((e) => `<div class="t"><b>${esc(e.title)}</b><div class="hint">${esc(e.effect)}</div>
+      <div class="bars" id="bars_${e.id}"></div>
+      <div class="src">${esc(e.finding.split('.')[0])}.</div></div>`).join('');
+  $('#manual').innerHTML = EXP.map((e) => {
+    const rows = (g) => {
+      const c = e[g]; const opts = c.opts || e.opts;
+      if (opts) return opts.map((o, k) => `<label>${g}: ${esc(o.slice(0, 44))}${o.length > 44 ? '…' : ''}</label><input type="number" min="0" data-t="${e.id}.${g}.${k}" value="${(S.tally && S.tally[e.id + '.' + g + '.' + k]) || ''}">`).join('');
+      return `<label>${g}: average answer (${esc(e.unit || '')})</label><input type="number" step="0.1" data-t="${e.id}.${g}.avg" value="${(S.tally && S.tally[e.id + '.' + g + '.avg']) || ''}">`;
+    };
+    return `<div class="t"><b>${esc(e.title)}</b>${rows('A')}${rows('B')}</div>`;
+  }).join('');
+  document.querySelectorAll('[data-t]').forEach((i) => i.addEventListener('input', () => {
+    S.tally = S.tally || {}; S.tally[i.dataset.t] = i.value; save(); drawBars();
+  }));
+  drawBars();
+}
+
+
+function liveBars(e) {
+  const c = liveCounts(e);
+  const opts = (e.A.opts || e.opts);
+  if (opts) {
+    return ['A', 'B'].map((g) => {
+      const o = (e[g].opts || e.opts);
+      const tot = Object.values(c[g].opts).reduce((x, y) => x + y, 0);
+      return o.map((txt, k) => {
+        const n = c[g].opts[k] || 0;
+        const pctv = tot ? (n / tot) * 100 : 0;
+        return `<div class="bar"><span>${g} · ${String.fromCharCode(65 + k)}</span>
+          <span class="track"><span class="fill ${g}" style="width:${pctv.toFixed(0)}%"></span></span>
+          <span class="unit">${tot ? pctv.toFixed(0) + '%' : '–'}</span></div>`;
+      }).join('');
+    }).join('') + `<div class="nbadge">${c.A.n + c.B.n} answers</div>`;
+  }
+  const mean = (g) => (c[g].cnt ? c[g].sum / c[g].cnt : NaN);
+  const ma = mean('A'), mb = mean('B');
+  const max = Math.max(ma || 0, mb || 0, 1);
+  return ['A', 'B'].map((g) => {
+    const v = g === 'A' ? ma : mb;
+    return `<div class="bar"><span>${g} · average</span><span class="track"><span class="fill ${g}" style="width:${(Number.isFinite(v) ? v / max * 100 : 0).toFixed(0)}%"></span></span>
+      <span class="unit">${Number.isFinite(v) ? v.toFixed(1) : '–'}</span></div>`;
+  }).join('') + `<div class="nbadge">${c.A.cnt} + ${c.B.cnt} answers</div>`;
+}
+
+function drawBars() {
+  EXP.forEach((e) => {
+    const el = document.getElementById('bars_' + e.id);
+    if (!el) return;
+    if (LIVE.size) { el.innerHTML = liveBars(e); return; }
+    const T = S.tally || {};
+    const opts = (e.A.opts || e.opts);
+    if (opts) {
+      const rows = [];
+      ['A', 'B'].forEach((g) => {
+        const o = (e[g].opts || e.opts);
+        const counts = o.map((_, k) => Number(T[e.id + '.' + g + '.' + k] || 0));
+        const tot = counts.reduce((a, b) => a + b, 0);
+        o.forEach((txt, k) => {
+          const pctv = tot ? (counts[k] / tot) * 100 : 0;
+          rows.push(`<div class="bar"><span>${g} · ${String.fromCharCode(65 + k)}</span>
+            <span class="track"><span class="fill ${g}" style="width:${pctv.toFixed(0)}%"></span></span>
+            <span class="unit">${tot ? pctv.toFixed(0) + '%' : '–'}</span></div>`);
+        });
+      });
+      el.innerHTML = rows.join('');
+    } else {
+      const a = Number(T[e.id + '.A.avg'] || 0), b = Number(T[e.id + '.B.avg'] || 0);
+      const max = Math.max(a, b, 1);
+      el.innerHTML = ['A', 'B'].map((g, i) => {
+        const v = i === 0 ? a : b;
+        return `<div class="bar"><span>${g} · average</span><span class="track"><span class="fill ${g}" style="width:${(v / max * 100).toFixed(0)}%"></span></span><span class="unit">${v || '–'}</span></div>`;
+      }).join('');
+    }
+  });
+}
+
+
+// ---------------------------------------------------------------- live room (ntfy.sh)
+// Anonymous and ephemeral: a random device id, the condition letter and the six answers.
+// Publishing and subscribing both work straight from the browser, with no account.
+const NTFY = 'https://ntfy.sh/';
+const topicOf = (code) => 'mf26lab-' + String(code).trim().toUpperCase();
+S.uid = S.uid || Math.random().toString(36).slice(2, 10);
+const LIVE = new Map();            // uid -> {g, a}
+let es = null, sendTimer = null;
+
+function roomFromUrl() {
+  const m = location.hash.match(/room=([A-Za-z0-9]{3,6})/);
+  return m ? m[1].toUpperCase() : '';
+}
+
+function sendAnswers() {
+  const code = (val('room') || '').toUpperCase();
+  const st = $('#sendState');
+  if (!code) return;
+  if (states() < EXP.length) { st.textContent = 'Answer the six questions and they will be sent to the class automatically.'; return; }
+  st.textContent = 'Sending your answers to the class…';
+  const body = JSON.stringify({ u: S.uid, g: S.grp, a: S.ans });
+  const post = () => fetch(NTFY + topicOf(code), { method: 'POST', body });
+  post().then((r) => {
+    if (r.status === 429) { st.textContent = 'The room is busy; trying again in a moment…'; setTimeout(() => post().then(() => { st.textContent = 'Sent. Your answers are in the class results.'; }), 4000 + Math.random() * 4000); return; }
+    st.textContent = r.ok ? 'Sent. Your answers are in the class results.' : 'Could not send (' + r.status + '). Tell the professor your answers by hand.';
+  }).catch(() => { st.textContent = 'No connection: tell the professor your answers by hand.'; });
+}
+
+function queueSend() {
+  clearTimeout(sendTimer);
+  sendTimer = setTimeout(sendAnswers, 1200 + Math.random() * 3000);   // jitter: 60 phones at once
+}
+
+function absorb(msg) {
+  try {
+    const d = JSON.parse(msg);
+    if (d && d.u && d.g && d.a) { LIVE.set(d.u, { g: d.g, a: d.a }); return true; }
+  } catch (e) { /* not ours */ }
+  return false;
+}
+
+function liveCounts(e) {
+  const out = { A: { n: 0, opts: {}, sum: 0, cnt: 0 }, B: { n: 0, opts: {}, sum: 0, cnt: 0 } };
+  LIVE.forEach((r) => {
+    const g = r.g === 'B' ? 'B' : 'A';
+    const v = r.a[e.id];
+    out[g].n++;
+    if (v === undefined || v === '') return;
+    if ((e[g].opts || e.opts)) out[g].opts[v] = (out[g].opts[v] || 0) + 1;
+    else { const num = Number(v); if (Number.isFinite(num)) { out[g].sum += num; out[g].cnt++; } }
+  });
+  return out;
+}
+
+function startLive(code) {
+  if (es) { es.close(); es = null; }
+  LIVE.clear();
+  const t = topicOf(code);
+  fetch(NTFY + t + '/json?poll=1&since=all').then((r) => r.text()).then((txt) => {
+    txt.trim().split('\n').forEach((line) => { try { const d = JSON.parse(line); if (d.event === 'message') absorb(d.message); } catch (e) { /* ignore */ } });
+    renderLive();
+  }).catch(() => { /* offline: manual tallies still work */ });
+  es = new EventSource(NTFY + t + '/sse');
+  es.onmessage = (ev) => { try { const d = JSON.parse(ev.data); if (d.event === 'message' && absorb(d.message)) renderLive(); } catch (e) { /* ignore */ } };
+  S.room = code; save();
+  $('#roomCode').textContent = code; $('#roomCode').style.display = '';
+  $('#btnNewCode').style.display = ''; $('#btnLive').style.display = 'none';
+  renderLive();
+}
+
+function renderLive() {
+  let a = 0, b = 0;
+  LIVE.forEach((r) => { if (r.g === 'B') b++; else a++; });
+  $('#liveN').textContent = LIVE.size ? `${LIVE.size} answers · ${a} in A · ${b} in B` : 'no answers yet';
+  drawBars();
+}
+
+// ---------------------------------------------------------------- print
+function buildPrint() {
+  const answer = (e) => {
+    const a = S.ans[e.id];
+    if (a === undefined || a === '') return '(not answered)';
+    const opts = (e[S.grp].opts || e.opts);
+    return opts ? String.fromCharCode(65 + Number(a)) + ') ' + opts[Number(a)] : a + ' ' + (e.unit || '');
+  };
+  let h = `<h1>Consumer decisions lab</h1>
+    <div class="id"><b>Name</b> ${esc(val('wName') || '—')} &nbsp; <b>Group</b> ${esc(val('wGroup') || '—')} &nbsp; <b>Condition</b> ${S.grp}</div>`;
+  EXP.forEach((e, i) => {
+    h += `<div class="qq"><b>${i + 1}. ${esc(e.title)} · ${esc(e.effect)}</b>
+      My answer: ${esc(answer(e))}<br>
+      <i>${esc(e.finding)}</i><br>
+      Where we could use it: ${esc(S.note[e.id] || '—')}</div>`;
+  });
+  h += '<div class="foot">Consumer decisions lab · answers kept on the student device and printed here.</div>';
+  $('#printout').innerHTML = h;
+}
+
+// ---------------------------------------------------------------- wiring
+build();
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.opt');
+  if (!b) return;
+  S.ans[b.dataset.q] = b.dataset.v; save();
+  document.querySelectorAll(`[data-q="${b.dataset.q}"]`).forEach((x) => x.classList.toggle('sel', x === b));
+  states(); queueSend();
+});
+document.addEventListener('input', (e) => {
+  if (e.target.dataset.q) { S.ans[e.target.dataset.q] = e.target.value; save(); states(); queueSend(); }
+  if (e.target.dataset.note !== undefined) { S.note[e.target.dataset.note] = e.target.value; save(); }
+  if (e.target.dataset.k !== undefined) save();
+});
+$('#btnReveal').addEventListener('click', () => {
+  if (states() < EXP.length && !confirm('Some questions are still unanswered. Open the explanations anyway?')) return;
+  reveal();
+});
+$('#btnTeacher').addEventListener('click', teacher);
+$('#btnLive').addEventListener('click', () => startLive(S.room || Math.random().toString(36).slice(2, 6).toUpperCase()));
+$('#btnNewCode').addEventListener('click', () => startLive(Math.random().toString(36).slice(2, 6).toUpperCase()));
+const roomInput = $('#room');
+roomInput.value = S.room0 || roomFromUrl() || '';
+roomInput.addEventListener('input', () => { S.room0 = roomInput.value.toUpperCase().trim(); roomInput.value = S.room0; save(); queueSend(); });
+$('#btnPdf').addEventListener('click', () => { buildPrint(); window.print(); });
+window.addEventListener('beforeprint', buildPrint);
+$('#btnClear').addEventListener('click', () => {
+  if (!confirm('Clear your answers and get a new random group?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
+  S = { grp: Math.random() < 0.5 ? 'A' : 'B', ans: {}, note: {} }; save();
+  $('#btnReveal').disabled = false; $('#btnReveal').textContent = 'Show me what this was about';
+  build();
+});
+if (S.revealed) reveal();
+if (roomFromUrl() && !S.room0) { S.room0 = roomFromUrl(); $('#room').value = S.room0; save(); }
+</script>
+</body>
+</html>
