@@ -109,6 +109,8 @@ input:focus,textarea:focus{outline:3px solid rgba(63,61,140,.3);border-color:var
 .tally .what .h{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.06em;
   text-transform:uppercase;color:var(--ind);display:block;margin-bottom:2px}
 .tally .what.mkt{background:var(--ok-soft)} .tally .what.mkt .h{color:var(--ok)}
+body.tmode #whoLine, body.tmode #whoBox, body.tmode #qs, body.tmode #endBox,
+body.tmode #quizBox, body.tmode .sub, body.tmode #grpChip, body.tmode #prog, body.tmode .chip.plain{display:none!important}
 .live{border:1px solid var(--ind);background:var(--ind-soft);border-radius:8px;padding:14px 16px;margin:10px 0 16px}
 .code{font-family:"IBM Plex Mono",monospace;font-size:38px;font-weight:600;letter-spacing:.18em;color:var(--ind);
   background:var(--surface);border:2px solid var(--ind);border-radius:8px;padding:2px 16px}
@@ -156,8 +158,9 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
   wording of the same question, and the point of the session is what happens when the two halves are compared.</p>
   <div class="meta">
     <span class="chip grp" id="grpChip" style="display:none">Group –</span>
-    <span class="chip">6 questions · about 10 minutes</span>
+    <span class="chip plain">6 questions · about 10 minutes</span>
     <span class="chip" id="prog">0 / 6 answered</span>
+    <span class="chip" id="modeChip" style="display:none">Teacher screen</span>
     <button class="btn" id="btnTeacher" style="padding:6px 14px;font-size:15px">Teacher panel</button>
   </div>
 </header>
@@ -405,9 +408,11 @@ function teacher() {
   const t = $('#teacher');
   const open = t.style.display === 'none';
   t.style.display = open ? 'block' : 'none';
-  $('#btnTeacher').textContent = open ? 'Close the teacher panel' : 'Teacher panel';
+  document.body.classList.toggle('tmode', open);
+  $('#modeChip').style.display = open ? '' : 'none';      // his screen is the game, not the questions
+  $('#btnTeacher').textContent = open ? 'Back to the student page' : 'Teacher panel';
   if (!open) return;
-  setTimeout(() => t.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+  window.scrollTo({ top: 0 });
   const said = (e, g) => {
     const c = e[g];
     const opts = (c.opts || e.opts || []).map((o, k) => String.fromCharCode(65 + k) + ') ' + o).join('   ');
