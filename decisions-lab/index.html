@@ -16,6 +16,7 @@
   cannot aggregate answers from 60 phones.
   Everything runs in the browser; answers are saved in localStorage and exported as a PDF.
 -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <style>
 :root{
   --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
@@ -100,6 +101,16 @@ input:focus,textarea:focus{outline:3px solid rgba(63,61,140,.3);border-color:var
 .opt.bad{border-color:var(--b);background:var(--b-soft)}
 .qwhy{font-size:16px;color:var(--muted);margin-top:8px;padding-left:16px;border-left:3px solid var(--line)}
 .qwhy.good{border-left-color:var(--ok)} .qwhy.bad{border-left-color:var(--b)}
+.join{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;margin-top:12px}
+.join .qr{background:#fff;padding:10px;border:1px solid var(--line);border-radius:8px;line-height:0}
+.join .qr svg{width:190px;height:190px;display:block}
+.steps{counter-reset:s;margin:10px 0 0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:34px;margin:7px 0;font-size:16.5px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:23px;height:23px;border-radius:50%;
+  background:var(--ind);color:#fff;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center}
+.who{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;margin:0 0 16px;font-size:16px}
+@media print{ .join .qr{display:none} }
 footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 #printout{display:none}
 @media print{
@@ -131,6 +142,9 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
     <button class="btn" id="btnTeacher" style="padding:6px 14px;font-size:15px">Teacher panel</button>
   </div>
 </header>
+
+<p class="who" id="whoLine"><b>Students:</b> answer the six questions below. &nbsp;·&nbsp;
+<b>Professor:</b> press <b>Teacher panel</b> above, then <b>Open a room</b>, and project that screen.</p>
 
 <section id="whoBox">
   <h2>Before you start</h2>
@@ -172,14 +186,25 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 <section id="teacher" style="display:none">
   <h2>Teacher panel: results of the room</h2>
   <div class="live">
-    <div class="row" style="margin:0 0 10px">
+    <ol class="steps" id="liveSteps">
+      <li>Press <b>Open a room</b>. A four-character code appears.</li>
+      <li>Project this screen: the class scans the QR, or types the code into their own page.</li>
+      <li>The bars below fill on their own as the phones finish. Nothing to press.</li>
+    </ol>
+    <div class="row" style="margin:14px 0 0">
       <button class="btn solid" id="btnLive">Open a room</button>
       <button class="btn" id="btnNewCode" style="display:none">New code</button>
       <span class="code" id="roomCode" style="display:none"></span>
       <span class="chip" id="liveN">no answers yet</span>
     </div>
-    <p class="hint" id="liveHelp" style="margin:0">Open a room, read the four characters out to the class and ask them to type them
-    into the page. Every phone that finishes sends its answers here on its own, and the bars fill up live.</p>
+    <div class="join" id="joinBox" style="display:none">
+      <div class="qr" id="joinQr"></div>
+      <div>
+        <p class="hint" style="margin:0 0 6px">Scanning this opens the page already in the room:
+        nobody has to type the code.</p>
+        <p class="hint" id="joinUrl" style="margin:0;word-break:break-all"></p>
+      </div>
+    </div>
   </div>
   <div id="tally" class="tally"></div>
   <details style="margin-top:14px"><summary class="hint" style="cursor:pointer">No internet in the room? Type the counts by hand</summary>
@@ -351,8 +376,11 @@ function reveal() {
 // ---------------------------------------------------------------- teacher panel
 function teacher() {
   const t = $('#teacher');
-  t.style.display = t.style.display === 'none' ? 'block' : 'none';
-  if (t.style.display === 'none') return;
+  const open = t.style.display === 'none';
+  t.style.display = open ? 'block' : 'none';
+  $('#btnTeacher').textContent = open ? 'Close the teacher panel' : 'Teacher panel';
+  if (!open) return;
+  setTimeout(() => t.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
   $('#tally').innerHTML = EXP.map((e) => `<div class="t"><b>${esc(e.title)}</b><div class="hint">${esc(e.effect)}</div>
       <div class="bars" id="bars_${e.id}"></div>
       <div class="src">${esc(e.finding.split('.')[0])}.</div></div>`).join('');
@@ -484,6 +512,20 @@ function liveCounts(e) {
   return out;
 }
 
+function showJoin(code) {
+  const url = location.href.split('#')[0] + '#room=' + code;
+  $('#joinUrl').textContent = url;
+  const box = $('#joinQr');
+  try {                                   // the library is the nice-to-have, the code is the fallback
+    const q = qrcode(0, 'M');
+    q.addData(url); q.make();
+    box.innerHTML = q.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
+    $('#joinBox').style.display = 'grid';
+  } catch (e) {
+    $('#joinBox').style.display = 'none';
+  }
+}
+
 function startLive(code) {
   if (es) { es.close(); es = null; }
   LIVE.clear();
@@ -496,6 +538,7 @@ function startLive(code) {
   es.onmessage = (ev) => { try { const d = JSON.parse(ev.data); if (d.event === 'message' && absorb(d.message)) renderLive(); } catch (e) { /* ignore */ } };
   S.room = code; save();
   $('#roomCode').textContent = code; $('#roomCode').style.display = '';
+  showJoin(code);
   $('#btnNewCode').style.display = ''; $('#btnLive').style.display = 'none';
   renderLive();
 }
@@ -722,7 +765,11 @@ $('#btnClear').addEventListener('click', () => {
   build();
 });
 if (S.revealed) reveal();
-if (roomFromUrl() && !S.room0) { S.room0 = roomFromUrl(); $('#room').value = S.room0; save(); }
+if (roomFromUrl()) {
+  S.room0 = roomFromUrl(); $('#room').value = S.room0; save();
+  $('#whoLine').innerHTML = '<b>You are in room ' + S.room0 + '.</b> Answer the six questions below; '
+    + 'when you finish, your answers join the results of the class on their own.';
+}
 </script>
 </body>
 </html>
