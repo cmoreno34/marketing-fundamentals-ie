@@ -136,32 +136,42 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
   <p class="sub">Six questions about ordinary choices. Answer them before any explanation: half the room is seeing a different
   wording of the same question, and the point of the session is what happens when the two halves are compared.</p>
   <div class="meta">
-    <span class="chip grp" id="grpChip">Group –</span>
+    <span class="chip grp" id="grpChip" style="display:none">Group –</span>
     <span class="chip">6 questions · about 10 minutes</span>
     <span class="chip" id="prog">0 / 6 answered</span>
     <button class="btn" id="btnTeacher" style="padding:6px 14px;font-size:15px">Teacher panel</button>
   </div>
 </header>
 
-<p class="who" id="whoLine"><b>Students:</b> answer the six questions below. &nbsp;·&nbsp;
+<p class="who" id="whoLine"><b>Students:</b> join the room below and the six questions appear. &nbsp;·&nbsp;
 <b>Professor:</b> press <b>Teacher panel</b> above, then <b>Open a room</b>, and project that screen.</p>
 
 <section id="whoBox">
-  <h2>Before you start</h2>
-  <p class="hint">Your name is only used for the PDF at the end. Nothing leaves your phone.</p>
+  <h2>Join the room</h2>
+  <p class="hint">The professor has a four-character code on screen. Scanning the QR next to it
+  brings you straight in; otherwise type the code here.</p>
   <div class="grid2">
-    <div><label class="hint" for="wName">Your name</label><input type="text" id="wName" data-k></div>
+    <div><label class="hint" for="room">Room code</label>
+      <input type="text" id="room" maxlength="6" autocapitalize="characters" placeholder="K7F2"
+      style="font-family:'IBM Plex Mono',monospace;font-size:26px;letter-spacing:.12em;text-transform:uppercase"></div>
+    <div><label class="hint" for="wName">Your name (only for your own PDF)</label><input type="text" id="wName" data-k></div>
     <div><label class="hint" for="wGroup">Group (if you have one)</label><input type="text" id="wGroup" data-k></div>
-    <div><label class="hint" for="room">Room code (on the professor's screen)</label>
-      <input type="text" id="room" maxlength="6" autocapitalize="characters" placeholder="e.g. K7F2"></div>
   </div>
-  <p class="hint" id="sendState" style="margin-top:8px">With a room code, your answers join the class results automatically.
-  Only the letter of your condition and your answers travel: no name, no phone number, nothing that identifies you.</p>
+  <div class="row">
+    <button class="btn solid" id="btnStart">Start the six questions</button>
+    <button class="btn" id="btnNoRoom" style="font-weight:400">No code: answer on my own</button>
+  </div>
+  <p class="hint" id="sendState" style="margin-top:12px">Only the letter of your half and your answers
+  travel to the class results: no name, no phone number, nothing that identifies you.</p>
+  <p class="hint" style="margin-top:6px"><b>One thing to know:</b> the room is split in two at random,
+  A and B, and the two halves get a slightly different wording of the same six questions. Yours is not
+  a mistake and your neighbour's is not either. You will see both versions at the end: that comparison
+  is the whole point.</p>
 </section>
 
-<div id="qs"></div>
+<div id="qs" style="display:none"></div>
 
-<section id="endBox">
+<section id="endBox" style="display:none">
   <h2>When everyone has answered</h2>
   <p class="hint">Do not press this until the professor says so: it explains every question.</p>
   <div class="row">
@@ -367,6 +377,7 @@ function reveal() {
       <textarea id="note_${e.id}" data-note="${e.id}">${esc(S.note[e.id] || '')}</textarea>`;
     box.classList.add('open');
   });
+  $('#grpChip').style.display = '';
   S.revealed = true; save();
   openQuiz();
   $('#btnReveal').textContent = 'Explanations are open';
@@ -548,6 +559,28 @@ function renderLive() {
   LIVE.forEach((r) => { if (r.g === 'B') b++; else a++; });
   $('#liveN').textContent = LIVE.size ? `${LIVE.size} answers · ${a} in A · ${b} in B` : 'no answers yet';
   drawBars();
+}
+
+// ---------------------------------------------------------------- joining the room
+function showQuestions() {
+  S.joined = true; save();
+  $('#qs').style.display = '';
+  $('#endBox').style.display = '';
+  $('#btnStart').style.display = 'none';
+  $('#btnNoRoom').style.display = 'none';
+  states();
+}
+
+function joinRoom(code) {
+  const c = String(code || '').toUpperCase().trim();
+  if (!c) { $('#room').focus(); $('#sendState').textContent = 'Type the code that is on the screen, or press "No code" to answer on your own.'; return; }
+  S.room0 = c; $('#room').value = c; save();
+  $('#whoLine').innerHTML = '<b>You are in room ' + c + '.</b> Answer the six questions below. '
+    + 'When you finish, your answers join the results of the class on their own.';
+  showQuestions();
+  queueSend();
+  const first = document.querySelector('[data-exp]');
+  if (first) setTimeout(() => first.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
 }
 
 // ---------------------------------------------------------------- print
@@ -748,6 +781,12 @@ $('#btnQuizAgain').addEventListener('click', () => {
   S.quiz = {}; S.quizDone = false; save(); buildQuiz();
   $('#quizScore').textContent = 'not checked yet';
 });
+$('#btnStart').addEventListener('click', () => joinRoom(val('room')));
+$('#btnNoRoom').addEventListener('click', () => {
+  $('#whoLine').innerHTML = '<b>No room.</b> You can answer and read the explanations, but your answers will not appear in the results of the class.';
+  showQuestions();
+});
+$('#room').addEventListener('keydown', (e) => { if (e.key === 'Enter') joinRoom(val('room')); });
 $('#btnTeacher').addEventListener('click', teacher);
 $('#btnLive').addEventListener('click', () => startLive(S.room || Math.random().toString(36).slice(2, 6).toUpperCase()));
 $('#btnNewCode').addEventListener('click', () => startLive(Math.random().toString(36).slice(2, 6).toUpperCase()));
@@ -760,15 +799,17 @@ $('#btnClear').addEventListener('click', () => {
   if (!confirm('Clear your answers and get a new random group?')) return;
   try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
   S = { grp: Math.random() < 0.5 ? 'A' : 'B', ans: {}, note: {}, quiz: {} }; save();
+  $('#qs').style.display = 'none'; $('#endBox').style.display = 'none';
+  $('#btnStart').style.display = ''; $('#btnNoRoom').style.display = '';
   $('#quizBox').style.display = 'none'; $('#quizScore').textContent = 'not checked yet';
   $('#btnReveal').disabled = false; $('#btnReveal').textContent = 'Show me what this was about';
   build();
 });
 if (S.revealed) reveal();
 if (roomFromUrl()) {
-  S.room0 = roomFromUrl(); $('#room').value = S.room0; save();
-  $('#whoLine').innerHTML = '<b>You are in room ' + S.room0 + '.</b> Answer the six questions below; '
-    + 'when you finish, your answers join the results of the class on their own.';
+  joinRoom(roomFromUrl());                 // scanned the QR: nothing else to press
+} else if (S.joined) {
+  showQuestions();                         // came back to a page already started
 }
 </script>
 </body>
