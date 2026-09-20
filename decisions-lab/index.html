@@ -31,18 +31,18 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 <style>
 :root{
   --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
-  --ink:#16161D; --muted:#5B5B6B; --line:#D9D9E3;
+  --ink:#16161D; --muted:#4A4A58; --line:#D9D9E3;
   --ind:#3F3D8C; --ind-soft:#E7E6F5;
   --a:#1F6F6B; --a-soft:#DDEFED; --b:#A4501E; --b-soft:#F7E7DA;
   --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
 }
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
-  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#9C9CAD; --line:#2C2C38;
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
   --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
   --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
 }}
 :root[data-theme="dark"]{
-  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#9C9CAD; --line:#2C2C38;
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
   --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
   --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
 }
@@ -109,7 +109,7 @@ input:focus,textarea:focus{outline:3px solid rgba(63,61,140,.3);border-color:var
 .tally .what .h{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.06em;
   text-transform:uppercase;color:var(--ind);display:block;margin-bottom:2px}
 .tally .what.mkt{background:var(--ok-soft)} .tally .what.mkt .h{color:var(--ok)}
-body.tmode #whoLine, body.tmode #whoBox, body.tmode #qs, body.tmode #endBox,
+body.tmode #whoLine, body.tmode #whoBox, body.tmode #qs, body.tmode #sendBox, body.tmode #endBox,
 body.tmode #quizBox, body.tmode .sub, body.tmode #grpChip, body.tmode #prog, body.tmode .chip.plain{display:none!important}
 .live{border:1px solid var(--ind);background:var(--ind-soft);border-radius:8px;padding:14px 16px;margin:10px 0 16px}
 .code{font-family:"IBM Plex Mono",monospace;font-size:38px;font-weight:600;letter-spacing:.18em;color:var(--ind);
@@ -132,6 +132,9 @@ body.tmode #quizBox, body.tmode .sub, body.tmode #grpChip, body.tmode #prog, bod
   display:flex;align-items:center;justify-content:center}
 .who{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;margin:0 0 16px;font-size:16px}
 @media print{ .join .qr{display:none} }
+.finding .hint, .finding .src, .card .hint{color:var(--ink);opacity:.9}
+.reveal .card .hint{color:var(--ink);font-size:16px}
+.qwhy{color:var(--ink);opacity:.9}
 footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 #printout{display:none}
 @media print{
@@ -181,8 +184,6 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
     <button class="btn solid" id="btnStart">Start the six questions</button>
     <button class="btn" id="btnNoRoom" style="font-weight:400">No code: answer on my own</button>
   </div>
-  <p class="hint" id="sendState" style="margin-top:12px">Only the letter of your half and your answers
-  travel to the class results: no name, no phone number, nothing that identifies you.</p>
   <p class="hint" style="margin-top:6px"><b>One thing to know:</b> the room is split in two at random,
   A and B, and the two halves get a slightly different wording of the same six questions. Yours is not
   a mistake and your neighbour's is not either. You will see both versions at the end: that comparison
@@ -190,6 +191,15 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 </section>
 
 <div id="qs" style="display:none"></div>
+
+<section id="sendBox" style="display:none">
+  <h2>Done with the six?</h2>
+  <p class="hint" id="sendState">Answer the six questions and send them: only the letter of your half and
+  your answers travel, no name and nothing that identifies you.</p>
+  <div class="row">
+    <button class="btn solid" id="btnSend">Send my answers</button>
+  </div>
+</section>
 
 <section id="endBox" style="display:none">
   <h2>When everyone has answered</h2>
@@ -513,6 +523,37 @@ function roomFromUrl() {
   return m ? m[1].toUpperCase() : '';
 }
 
+function announce() {                       // tell the room this phone is here
+  const code = (val('room') || '').toUpperCase();
+  if (!code) return;
+  fetch(NTFY + topicOf(code), { method: 'POST', body: JSON.stringify({ u: S.uid, g: S.grp, j: 1 }) })
+    .catch(() => { /* offline: the answers will carry it later */ });
+}
+
+function balanceGroup(code) {
+  // the halves have to be even, and a coin per phone drifts: read who is already
+  // in the room and take the smaller side
+  return fetch(NTFY + topicOf(code) + '/json?poll=1&since=all')
+    .then((r) => r.text())
+    .then((txt) => {
+      const seen = new Map();
+      txt.trim().split('\n').forEach((line) => {
+        try {
+          const d = JSON.parse(line);
+          if (d.event !== 'message') return;
+          const m = JSON.parse(d.message);
+          if (m && m.u && m.g) seen.set(m.u, m.g);
+        } catch (e) { /* not ours */ }
+      });
+      let a = 0, b = 0;
+      seen.forEach((g) => { if (g === 'B') b++; else a++; });
+      if (!seen.has(S.uid) && a !== b) { S.grp = a > b ? 'B' : 'A'; save(); }
+      $('#grpChip').textContent = 'Group ' + S.grp;
+      $('#grpChip').className = 'chip grp ' + S.grp;
+    })
+    .catch(() => { /* offline: the coin flip stands */ });
+}
+
 function sendAnswers() {
   const code = (val('room') || '').toUpperCase();
   const st = $('#sendState');
@@ -535,7 +576,7 @@ function queueSend() {
 function absorb(msg) {
   try {
     const d = JSON.parse(msg);
-    if (d && d.u && d.g && d.a) { LIVE.set(d.u, { g: d.g, a: d.a }); return true; }
+    if (d && d.u && d.g) { LIVE.set(d.u, { g: d.g, a: d.a || (LIVE.get(d.u) || {}).a || null }); return true; }
   } catch (e) { /* not ours */ }
   return false;
 }
@@ -543,6 +584,7 @@ function absorb(msg) {
 function liveCounts(e) {
   const out = { A: { n: 0, opts: {}, sum: 0, cnt: 0 }, B: { n: 0, opts: {}, sum: 0, cnt: 0 } };
   LIVE.forEach((r) => {
+    if (!r.a) return;                       // in the room, but has not answered yet
     const g = r.g === 'B' ? 'B' : 'A';
     const v = r.a[e.id];
     out[g].n++;
@@ -587,9 +629,14 @@ function startLive(code) {
 }
 
 function renderLive() {
-  let a = 0, b = 0;
-  LIVE.forEach((r) => { if (r.g === 'B') b++; else a++; });
-  $('#liveN').textContent = LIVE.size ? `${LIVE.size} answers · ${a} in A · ${b} in B` : 'no answers yet';
+  let a = 0, b = 0, done = 0;
+  LIVE.forEach((r) => {
+    if (r.g === 'B') b++; else a++;
+    if (r.a && Object.keys(r.a).length) done++;
+  });
+  $('#liveN').textContent = LIVE.size
+    ? `${LIVE.size} in the room · ${done} finished · ${a} in A · ${b} in B`
+    : 'nobody in the room yet';
   drawBars();
 }
 
@@ -597,6 +644,7 @@ function renderLive() {
 function showQuestions() {
   S.joined = true; save();
   $('#qs').style.display = '';
+  $('#sendBox').style.display = '';
   $('#endBox').style.display = '';
   $('#btnStart').style.display = 'none';
   $('#btnNoRoom').style.display = 'none';
@@ -607,6 +655,7 @@ function joinRoom(code) {
   const c = String(code || '').toUpperCase().trim();
   if (!c) { $('#room').focus(); $('#sendState').textContent = 'Type the code that is on the screen, or press "No code" to answer on your own.'; return; }
   S.room0 = c; $('#room').value = c; save();
+  balanceGroup(c).then(announce);
   $('#whoLine').innerHTML = '<b>You are in room ' + c + '.</b> Answer the six questions below. '
     + 'When you finish, your answers join the results of the class on their own.';
   showQuestions();
@@ -819,6 +868,7 @@ $('#btnNoRoom').addEventListener('click', () => {
   showQuestions();
 });
 $('#room').addEventListener('keydown', (e) => { if (e.key === 'Enter') joinRoom(val('room')); });
+$('#btnSend').addEventListener('click', () => { clearTimeout(sendTimer); sendAnswers(); });
 $('#btnTeacher').addEventListener('click', teacher);
 $('#btnLive').addEventListener('click', () => startLive(S.room || Math.random().toString(36).slice(2, 6).toUpperCase()));
 $('#btnNewCode').addEventListener('click', () => startLive(Math.random().toString(36).slice(2, 6).toUpperCase()));
@@ -830,7 +880,7 @@ $('#btnClear').addEventListener('click', () => {
   if (!confirm('Clear your answers and get a new random group?')) return;
   try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
   S = { grp: Math.random() < 0.5 ? 'A' : 'B', ans: {}, note: {}, quiz: {} }; save();
-  $('#qs').style.display = 'none'; $('#endBox').style.display = 'none';
+  $('#qs').style.display = 'none'; $('#sendBox').style.display = 'none'; $('#endBox').style.display = 'none';
   $('#btnStart').style.display = ''; $('#btnNoRoom').style.display = '';
   $('#quizBox').style.display = 'none'; $('#quizScore').textContent = 'not checked yet';
   $('#btnReveal').disabled = false; $('#btnReveal').textContent = 'Show me what this was about';
