@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qualitative lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%97%A3%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script src="qrcode.min.js"></script>
+<!--
+  Qualitative lab, Session 11. Two practicals that run on the phones of the room:
+
+    1. Projective techniques on a brand the professor names - word association, sentence
+       completion, the brand as a person, a story to close and the third-person question.
+       The teacher screen counts the words and lists the answers, which is exactly what a
+       projective session produces.
+    2. Netnography: ten pieces of online talk (written for the course, not copied from any
+       site) that the class codes with a theme, a sentiment and the need behind it. The
+       teacher screen builds the frequency table: a coded corpus, live.
+
+  Same machinery as the decisions lab: a room code, ntfy.sh as the channel, everything in
+  the browser, nothing personal sent and nothing to hand in.
+-->
+<style>
+:root{
+  --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
+  --ink:#16161D; --muted:#4A4A58; --line:#D9D9E3;
+  --ind:#3F3D8C; --ind-soft:#E7E6F5;
+  --a:#1F6F6B; --a-soft:#DDEFED; --b:#A4501E; --b-soft:#F7E7DA;
+  --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+}}
+:root[data-theme="dark"]{
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.6;margin:0;padding:0 clamp(16px,3vw,44px) 90px}
+.wrap{width:100%;max-width:1500px;margin:0 auto}
+h1,h2,h3{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
+header{padding:30px 0 18px;border-bottom:2px solid var(--ink);margin-bottom:20px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ind);margin:0 0 8px;font-weight:600}
+h1{font-size:clamp(32px,5vw,50px);line-height:1.05;margin:0 0 10px;font-weight:700}
+.sub{font-size:19px;margin:0;max-width:95ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:13.5px;padding:5px 11px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:var(--surface)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;padding:20px 24px}
+h2{font-size:26px;margin:0 0 6px}
+h3{font-size:20px;margin:0 0 4px}
+.who{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;margin:0 0 16px;font-size:16px}
+.q{border-left:5px solid var(--ind);padding-left:16px;margin:18px 0 10px}
+.q .n{font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--ind);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.q .text{font-size:19px;margin-top:2px}
+.q .how{font-size:15.5px;color:var(--muted);margin-top:4px}
+input[type=text],textarea,select{width:100%;font-family:inherit;font-size:17px;color:var(--ink);background:var(--surface);
+  border:1.5px solid #A6A6B5;border-radius:6px;padding:11px 14px;min-height:48px}
+textarea{min-height:76px;resize:vertical}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 22px,calc(100% - 14px) 22px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:44px}
+input:focus,textarea:focus,select:focus{outline:3px solid rgba(63,61,140,.3);border-color:var(--ind)}
+.btn{font-family:inherit;font-size:17px;font-weight:600;padding:12px 22px;border:1.5px solid var(--ind);background:var(--surface);color:var(--ind);border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--ind-soft)}
+.btn.solid{background:var(--ind);color:#fff}.btn.solid:hover{opacity:.9}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.hint{color:var(--muted);font-size:16px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:10px 0}
+.post{background:var(--sunk);border-left:4px solid var(--line);border-radius:6px;padding:12px 15px;font-size:17px}
+.post .src{font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.codes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:10px}
+.state{font-family:"IBM Plex Mono",monospace;font-size:14px;padding:4px 10px;border-radius:4px;background:var(--sunk);color:var(--muted)}
+.state.done{background:var(--ok-soft);color:var(--ok);font-weight:600}
+.live{border:1px solid var(--ind);background:var(--ind-soft);border-radius:8px;padding:14px 16px;margin:10px 0 16px}
+.steps{counter-reset:s;margin:10px 0 0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:34px;margin:7px 0;font-size:16.5px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:23px;height:23px;border-radius:50%;
+  background:var(--ind);color:#fff;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center}
+.code{font-family:"IBM Plex Mono",monospace;font-size:38px;font-weight:600;letter-spacing:.18em;color:var(--ind);
+  background:var(--surface);border:2px solid var(--ind);border-radius:8px;padding:2px 16px}
+.join{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;margin-top:12px}
+.join .qr{background:#fff;padding:10px;border:1px solid var(--line);border-radius:8px;line-height:0}
+.join .qr svg{width:190px;height:190px;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:16px}
+.card{border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.card b{font-size:18px}
+.bar{display:grid;grid-template-columns:minmax(120px,32%) 1fr 54px;gap:10px;align-items:center;margin:6px 0;font-size:16px}
+.track{display:block;background:var(--sunk);border-radius:4px;height:20px;overflow:hidden}
+.fill{display:block;height:100%;background:var(--ind);min-width:2px}
+.fill.pos{background:var(--ok)} .fill.neg{background:var(--b)} .fill.mix{background:var(--warn)}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.word{font-size:16px;background:var(--sunk);border-radius:4px;padding:4px 10px}
+.word b{font-family:"IBM Plex Mono",monospace;color:var(--ind)}
+.answers{margin-top:10px;max-height:320px;overflow:auto}
+.answers div{border-top:1px solid var(--line);padding:7px 0;font-size:16px}
+.needs{font-size:16px;color:var(--ink)}
+body.tmode #whoLine, body.tmode #whoBox, body.tmode #part1, body.tmode #part2,
+body.tmode #sendBox, body.tmode .sub, body.tmode .chip.plain{display:none!important}
+footer{margin-top:26px;color:var(--muted);font-size:14.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Session 11 · in-class practical</p>
+  <h1>Qualitative lab</h1>
+  <p class="sub">Two ways of listening: projective techniques, which never ask you the question they want
+  answered, and netnography, which reads what people already said to each other. The room produces the data
+  and the screen analyses it.</p>
+  <div class="meta">
+    <span class="chip plain">two parts · about 20 minutes</span>
+    <span class="chip" id="prog">0 answered</span>
+    <span class="chip" id="modeChip" style="display:none">Teacher screen</span>
+    <button class="btn" id="btnTeacher" style="padding:6px 14px;font-size:15px">Teacher panel</button>
+  </div>
+</header>
+
+<p class="who" id="whoLine"><b>Students:</b> join the room below and the two parts appear. &nbsp;·&nbsp;
+<b>Professor:</b> press <b>Teacher panel</b> above, then <b>Open a room</b>, and project that screen.</p>
+
+<section id="whoBox">
+  <h2>Join the room</h2>
+  <p class="hint">The professor has a four-character code on screen. Scanning the QR next to it brings you
+  straight in; otherwise type the code here.</p>
+  <div style="max-width:320px">
+    <label class="hint" for="room">Room code</label>
+    <input type="text" id="room" maxlength="6" autocapitalize="characters" placeholder="K7F2"
+    style="font-family:'IBM Plex Mono',monospace;font-size:30px;letter-spacing:.14em;text-transform:uppercase;text-align:center">
+  </div>
+  <div class="row">
+    <button class="btn solid" id="btnStart">Start</button>
+    <button class="btn" id="btnNoRoom" style="font-weight:400">No code: answer on my own</button>
+  </div>
+</section>
+
+<section id="part1" style="display:none">
+  <h2>Part 1 · Five questions that are not about you</h2>
+  <p class="hint">Answer fast and do not think about it twice: the first thing that comes to mind is the
+  data. There are no right answers here, and nothing you write is signed.</p>
+  <div id="brandBox" style="max-width:420px;margin-top:10px">
+    <label class="hint" for="brand">The brand the professor named</label>
+    <input type="text" id="brand" placeholder="e.g. Zara">
+  </div>
+  <div id="proj"></div>
+</section>
+
+<section id="part2" style="display:none">
+  <h2>Part 2 · Code what people already said</h2>
+  <p class="hint">Ten pieces of online talk about coffee at home, written for this class so that nobody's
+  words are taken without permission. For each one: the theme, whether it is positive or negative, and the
+  need underneath. That is what coding a corpus is.</p>
+  <div id="netno"></div>
+</section>
+
+<section id="sendBox" style="display:none">
+  <h2>Done?</h2>
+  <p class="hint" id="sendState">Send when you have finished: only your answers travel, no name and nothing
+  that identifies you.</p>
+  <div class="row">
+    <button class="btn solid" id="btnSend">Send my answers</button>
+  </div>
+</section>
+
+<section id="teacher" style="display:none">
+  <h2>Teacher panel: what the room produced</h2>
+  <div class="live">
+    <ol class="steps">
+      <li>Press <b>Open a room</b>, then write the brand for part 1 (it travels in the QR).</li>
+      <li>Project this screen: the class scans the QR, or types the code.</li>
+      <li>The words, the answers and the coding table fill on their own.</li>
+    </ol>
+    <div class="row" style="margin:14px 0 0">
+      <button class="btn solid" id="btnLive">Open a room</button>
+      <button class="btn" id="btnNewCode" style="display:none">New code</button>
+      <span class="code" id="roomCode" style="display:none"></span>
+      <span class="chip" id="liveN">nobody in the room yet</span>
+    </div>
+    <div style="max-width:320px;margin-top:12px">
+      <label class="hint" for="tBrand">Brand for part 1</label>
+      <input type="text" id="tBrand" placeholder="e.g. Zara">
+    </div>
+    <div class="join" id="joinBox" style="display:none">
+      <div class="qr" id="joinQr"></div>
+      <div>
+        <p class="hint" style="margin:0 0 6px">Scanning this opens the page already in the room, with the
+        brand already set.</p>
+        <p class="hint" id="joinUrl" style="margin:0;word-break:break-all"></p>
+      </div>
+    </div>
+  </div>
+  <h3 style="margin-top:22px">Part 1 · the projective answers</h3>
+  <div id="tProj" class="cards"></div>
+  <h3 style="margin-top:22px">Part 2 · the coded corpus</h3>
+  <div id="tNetno" class="cards"></div>
+</section>
+
+<footer id="foot">The online talk in part 2 was written for this class: it imitates the kind of thing people
+post, and no real post or review is reproduced. Projective techniques follow the Marketing Research course;
+netnography follows Kozinets.</footer>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const KEY = 'qualitative-lab.v1';
+
+// ---------------------------------------------------------------- part 1: the stimuli
+const PROJ = [
+  { id: 'assoc', kind: 'word', family: 'Association',
+    text: 'One word. The first that comes to mind when you hear BRAND.',
+    how: 'One word only, no explanation.' },
+  { id: 'people', kind: 'line', family: 'Completion',
+    text: 'Finish the sentence: "People who buy BRAND are..."',
+    how: 'One line. Write what comes out, not what sounds polite.' },
+  { id: 'person', kind: 'line', family: 'Construction',
+    text: 'BRAND walks into a party. Who is it, and what is it wearing?',
+    how: 'Two or three lines.' },
+  { id: 'story', kind: 'line', family: 'Completion',
+    text: 'A friend asks what to buy in this category. You say BRAND, and your friend answers...',
+    how: 'Finish the scene.' },
+  { id: 'third', kind: 'line', family: 'Expressive',
+    text: 'Your neighbour is asked to pay 20% more for BRAND than for the shop brand. What do they say?',
+    how: 'Speak as them, not as you.' },
+];
+
+// ---------------------------------------------------------------- part 2: the corpus
+const THEMES = ['Price and value', 'Quality of the product', 'The ritual and the taste',
+  'Convenience and time', 'Machine and maintenance', 'Sustainability and waste',
+  'Health', 'Status and identity', 'Service and delivery'];
+const POSTS = [
+  { id: 'p1', src: 'forum thread, "home baristas"',
+    t: 'Three years with the same machine and I have never descaled it properly. It still works but the coffee tastes like the inside of a kettle. Is it worth paying someone or do I just buy a new one?' },
+  { id: 'p2', src: 'review, subscription service',
+    t: 'The coffee is good but four bags a month is far too much for two of us. I keep pausing the subscription and forgetting to restart it, so half the time we run out anyway.' },
+  { id: 'p3', src: 'reply in a group chat, screenshot posted',
+    t: 'I did the maths: 2.60 in the cafe downstairs, 0.28 at home. And yet I still buy the one downstairs every morning because I am not awake enough to grind anything.' },
+  { id: 'p4', src: 'comment under a video',
+    t: 'Nobody talks about the pods. I love mine and I am tired of being made to feel guilty about it every time it comes up. Make them recyclable and let me drink my coffee.' },
+  { id: 'p5', src: 'forum thread, "first machine"',
+    t: 'Bought the cheap one and regretted it in a month. Bought the expensive one and now I am afraid to let anyone else use it. There is no middle option that is not a compromise.' },
+  { id: 'p6', src: 'review, beans',
+    t: 'Arrived four days late and the bag was already open at the corner. The coffee itself was lovely, which makes it worse, because now I have to decide whether to order again.' },
+  { id: 'p7', src: 'post in a local group',
+    t: 'My flatmate buys the supermarket brand and pours it into a nice jar so guests think it is the good one. Honestly I could not tell the difference in the blind test we did.' },
+  { id: 'p8', src: 'comment thread about routines',
+    t: 'The best part of my day is the ten minutes before anyone wakes up, with the machine noise and the smell. I would pay for that even if the coffee were mediocre.' },
+  { id: 'p9', src: 'review, subscription service',
+    t: 'Cancelling took four clicks and an email asking me to reconsider. That is the part I will remember, not the coffee.' },
+  { id: 'p10', src: 'forum thread, "too much caffeine?"',
+    t: 'I switched to decaf after lunch and I sleep better, but every decaf I find tastes flat. Somebody must be making a decent one and not telling anyone.' },
+];
+
+// ---------------------------------------------------------------- state
+const val = (id) => (document.getElementById(id) ? document.getElementById(id).value.trim() : '');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null') || {}; } catch (e) { return {}; } };
+let S = load();
+S.p1 = S.p1 || {}; S.p2 = S.p2 || {};
+S.uid = S.uid || Math.random().toString(36).slice(2, 10);
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* blocked */ } };
+const brand = () => (val('brand') || S.brand || 'the brand');
+
+// ---------------------------------------------------------------- build the two parts
+function buildProj() {
+  $('#proj').innerHTML = PROJ.map((e, i) => `<div class="q" data-p1="${e.id}">
+      <div class="n">${i + 1} · ${esc(e.family)}</div>
+      <div class="text">${esc(e.text).replace(/BRAND/g, '<b>' + esc(brand()) + '</b>')}</div>
+      <div class="how">${esc(e.how)}</div>
+      <div style="margin-top:10px">${e.kind === 'word'
+        ? `<input type="text" data-a="${e.id}" maxlength="24" value="${esc(S.p1[e.id] || '')}">`
+        : `<textarea data-a="${e.id}">${esc(S.p1[e.id] || '')}</textarea>`}</div>
+    </div>`).join('');
+}
+
+function buildNetno() {
+  $('#netno').innerHTML = POSTS.map((p, i) => {
+    const c = S.p2[p.id] || {};
+    return `<div class="q" data-p2="${p.id}">
+      <div class="n">Post ${i + 1}</div>
+      <div class="post"><div class="src">${esc(p.src)}</div>${esc(p.t)}</div>
+      <div class="codes">
+        <div><label class="hint" for="th_${p.id}">Theme</label>
+          <select id="th_${p.id}" data-c="${p.id}.theme">
+            <option value="">choose one</option>
+            ${THEMES.map((t) => `<option ${c.theme === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}
+          </select></div>
+        <div><label class="hint" for="se_${p.id}">Tone</label>
+          <select id="se_${p.id}" data-c="${p.id}.tone">
+            <option value="">choose one</option>
+            <option ${c.tone === 'Positive' ? 'selected' : ''}>Positive</option>
+            <option ${c.tone === 'Negative' ? 'selected' : ''}>Negative</option>
+            <option ${c.tone === 'Mixed' ? 'selected' : ''}>Mixed</option>
+          </select></div>
+        <div><label class="hint" for="nd_${p.id}">The need underneath, in five words</label>
+          <input type="text" id="nd_${p.id}" data-c="${p.id}.need" value="${esc(c.need || '')}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function states() {
+  let n = 0;
+  PROJ.forEach((e) => { if ((S.p1[e.id] || '').trim()) n++; });
+  POSTS.forEach((p) => { const c = S.p2[p.id] || {}; if (c.theme && c.tone) n++; });
+  $('#prog').textContent = n + ' / ' + (PROJ.length + POSTS.length) + ' answered';
+  return n;
+}
+
+// ---------------------------------------------------------------- joining
+function showParts() {
+  S.joined = true; save();
+  $('#part1').style.display = ''; $('#part2').style.display = ''; $('#sendBox').style.display = '';
+  $('#btnStart').style.display = 'none'; $('#btnNoRoom').style.display = 'none';
+  if (S.brand) { $('#brand').value = S.brand; $('#brandBox').style.display = 'none'; }
+  buildProj(); buildNetno(); states();
+}
+
+function joinRoom(code) {
+  const c = String(code || '').toUpperCase().trim();
+  if (!c) { $('#room').focus(); $('#sendState').textContent = 'Type the code on the screen, or press "No code".'; return; }
+  S.room0 = c; $('#room').value = c; save();
+  $('#whoLine').innerHTML = '<b>You are in room ' + c + '.</b> Answer the two parts below and send them at the end.';
+  showParts();
+  announce();
+  const first = document.querySelector('[data-p1]');
+  if (first) setTimeout(() => first.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+}
+
+// ---------------------------------------------------------------- the live room (ntfy.sh)
+const NTFY = 'https://ntfy.sh/';
+const topicOf = (code) => 'mf26qual-' + String(code).trim().toUpperCase();
+const LIVE = new Map();
+let es = null, sendTimer = null;
+
+function paramsFromUrl() {
+  const m = location.hash.match(/room=([A-Za-z0-9]{3,6})/);
+  const b = location.hash.match(/[#&]b=([^&]+)/);
+  return { room: m ? m[1].toUpperCase() : '', brand: b ? decodeURIComponent(b[1]) : '' };
+}
+
+function announce() {
+  const code = (val('room') || '').toUpperCase();
+  if (!code) return;
+  fetch(NTFY + topicOf(code), { method: 'POST', body: JSON.stringify({ u: S.uid, j: 1 }) }).catch(() => {});
+}
+
+function sendAnswers() {
+  const code = (val('room') || '').toUpperCase();
+  const st = $('#sendState');
+  if (!code) { st.textContent = 'You are answering without a room, so nothing is sent.'; return; }
+  st.textContent = 'Sending...';
+  const body = JSON.stringify({ u: S.uid, p1: S.p1, p2: S.p2 });
+  fetch(NTFY + topicOf(code), { method: 'POST', body })
+    .then((r) => { st.textContent = r.ok ? 'Sent. Your answers are on the screen of the room.' : 'Could not send (' + r.status + ').'; })
+    .catch(() => { st.textContent = 'No connection: tell the professor.'; });
+}
+
+function queueSend() {
+  clearTimeout(sendTimer);
+  sendTimer = setTimeout(sendAnswers, 2000 + Math.random() * 3000);
+}
+
+function absorb(msg) {
+  try {
+    const d = JSON.parse(msg);
+    if (!d || !d.u) return false;
+    const old = LIVE.get(d.u) || {};
+    LIVE.set(d.u, { p1: d.p1 || old.p1 || null, p2: d.p2 || old.p2 || null });
+    return true;
+  } catch (e) { return false; }
+}
+
+function startLive(code) {
+  if (es) { es.close(); es = null; }
+  LIVE.clear();
+  const t = topicOf(code);
+  fetch(NTFY + t + '/json?poll=1&since=all').then((r) => r.text()).then((txt) => {
+    txt.trim().split('\n').forEach((line) => {
+      try { const d = JSON.parse(line); if (d.event === 'message') absorb(d.message); } catch (e) {}
+    });
+    renderLive();
+  }).catch(() => {});
+  es = new EventSource(NTFY + t + '/sse');
+  es.onmessage = (ev) => { try { const d = JSON.parse(ev.data); if (d.event === 'message' && absorb(d.message)) renderLive(); } catch (e) {} };
+  S.room = code; save();
+  $('#roomCode').textContent = code; $('#roomCode').style.display = '';
+  $('#btnNewCode').style.display = ''; $('#btnLive').style.display = 'none';
+  showJoin(code);
+  renderLive();
+}
+
+function showJoin(code) {
+  const b = val('tBrand');
+  const url = location.href.split('#')[0] + '#room=' + code + (b ? '&b=' + encodeURIComponent(b) : '');
+  $('#joinUrl').textContent = url;
+  try {
+    const q = qrcode(0, 'M');
+    q.addData(url); q.make();
+    $('#joinQr').innerHTML = q.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
+    $('#joinBox').style.display = 'grid';
+  } catch (e) {
+    $('#joinQr').innerHTML = '';
+    $('#joinBox').style.display = 'grid';
+    $('#joinUrl').textContent = 'QR not available here: read the code out loud. ' + url;
+  }
+}
+
+// ---------------------------------------------------------------- the teacher screen
+function words(id) {
+  const count = new Map();
+  LIVE.forEach((r) => {
+    const v = ((r.p1 || {})[id] || '').trim().toLowerCase().replace(/[.,;:!?"']/g, '');
+    if (!v) return;
+    count.set(v, (count.get(v) || 0) + 1);
+  });
+  return [...count.entries()].sort((x, y) => y[1] - x[1]);
+}
+
+function lines(id) {
+  const out = [];
+  LIVE.forEach((r) => { const v = ((r.p1 || {})[id] || '').trim(); if (v) out.push(v); });
+  return out;
+}
+
+function renderProj() {
+  $('#tProj').innerHTML = PROJ.map((e) => {
+    const body = e.kind === 'word'
+      ? (() => {
+        const w = words(e.id);
+        const max = w.length ? w[0][1] : 1;
+        return w.length
+          ? w.slice(0, 14).map(([t, n]) => `<div class="bar"><span>${esc(t)}</span>
+              <span class="track"><span class="fill" style="width:${(n / max * 100).toFixed(0)}%"></span></span>
+              <span class="hint">${n}</span></div>`).join('')
+          : '<p class="hint">no words yet</p>';
+      })()
+      : (() => {
+        const l = lines(e.id);
+        return l.length
+          ? `<div class="answers">${l.map((t) => `<div>${esc(t)}</div>`).join('')}</div>`
+          : '<p class="hint">no answers yet</p>';
+      })();
+    return `<div class="card"><b>${esc(e.family)}</b>
+      <div class="hint">${esc(e.text).replace(/BRAND/g, esc(val('tBrand') || 'the brand'))}</div>
+      ${body}</div>`;
+  }).join('');
+}
+
+function renderNetno() {
+  const tone = { Positive: 'pos', Negative: 'neg', Mixed: 'mix' };
+  const byTheme = new Map();
+  const needs = [];
+  LIVE.forEach((r) => {
+    Object.entries(r.p2 || {}).forEach(([pid, c]) => {
+      if (!c || !c.theme) return;
+      const k = c.theme;
+      const e = byTheme.get(k) || { n: 0, Positive: 0, Negative: 0, Mixed: 0 };
+      e.n++; if (c.tone) e[c.tone] = (e[c.tone] || 0) + 1;
+      byTheme.set(k, e);
+      if (c.need && c.need.trim()) needs.push(c.need.trim());
+    });
+  });
+  const rows = [...byTheme.entries()].sort((a, b) => b[1].n - a[1].n);
+  const max = rows.length ? rows[0][1].n : 1;
+  const table = rows.length
+    ? rows.map(([t, e]) => `<div class="bar"><span>${esc(t)}</span>
+        <span class="track"><span class="fill ${tone[dominant(e)] || ''}" style="width:${(e.n / max * 100).toFixed(0)}%"></span></span>
+        <span class="hint">${e.n}</span></div>`).join('')
+    : '<p class="hint">nothing coded yet</p>';
+  const cloud = needs.length
+    ? `<div class="wordlist">${needs.slice(0, 40).map((n) => `<span class="word">${esc(n)}</span>`).join('')}</div>`
+    : '<p class="hint">no needs written yet</p>';
+  $('#tNetno').innerHTML = `<div class="card"><b>Themes, by how often the room used them</b>
+      <div class="hint">The colour is the tone that dominates that theme.</div>${table}</div>
+    <div class="card"><b>The needs the room wrote underneath</b>
+      <div class="hint">These lines are the raw material of the insight.</div>${cloud}</div>`;
+}
+
+function dominant(e) {
+  let best = '', n = -1;
+  ['Positive', 'Negative', 'Mixed'].forEach((k) => { if ((e[k] || 0) > n) { n = e[k] || 0; best = k; } });
+  return best;
+}
+
+function renderLive() {
+  let done = 0;
+  LIVE.forEach((r) => { if (r.p1 || r.p2) done++; });
+  $('#liveN').textContent = LIVE.size
+    ? `${LIVE.size} in the room · ${done} sent`
+    : 'nobody in the room yet';
+  renderProj(); renderNetno();
+}
+
+function teacher() {
+  const t = $('#teacher');
+  const open = t.style.display === 'none';
+  t.style.display = open ? 'block' : 'none';
+  document.body.classList.toggle('tmode', open);
+  $('#modeChip').style.display = open ? '' : 'none';
+  $('#btnTeacher').textContent = open ? 'Back to the student page' : 'Teacher panel';
+  if (!open) return;
+  window.scrollTo({ top: 0 });
+  renderLive();
+}
+
+// ---------------------------------------------------------------- wiring
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.a !== undefined) { S.p1[t.dataset.a] = t.value; save(); states(); queueSend(); }
+  if (t.dataset.c !== undefined) {
+    const [pid, field] = t.dataset.c.split('.');
+    S.p2[pid] = S.p2[pid] || {};
+    S.p2[pid][field] = t.value;
+    save(); states(); queueSend();
+  }
+  if (t.id === 'brand') { S.brand = t.value; save(); buildProj(); }
+  if (t.id === 'tBrand') { if (S.room) showJoin(S.room); renderProj(); }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.dataset.c !== undefined) e.target.dispatchEvent(new Event('input', { bubbles: true }));
+});
+$('#btnStart').addEventListener('click', () => joinRoom(val('room')));
+$('#btnNoRoom').addEventListener('click', () => {
+  $('#whoLine').innerHTML = '<b>No room.</b> You can answer both parts, but nothing is sent to the class screen.';
+  showParts();
+});
+$('#room').addEventListener('keydown', (e) => { if (e.key === 'Enter') joinRoom(val('room')); });
+$('#btnSend').addEventListener('click', () => { clearTimeout(sendTimer); sendAnswers(); });
+$('#btnTeacher').addEventListener('click', teacher);
+$('#btnLive').addEventListener('click', () => startLive(S.room || Math.random().toString(36).slice(2, 6).toUpperCase()));
+$('#btnNewCode').addEventListener('click', () => startLive(Math.random().toString(36).slice(2, 6).toUpperCase()));
+
+const P = paramsFromUrl();
+if (P.brand) { S.brand = P.brand; save(); }
+if (P.room) {
+  $('#room').value = P.room;
+  joinRoom(P.room);
+} else if (S.joined) {
+  showParts();
+}
+</script>
+</body>
+</html>
