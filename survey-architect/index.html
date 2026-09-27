@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Survey architect</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%8B%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<!--
+  Survey architect, Session 12. The student writes the brief - the decision, the population,
+  what they expect to find, the demographics they will cross by - and the page writes the
+  prompt that an AI needs in order to draft a questionnaire that follows the rules of the
+  session: 1 to 5 scales whenever the question can take one, one idea per question, a
+  screener first, demographics last, and an analysis plan for every question.
+
+  Everything happens in this browser. There is no API key in a public page, so the tool
+  produces the prompt and the checklist; the student takes them to whichever assistant they
+  use and brings the questionnaire back for review.
+-->
+<style>
+:root{
+  --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
+  --ink:#16161D; --muted:#4A4A58; --line:#D9D9E3;
+  --ind:#3F3D8C; --ind-soft:#E7E6F5;
+  --a:#1F6F6B; --a-soft:#DDEFED; --b:#A4501E; --b-soft:#F7E7DA;
+  --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+}}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.6;margin:0;padding:0 clamp(16px,3vw,44px) 90px}
+.wrap{width:100%;max-width:1500px;margin:0 auto}
+h1,h2,h3{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
+header{padding:30px 0 18px;border-bottom:2px solid var(--ink);margin-bottom:20px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ind);margin:0 0 8px;font-weight:600}
+h1{font-size:clamp(32px,5vw,50px);line-height:1.05;margin:0 0 10px;font-weight:700}
+.sub{font-size:19px;margin:0;max-width:95ch}
+section{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;padding:20px 24px}
+h2{font-size:26px;margin:0 0 6px}
+h3{font-size:20px;margin:18px 0 4px}
+.hint{color:var(--muted);font-size:16px}
+label.f{display:block;font-size:15.5px;color:var(--muted);margin:14px 0 4px}
+input[type=text],textarea,select{width:100%;font-family:inherit;font-size:17px;color:var(--ink);background:var(--surface);
+  border:1.5px solid #A6A6B5;border-radius:6px;padding:11px 14px;min-height:48px}
+textarea{min-height:82px;resize:vertical}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 22px,calc(100% - 14px) 22px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:44px}
+input:focus,textarea:focus,select:focus{outline:3px solid rgba(63,61,140,.3);border-color:var(--ind)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0 22px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.chk{display:flex;gap:9px;align-items:flex-start;border:1.5px solid var(--line);border-radius:6px;padding:9px 12px;cursor:pointer;font-size:16px}
+.chk:hover{border-color:var(--ind)}
+.chk input{margin-top:4px;width:18px;height:18px;accent-color:var(--ind)}
+.chk.on{border-color:var(--ind);background:var(--ind-soft)}
+.btn{font-family:inherit;font-size:17px;font-weight:600;padding:12px 22px;border:1.5px solid var(--ind);background:var(--surface);color:var(--ind);border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--ind-soft)}
+.btn.solid{background:var(--ind);color:#fff}.btn.solid:hover{opacity:.9}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+pre.prompt{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:16px 18px;white-space:pre-wrap;
+  font-family:"IBM Plex Mono",monospace;font-size:14.5px;line-height:1.55;max-height:460px;overflow:auto;margin:12px 0 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;border-bottom:2px solid var(--line)}
+.tab{font-family:inherit;font-size:17px;font-weight:600;padding:10px 18px;border:0;background:none;color:var(--muted);
+  cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--ind);border-bottom-color:var(--ind)}
+.pane{display:none}.pane.on{display:block}
+.check{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:16.5px}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--ok)}
+.check b{display:block}
+.plan{width:100%;border-collapse:collapse;margin-top:10px;font-size:16px}
+.plan th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ind);border-bottom:2px solid var(--line);padding:6px 10px 6px 0}
+.plan td{border-bottom:1px solid var(--line);padding:8px 10px 8px 0;vertical-align:top}
+.note{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:12px 15px;margin-top:14px;font-size:16px}
+.ok{background:var(--ok-soft);border:1px solid var(--ok);border-radius:8px;padding:12px 15px;margin-top:14px;font-size:16px}
+footer{margin-top:26px;color:var(--muted);font-size:14.5px}
+@media print{ body{background:#fff} .tabs,.btn,.row{display:none!important} pre.prompt{max-height:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Session 12 · questionnaire design</p>
+  <h1>Survey architect</h1>
+  <p class="sub">You write the brief; the page writes the prompt. Every rule of the session travels inside
+  it: 1 to 5 scales wherever the question can take one, one idea per question, a screener at the start,
+  demographics at the end, and an analysis plan for every question you ask.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab on" id="tabBrief">1 · Your brief</button>
+  <button class="tab" id="tabPrompt">2 · The prompt</button>
+  <button class="tab" id="tabCheck">3 · Review what it wrote</button>
+</div>
+
+<div class="pane on" id="paneBrief">
+<section>
+  <h2>The decision, first</h2>
+  <p class="hint">If you cannot say what you would do differently depending on the answer, the survey is
+  not worth running. Write that first.</p>
+  <div class="grid2">
+    <div>
+      <label class="f" for="topic">Product, brand or topic</label>
+      <input type="text" id="topic" data-k placeholder="e.g. a coffee subscription for students">
+      <label class="f" for="decision">The decision this survey has to inform</label>
+      <textarea id="decision" data-k placeholder="e.g. whether to launch a 9.90 euro monthly plan, and with which two benefits"></textarea>
+      <label class="f" for="pop">Who exactly you will ask</label>
+      <input type="text" id="pop" data-k placeholder="e.g. IE undergraduates who buy coffee outside home at least weekly">
+      <label class="f" for="reach">How you will reach them</label>
+      <input type="text" id="reach" data-k placeholder="e.g. WhatsApp groups and a QR on campus">
+    </div>
+    <div>
+      <label class="f" for="hyp">What you expect to find: two to four hypotheses</label>
+      <textarea id="hyp" style="min-height:150px" data-k placeholder="One per line.
+e.g. Price is the main barrier above 10 euros
+e.g. Those who already subscribe to something value convenience more
+e.g. First-years are more price sensitive than final-years"></textarea>
+      <div class="grid2">
+        <div>
+          <label class="f" for="n">Questions you want (without demographics)</label>
+          <select id="n" data-k>
+            <option>8</option><option selected>12</option><option>15</option><option>20</option>
+          </select>
+        </div>
+        <div>
+          <label class="f" for="lang">Language of the questionnaire</label>
+          <select id="lang" data-k>
+            <option selected>English</option><option>Spanish</option><option>Both, side by side</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Demographics you will cross the answers by</h3>
+  <p class="hint">Only the ones you will actually use in a table. Every extra one costs you answers.</p>
+  <div class="opts" id="demos"></div>
+
+  <h3>Blocks to include</h3>
+  <div class="opts" id="blocks"></div>
+
+  <div class="row">
+    <button class="btn solid" id="btnBuild">Write my prompt</button>
+    <button class="btn" id="btnClear" style="font-weight:400">Clear</button>
+  </div>
+</section>
+
+<section>
+  <h2>The analysis plan this brief implies</h2>
+  <p class="hint">Written before the questionnaire, as the session asks. Each row is a variable you will
+  have in your dataset and the table it ends up in.</p>
+  <div id="plan"></div>
+</section>
+</div>
+
+<div class="pane" id="panePrompt">
+<section>
+  <h2>Your prompt</h2>
+  <p class="hint">Copy it into whichever assistant you use. Read what comes back with the checklist in the
+  next tab: the questionnaire is yours, not the model's.</p>
+  <div class="row">
+    <button class="btn solid" id="btnCopy">Copy the prompt</button>
+    <button class="btn" id="btnPrint" style="font-weight:400">Print or save as PDF</button>
+    <span class="hint" id="copyState"></span>
+  </div>
+  <pre class="prompt" id="prompt">Fill in the brief and press "Write my prompt".</pre>
+  <div class="note"><b>Before you send it to anybody:</b> a questionnaire written by a model is a draft.
+  It will be too long, it will repeat itself, and one question in five will be leading. Cut it to the
+  number you asked for and rewrite the ones the checklist catches.</div>
+</section>
+</div>
+
+<div class="pane" id="paneCheck">
+<section>
+  <h2>Review what it wrote</h2>
+  <p class="hint">Go through this with the draft in front of you. Anything you cannot tick is a question
+  to rewrite, not a detail.</p>
+  <div id="checks"></div>
+  <div class="ok" id="checkScore">0 of 0 checked.</div>
+  <h3>And if you want the model to audit itself</h3>
+  <p class="hint">Paste your draft after this and send it back. It is a second pair of eyes, not a
+  verdict.</p>
+  <div class="row"><button class="btn" id="btnCopyAudit">Copy the audit prompt</button>
+    <span class="hint" id="copyState2"></span></div>
+  <pre class="prompt" id="audit"></pre>
+</section>
+</div>
+
+<footer>Session 12 · Marketing Fundamentals 26-27. Nothing you type leaves this browser: the page writes a
+prompt, it does not send anything anywhere.</footer>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const KEY = 'survey-architect.v1';
+const DEMOS = [
+  ['age', 'Age band', 'Age: under 18 / 18-20 / 21-23 / 24-26 / 27 or older'],
+  ['gender', 'Gender', 'Gender, with a "prefer not to say" option'],
+  ['year', 'Year or occupation', 'Year of study, or occupation'],
+  ['income', 'Income or budget', 'Monthly budget for this category, in bands'],
+  ['place', 'Where they live', 'City / suburb / small town, or campus / home'],
+  ['nat', 'Nationality or origin', 'Nationality, grouped'],
+  ['house', 'Household', 'Living alone / with family / shared flat'],
+  ['freq', 'Category usage', 'How often they buy in the category, in bands'],
+];
+const BLOCKS = [
+  ['screener', 'Screener', 'One or two questions that send away anybody outside the population'],
+  ['aware', 'Awareness and use', 'Which brands they know, which they have bought'],
+  ['attr', 'Attribute ratings', 'The 1 to 5 block: the attributes that drive the decision'],
+  ['barrier', 'Barriers', 'What stops them, asked without leading'],
+  ['price', 'Price', 'Acceptable range and the point where it becomes too expensive'],
+  ['intent', 'Intention', 'Likelihood to try, on 1 to 5, with the caveat that intention overstates'],
+  ['nps', 'Recommendation', 'One recommendation question, on the same 1 to 5 scale'],
+  ['open', 'One open question', 'At the end, one free answer for what the scales missed'],
+];
+
+const val = (id) => (document.getElementById(id) ? document.getElementById(id).value.trim() : '');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null') || {}; } catch (e) { return {}; } };
+let S = load();
+S.demos = S.demos || { age: true, gender: true, year: true, freq: true };
+S.blocks = S.blocks || { screener: true, aware: true, attr: true, barrier: true, price: true, intent: true, open: true };
+S.checked = S.checked || {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+function boxes(where, list, store) {
+  $(where).innerHTML = list.map(([id, name, what]) => `<label class="chk ${store[id] ? 'on' : ''}" data-box="${id}">
+      <input type="checkbox" ${store[id] ? 'checked' : ''} data-box-in="${id}">
+      <span><b>${esc(name)}</b><br><span class="hint">${esc(what)}</span></span></label>`).join('');
+}
+
+// ---------------------------------------------------------------- the prompt
+function lines(id) {
+  return val(id).split('\n').map((l) => l.trim()).filter(Boolean);
+}
+
+function buildPrompt() {
+  const n = val('n') || '12';
+  const lang = val('lang') || 'English';
+  const hyp = lines('hyp');
+  const demos = DEMOS.filter(([id]) => S.demos[id]);
+  const blocks = BLOCKS.filter(([id]) => S.blocks[id]);
+  const p = [];
+  p.push('You are helping me design a questionnaire for a marketing research project. Follow the rules below exactly; they are the rules of my course and they are not negotiable.');
+  p.push('');
+  p.push('THE BRIEF');
+  p.push('- Topic: ' + (val('topic') || '(not stated)'));
+  p.push('- Decision the survey has to inform: ' + (val('decision') || '(not stated)'));
+  p.push('- Population: ' + (val('pop') || '(not stated)'));
+  p.push('- How it will be distributed: ' + (val('reach') || '(not stated)'));
+  if (hyp.length) {
+    p.push('- What I expect to find, and therefore what the questionnaire has to be able to confirm or contradict:');
+    hyp.forEach((h, i) => p.push('   H' + (i + 1) + '. ' + h));
+  }
+  p.push('- Length: ' + n + ' questions, not counting the demographics and the screener.');
+  p.push('- Language: ' + lang + '.');
+  p.push('');
+  p.push('RULES FOR EVERY QUESTION');
+  p.push('1. One idea per question. Never join two ideas with "and" or "or".');
+  p.push('2. No leading, loaded or assuming wording. The question must not suggest an answer.');
+  p.push('3. Plain words the respondent uses. No marketing jargon.');
+  p.push('4. Anything about behaviour carries an explicit reference period, for example "in the last 30 days".');
+  p.push('5. Do not ask people to predict their own future behaviour except in the single intention question, and mark it as the weak measure it is.');
+  p.push('6. Categories never overlap and always cover every case.');
+  p.push('7. Offer "don\'t know" or "not applicable" wherever a respondent could honestly have no answer.');
+  p.push('');
+  p.push('RULES FOR THE SCALES');
+  p.push('8. Whenever a question can be answered on a rating, use a 1 to 5 scale and nothing else. Never 1 to 7, never 0 to 10, never a slider.');
+  p.push('9. The 5 points are labelled, balanced and always in the same direction: 1 = strongly disagree, 2 = disagree, 3 = neither agree nor disagree, 4 = agree, 5 = strongly agree. For frequency or importance use the equivalent labelled 1 to 5 set, again with 5 as the high end.');
+  p.push('10. Facts are not rated: counts, amounts, times and dates are asked as numbers or as bands.');
+  p.push('11. Choices are asked with a list, single or multiple answer, with "other, please specify" when the list may be incomplete.');
+  p.push('');
+  p.push('STRUCTURE');
+  p.push('12. Order: a three-line presentation (who is asking, why, how long, what happens with the answers); ' + (S.blocks.screener ? 'the screener; ' : '') + 'two easy warm-up questions; the body in blocks, one topic at a time; the sensitive questions late; the demographics at the very end.');
+  if (blocks.length) {
+    p.push('13. Blocks I want, in this order:');
+    blocks.forEach(([id, name, what]) => p.push('   - ' + name + ': ' + what));
+  }
+  p.push((blocks.length ? '14' : '13') + '. Demographics to include, at the end, in bands and never as open text:');
+  if (demos.length) demos.forEach(([id, name, what]) => p.push('   - ' + what));
+  else p.push('   - none');
+  p.push('');
+  p.push('WHAT TO GIVE ME BACK, IN THIS ORDER');
+  p.push('A. The questionnaire, numbered, ready to be typed into a form, with the exact answer options for every question.');
+  p.push('B. A table with one row per question: question number, short variable name, what it measures, scale type (nominal, ordinal, interval or ratio), and which hypothesis it serves.');
+  p.push('C. An analysis plan: which questions become frequency tables, which become means, which two are crossed against which demographic, and which pair is correlated. Name the specific table for each hypothesis.');
+  p.push('D. A list of the three questions you are least sure about, and why.');
+  p.push('');
+  p.push('WHAT NOT TO DO');
+  p.push('- Do not exceed ' + n + ' questions. If something does not serve a hypothesis or the decision, leave it out and say so.');
+  p.push('- Do not invent findings, data or benchmarks.');
+  p.push('- Do not use a Net Promoter style 0 to 10 question. If recommendation matters, ask it on the same 1 to 5 scale.');
+  p.push('- Do not put demographics at the beginning.');
+  $('#prompt').textContent = p.join('\n');
+  buildAudit();
+  buildPlan();
+}
+
+function buildAudit() {
+  const a = [];
+  a.push('Audit the questionnaire below against these rules and answer in a table: question number, the rule it breaks, and a rewritten version.');
+  a.push('');
+  a.push('1. One idea per question. 2. No leading or loaded wording. 3. No jargon or vague quantifiers such as "regularly" or "value for money". 4. Behaviour questions carry an explicit reference period. 5. No question asks for a prediction except a single intention question. 6. Answer categories do not overlap and cover every case. 7. "Don\'t know" is offered where it is honest. 8. Every rating is a labelled, balanced 1 to 5 scale in the same direction. 9. Facts are asked as numbers or bands, not rated. 10. The screener is at the start and the demographics are at the end. 11. Nothing is asked that no analysis will use.');
+  a.push('');
+  a.push('Then tell me which questions I can delete without losing the ability to answer my hypotheses, and give me the shortest version of the questionnaire that still works.');
+  a.push('');
+  a.push('THE QUESTIONNAIRE:');
+  a.push('[paste it here]');
+  $('#audit').textContent = a.join('\n');
+}
+
+function buildPlan() {
+  const hyp = lines('hyp');
+  const rows = [];
+  if (S.blocks.screener) rows.push(['screener', 'Nominal', 'Filter: nobody outside the population is analysed']);
+  if (S.blocks.aware) rows.push(['awareness, used_brand', 'Nominal', 'Frequency table, and a crosstab against the main demographic']);
+  if (S.blocks.attr) rows.push(['attr_1 … attr_n (1-5)', 'Interval, by convention', 'Mean and standard deviation per attribute, and a comparison of means between segments']);
+  if (S.blocks.barrier) rows.push(['barrier (list)', 'Nominal', 'Frequency table; crosstab with the intention question']);
+  if (S.blocks.price) rows.push(['price_ok, price_high', 'Ratio', 'Median and quartiles; the band where acceptance falls']);
+  if (S.blocks.intent) rows.push(['intent (1-5)', 'Interval, by convention', 'Mean, and crosstab of the top two boxes against every demographic']);
+  if (S.blocks.nps) rows.push(['recommend (1-5)', 'Interval, by convention', 'Mean, and correlation with the attribute block']);
+  if (S.blocks.open) rows.push(['open_end', 'Text', 'Coded by hand into themes, as in Session 11']);
+  DEMOS.filter(([id]) => S.demos[id]).forEach(([id, name]) => rows.push([id, 'Nominal or ordinal band', 'The column of every crosstab']));
+  const body = rows.map(([v, s, a]) => `<tr><td><b>${esc(v)}</b></td><td>${esc(s)}</td><td>${esc(a)}</td></tr>`).join('');
+  const hypRows = hyp.map((h, i) => `<tr><td><b>H${i + 1}</b></td><td colspan="2">${esc(h)} &nbsp;<span class="hint">— name here the table that will confirm or contradict it</span></td></tr>`).join('');
+  $('#plan').innerHTML = rows.length
+    ? `<table class="plan"><tr><th>Variable</th><th>Scale</th><th>What it feeds</th></tr>${body}${hypRows}</table>`
+    : '<p class="hint">Choose at least one block.</p>';
+}
+
+// ---------------------------------------------------------------- the checklist
+const CHECKS = [
+  ['Every question serves the decision or one hypothesis. The ones that do not are gone.'],
+  ['No question joins two ideas with "and" or "or".'],
+  ['No question suggests its own answer.'],
+  ['Every rating is a 1 to 5 scale, labelled at all five points, in the same direction.'],
+  ['There is no 1 to 7, 0 to 10 or unlabelled slider anywhere.'],
+  ['Facts (counts, amounts, times) are asked as numbers or bands, not rated.'],
+  ['Every behaviour question has an explicit reference period.'],
+  ['Answer categories do not overlap and cover every case.'],
+  ['"Don\'t know" or "not applicable" exists wherever it is honest.'],
+  ['The screener is first and the demographics are last.'],
+  ['The sensitive questions are late, not at the start.'],
+  ['The presentation says who asks, why, how long and what happens with the answers.'],
+  ['It takes under 10 minutes; I timed it on a phone.'],
+  ['Every question has a line in the analysis plan, with the table it ends up in.'],
+  ['Each hypothesis has a named table that could contradict it.'],
+  ['I could remove three more questions and still answer the decision.'],
+];
+
+function buildChecks() {
+  $('#checks').innerHTML = CHECKS.map((c, i) => `<label class="check"><input type="checkbox" data-chk="${i}" ${S.checked[i] ? 'checked' : ''}>
+      <span>${esc(c[0])}</span></label>`).join('');
+  scoreChecks();
+}
+
+function scoreChecks() {
+  const n = Object.values(S.checked).filter(Boolean).length;
+  $('#checkScore').textContent = n + ' of ' + CHECKS.length + ' checked.' +
+    (n === CHECKS.length ? ' That questionnaire can go out.' : n > 11 ? ' Close. Fix the rest before sending it.' : ' Not yet.');
+}
+
+// ---------------------------------------------------------------- wiring
+function showTab(which) {
+  ['Brief', 'Prompt', 'Check'].forEach((t) => {
+    $('#pane' + t).classList.toggle('on', t === which);
+    $('#tab' + t).classList.toggle('on', t === which);
+  });
+}
+$('#tabBrief').addEventListener('click', () => showTab('Brief'));
+$('#tabPrompt').addEventListener('click', () => { buildPrompt(); showTab('Prompt'); });
+$('#tabCheck').addEventListener('click', () => showTab('Check'));
+
+document.addEventListener('input', (e) => {
+  if (e.target.dataset.k !== undefined) { S[e.target.id] = e.target.value; save(); buildPlan(); }
+});
+document.addEventListener('change', (e) => {
+  const b = e.target.dataset.boxIn;
+  if (b !== undefined) {
+    const store = DEMOS.some(([id]) => id === b) ? S.demos : S.blocks;
+    store[b] = e.target.checked; save();
+    e.target.closest('.chk').classList.toggle('on', e.target.checked);
+    buildPlan();
+  }
+  if (e.target.dataset.chk !== undefined) { S.checked[e.target.dataset.chk] = e.target.checked; save(); scoreChecks(); }
+});
+$('#btnBuild').addEventListener('click', () => { buildPrompt(); showTab('Prompt'); });
+$('#btnCopy').addEventListener('click', () => {
+  navigator.clipboard.writeText($('#prompt').textContent)
+    .then(() => { $('#copyState').textContent = 'Copied.'; })
+    .catch(() => { $('#copyState').textContent = 'Select it and copy by hand.'; });
+});
+$('#btnCopyAudit').addEventListener('click', () => {
+  navigator.clipboard.writeText($('#audit').textContent)
+    .then(() => { $('#copyState2').textContent = 'Copied.'; })
+    .catch(() => { $('#copyState2').textContent = 'Select it and copy by hand.'; });
+});
+$('#btnPrint').addEventListener('click', () => window.print());
+$('#btnClear').addEventListener('click', () => {
+  if (!confirm('Clear the brief?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  location.reload();
+});
+
+// restore
+['topic', 'decision', 'pop', 'reach', 'hyp', 'n', 'lang'].forEach((id) => {
+  if (S[id] !== undefined && document.getElementById(id)) document.getElementById(id).value = S[id];
+});
+boxes('#demos', DEMOS, S.demos);
+boxes('#blocks', BLOCKS, S.blocks);
+buildChecks();
+buildPrompt();
+</script>
+</body>
+</html>
