@@ -512,7 +512,34 @@ function drawBars() {
 // ---------------------------------------------------------------- live room (ntfy.sh)
 // Anonymous and ephemeral: a random device id, the condition letter and the six answers.
 // Publishing and subscribing both work straight from the browser, with no account.
-const NTFY = 'https://ntfy.sh/';
+const NTFY_SERVERS = ['https://ntfy.sh/', 'https://ntfy.envs.net/', 'https://ntfy.adminforge.de/'];
+let NTFY = NTFY_SERVERS[0];
+let ntfyPicked = false;
+
+function ntfyIndex() { return Math.max(0, NTFY_SERVERS.indexOf(NTFY)); }
+
+function serverFromUrl() {                     // the QR carries the server the professor is on
+  const m = location.hash.match(/[#&]s=(\d)/);
+  return m ? Number(m[1]) : null;
+}
+
+async function pickServer(preferred) {         // first one that answers wins
+  const order = [];
+  if (preferred !== null && preferred !== undefined && NTFY_SERVERS[preferred]) order.push(NTFY_SERVERS[preferred]);
+  NTFY_SERVERS.forEach((s) => { if (!order.includes(s)) order.push(s); });
+  for (const s of order) {
+    try {
+      const c = new AbortController();
+      const t = setTimeout(() => c.abort(), 4000);
+      const r = await fetch(s + 'mf26ping/json?poll=1&since=latest', { signal: c.signal, cache: 'no-store' });
+      clearTimeout(t);
+      if (r.ok) { NTFY = s; ntfyPicked = true; return s; }
+    } catch (e) { /* next one */ }
+  }
+  ntfyPicked = false;
+  return null;
+}
+
 const topicOf = (code) => 'mf26lab-' + String(code).trim().toUpperCase();
 S.uid = S.uid || Math.random().toString(36).slice(2, 10);
 const LIVE = new Map();            // uid -> {g, a}
@@ -554,7 +581,8 @@ function balanceGroup(code) {
     .catch(() => { /* offline: the coin flip stands */ });
 }
 
-function sendAnswers() {
+async function sendAnswers() {
+  if (!ntfyPicked) await pickServer(serverFromUrl());
   const code = (val('room') || '').toUpperCase();
   const st = $('#sendState');
   if (!code) return;
@@ -596,7 +624,7 @@ function liveCounts(e) {
 }
 
 function showJoin(code) {
-  const url = location.href.split('#')[0] + '#room=' + code;
+  const url = location.href.split('#')[0] + '#room=' + code + '&s=' + ntfyIndex();
   $('#joinUrl').textContent = url;
   const box = $('#joinQr');
   try {                                   // the library is the nice-to-have, the code is the fallback
@@ -611,7 +639,8 @@ function showJoin(code) {
   }
 }
 
-function startLive(code) {
+async function startLive(code) {
+  await pickServer(null);
   if (es) { es.close(); es = null; }
   LIVE.clear();
   const t = topicOf(code);
@@ -651,7 +680,8 @@ function showQuestions() {
   states();
 }
 
-function joinRoom(code) {
+async function joinRoom(code) {
+  if (!ntfyPicked) await pickServer(serverFromUrl());
   const c = String(code || '').toUpperCase().trim();
   if (!c) { $('#room').focus(); $('#sendState').textContent = 'Type the code that is on the screen, or press "No code" to answer on your own.'; return; }
   S.room0 = c; $('#room').value = c; save();
