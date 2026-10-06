@@ -114,8 +114,10 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 
 <section>
   <h2><span class="n">2</span>What you need to learn</h2>
-  <p class="hint">Three things, no more. For each one, the table it will end up in: that is what stops a
-  questionnaire from growing. A line with no table does not become a question.</p>
+  <p class="hint">Three things, no more. For each one, choose the table it will end up in: that is what
+  stops a questionnaire from growing, and it also decides how the question has to be written. Pick one and
+  read the line underneath: it tells you what that analysis is and what the question needs to look like.
+  A line with no table does not become a question.</p>
   <div id="needs"></div>
   <div class="rules"><b>The rule behind this step</b>Every question maps to one thing you need to learn and
   one analysis. If you cannot name the table, the question is not ready.</div>
@@ -168,8 +170,23 @@ de Mercado I. Nothing you type leaves this browser.</footer>
 <script>
 const $ = (s) => document.querySelector(s);
 const KEY = 'questionnaire-lab.v1';
-const ANALYSES = ['a frequency table', 'a mean on the 1 to 5 scale', 'a crosstab against a demographic',
-                  'a comparison of means between two groups', 'a correlation between two 1 to 5 questions'];
+const ANALYSES = [
+  { label: 'a frequency table (how many chose each option)',
+    what: 'Counts and percentages of each answer. The first table of any report: "62% use the phone".',
+    needs: 'The question has to be a list of options, or yes/no. Nothing to average.' },
+  { label: 'a mean on the 1 to 5 scale (the average score)',
+    what: 'The average of a rating, with its standard deviation, which tells you how divided the room is.',
+    needs: 'The question has to be a 1 to 5 rating, labelled at all five points.' },
+  { label: 'a crosstab (one group against another)',
+    what: 'The same question split by a second one: "of the first-years, 70% say price; of the final-years, 40%". Chi-square says whether the gap is real.',
+    needs: 'Two questions with a few categories each: one of them is usually a demographic.' },
+  { label: 'a comparison of means (two groups, one rating)',
+    what: 'The average of the same 1 to 5 question in two groups, to see whether one scores it higher.',
+    needs: 'One 1 to 5 rating, plus a question that splits people into two groups.' },
+  { label: 'a correlation (two ratings that move together)',
+    what: 'Whether two ratings rise and fall together, and how strongly. It does not prove that one causes the other.',
+    needs: 'Two questions on the 1 to 5 scale, answered by the same person.' },
+];
 const BLOCKS = [
   ['screener', 'Screener', 'Sends away anybody outside the population'],
   ['behaviour', 'Behaviour', 'What they do now, with a reference period'],
@@ -197,14 +214,20 @@ S.demos = S.demos || { age: true, year: true };
 S.checked = S.checked || {};
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
+function anWhy(k) {
+  const a = ANALYSES[k] || ANALYSES[0];
+  return '<b>What it is:</b> ' + esc(a.what) + ' <b>So the question has to be:</b> ' + esc(a.needs);
+}
+
 function needRows() {
   $('#needs').innerHTML = S.needs.map((nd, i) => `<div class="need">
       <div><label class="f" for="need${i}">${i + 1}. I need to learn...</label>
         <input type="text" id="need${i}" data-need="${i}" value="${esc(nd.t || '')}"
         placeholder="${['whether price is the barrier above 10 euros','which benefit matters most','who is willing to try it'][i] || ''}"></div>
       <div><label class="f" for="an${i}">and it ends in</label>
-        <select id="an${i}" data-an="${i}">${ANALYSES.map((a, k) => `<option value="${k}" ${Number(nd.a) === k ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
-    </div>`).join('');
+        <select id="an${i}" data-an="${i}">${ANALYSES.map((a, k) => `<option value="${k}" ${Number(nd.a) === k ? 'selected' : ''}>${esc(a.label)}</option>`).join('')}</select></div>
+    </div>
+    <p class="hint anwhy" id="anwhy${i}" style="margin:6px 0 2px">${anWhy(Number(nd.a) || 0)}</p>`).join('');
 }
 
 function boxes(where, list, store) {
@@ -263,7 +286,7 @@ function buildPrompt() {
   p.push('');
   if (needs.length) {
     p.push('WHAT I NEED TO LEARN, AND WHERE EACH LINE ENDS');
-    needs.forEach((nd, i) => p.push('  ' + (i + 1) + '. ' + nd.t.trim() + '  ->  ' + ANALYSES[Number(nd.a) || 0]));
+    needs.forEach((nd, i) => p.push('  ' + (i + 1) + '. ' + nd.t.trim() + '  ->  ' + ANALYSES[Number(nd.a) || 0].label));
     p.push('Every question must serve one of these lines. If a question serves none of them, leave it out and say so at the end.');
     p.push('');
   }
@@ -307,7 +330,8 @@ document.addEventListener('input', (e) => {
   const t = e.target;
   if (t.dataset.k !== undefined) { S[t.id] = t.value; save(); progress(); }
   if (t.dataset.need !== undefined) { S.needs[t.dataset.need].t = t.value; save(); progress(); }
-  if (t.dataset.an !== undefined) { S.needs[t.dataset.an].a = Number(t.value); save(); }
+  if (t.dataset.an !== undefined) { S.needs[t.dataset.an].a = Number(t.value); save();
+    const el = document.getElementById('anwhy' + t.dataset.an); if (el) el.innerHTML = anWhy(Number(t.value)); }
 });
 document.addEventListener('change', (e) => {
   const b = e.target.dataset.box;
@@ -317,7 +341,8 @@ document.addEventListener('change', (e) => {
     e.target.closest('.chk').classList.toggle('on', e.target.checked);
   }
   if (e.target.dataset.chk !== undefined) { S.checked[e.target.dataset.chk] = e.target.checked; save(); scoreChecks(); }
-  if (e.target.dataset.an !== undefined) { S.needs[e.target.dataset.an].a = Number(e.target.value); save(); }
+  if (e.target.dataset.an !== undefined) { S.needs[e.target.dataset.an].a = Number(e.target.value); save();
+    const el = document.getElementById('anwhy' + e.target.dataset.an); if (el) el.innerHTML = anWhy(Number(e.target.value)); }
 });
 $('#btnBuild').addEventListener('click', buildPrompt);
 $('#btnCopy').addEventListener('click', () => {
