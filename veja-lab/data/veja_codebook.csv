@@ -1,0 +1,26 @@
+variable,question,type,codes
+appeal_allergy_immune,How appealing do you find a drink that focuses on relieving allergies and boosting immunity through natural ingredients?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+try_relaxing_drink,How likely are you to try a new carbonated beverage that promotes relaxation instead of energy boosts?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+natural_ingredients,How important is it for you to consume beverages made from natural ingredients such as birch sap and herbs?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+buy_the_benefits,"How likely are you to buy a beverage with allergy relief, immune boost and stress reduction?",rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+relevant_to_my_life,To what extent do you believe a product that helps relieve stress and boosts immunity is relevant to your life?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+relax_no_caffeine,How important is it that a carbonated drink promotes relaxation without caffeine or artificial stimulants?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+sustainability_local,Rate your interest in beverages that follow sustainability trends through local ingredients.,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+benefits_differentiate,How well do the benefits of immune boost and allergy relief differentiate VAJA from current drinks?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+birch_sap_influence,How much would unique ingredients like birch sap influence your decision to buy?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+alcohol_alternative,How appealing is a beverage that is a healthier alternative to alcohol for social occasions?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+low_sugar_importance,Rate the importance of a beverage being low in sugar and calories.,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+replace_energy_drinks,To what extent could a health-oriented carbonated drink replace energy drinks in your diet?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+brand_transparency,How critical is the brand's transparency about the benefits of its ingredients?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+social_trends,I am influenced by current social trends in choosing drinks.,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+fitness_importance,How important is maintaining physical fitness when selecting a beverage?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+selfcare_routines,I prefer products that align with self-care and wellness routines.,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+pay_premium,How willing are you to pay a premium for beverages with scientifically backed health benefits?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+trust_new_brands,To what extent do you trust claims made by new brands about their health benefits?,rating,1 = not at all / strongly disagree ... 5 = very much / strongly agree
+age_group,What is your age group?,category,1 = 16-20 | 2 = 21-25 | 3 = under 16 | 4 = 26-35 | 5 = 36-50 | 6 = over 50
+gender,What is your gender?,category,1 = male | 2 = female | 3 = non-binary
+income,What is your approximate annual income level?,category,1 = below 20k | 2 = 20-35k | 3 = 35-50k | 4 = 50-75k | 5 = 75-100k | 6 = over 100k
+region,Where do you currently reside?,category,1 = Europe | 2 = North America | 3 = Asia | 4 = South America | 5 = Africa | 6 = Australia
+buy_channel,Where would you prefer to buy VAJA if it were available?,category,1 = supermarket | 2 = convenience store | 3 = online | 4 = specialty health store | 5 = vending machine | 6 = cafe or restaurant
+education,What is your level of education?,category,1 = high school or lower | 2 = some college | 3 = bachelor | 4 = master | 5 = doctoral
+ethnicity,What is your ethnicity?,category,1 = Hispanic or Latino | 2 = White | 3 = Asian | 4 = Black or African | 5 = Pacific Islander | 6 = Native American | 7 = Arab or Middle Eastern | 8 = Mixed | 9 = Other

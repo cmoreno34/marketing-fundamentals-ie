@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VAJA survey lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A5%A4%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<!--
+  VAJA survey lab - the quantitative practical of Marketing Fundamentals.
+
+  One real student survey (77 answers, 18 ratings and 7 demographics about a health-focused
+  carbonated drink) and the three analyses of the session on top of it: descriptives,
+  cross-tabulation with chi-square, and k-means segmentation. The last tab walks the class
+  through the VAJA numbers so they learn to read the output before they touch their own.
+
+  The data clinic accepts a file as it comes out of a form - text instead of codes, blanks,
+  duplicates, a straight-liner, a 1 to 10 answer in a 1 to 5 column - lists every defect
+  with its fix, repairs what can be repaired and exports a clean file.
+
+  Everything runs in the browser: no file is ever uploaded anywhere.
+-->
+<style>
+:root{
+  --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
+  --ink:#16161D; --muted:#4A4A58; --line:#D9D9E3;
+  --ind:#3F3D8C; --ind-soft:#E7E6F5;
+  --a:#1F6F6B; --a-soft:#DDEFED; --b:#A4501E; --b-soft:#F7E7DA;
+  --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
+  --bad:#A03030; --bad-soft:#F8E3E3;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213; --bad:#E08585; --bad-soft:#331B1B;
+}}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.6;margin:0;padding:0 clamp(16px,3vw,44px) 90px}
+.wrap{width:100%;max-width:1500px;margin:0 auto}
+h1,h2,h3{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
+header{padding:28px 0 16px;border-bottom:2px solid var(--ink);margin-bottom:16px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ind);margin:0 0 8px;font-weight:600}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0 0 10px;font-weight:700}
+.sub{font-size:19px;margin:0;max-width:95ch}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:13px;padding:5px 11px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:var(--surface)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;border-bottom:2px solid var(--line)}
+.tab{font-family:inherit;font-size:16.5px;font-weight:600;padding:10px 16px;border:0;background:none;color:var(--muted);
+  cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--ind);border-bottom-color:var(--ind)}
+.pane{display:none}.pane.on{display:block}
+section{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;padding:18px 22px}
+h2{font-size:24px;margin:0 0 6px} h3{font-size:19px;margin:16px 0 4px}
+.hint{color:var(--muted);font-size:15.5px}
+label.f{display:block;font-size:15px;color:var(--muted);margin:12px 0 4px}
+select,input[type=text],input[type=file]{width:100%;font-family:inherit;font-size:16px;color:var(--ink);background:var(--surface);
+  border:1.5px solid #A6A6B5;border-radius:6px;padding:10px 12px;min-height:44px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 20px}
+.btn{font-family:inherit;font-size:16.5px;font-weight:600;padding:11px 20px;border:1.5px solid var(--ind);background:var(--surface);color:var(--ind);border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--ind-soft)} .btn.solid{background:var(--ind);color:#fff}.btn.solid:hover{opacity:.9}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ind);border-bottom:2px solid var(--line);padding:6px 8px 6px 0;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:6px 8px 6px 0;vertical-align:top}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.bar{display:inline-block;height:10px;background:var(--ind);border-radius:2px;vertical-align:middle}
+.scroll{max-height:460px;overflow:auto}
+.flag{border-left:5px solid var(--warn);background:var(--warn-soft);border-radius:6px;padding:10px 14px;margin:8px 0;font-size:15.5px}
+.flag.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.flag.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.flag b{display:block;font-size:12.5px;font-family:"IBM Plex Mono",monospace;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.note{background:var(--ind-soft);border-radius:8px;padding:12px 15px;margin-top:12px;font-size:15.5px}
+.q{border-left:5px solid var(--ind);padding-left:14px;margin:18px 0 8px}
+.q .n{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ind);font-weight:600;text-transform:uppercase}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:8px}
+.opt{border:2px solid var(--line);border-radius:8px;padding:11px 13px;background:var(--surface);cursor:pointer;font-size:16px;text-align:left}
+.opt:hover{border-color:var(--ind)} .opt.sel{border-color:var(--ind);background:var(--ind-soft)}
+.opt.good{border-color:var(--ok);background:var(--ok-soft)} .opt.bad{border-color:var(--b);background:var(--b-soft)}
+.why{font-size:15.5px;color:var(--ink);opacity:.9;margin-top:8px;padding-left:14px;border-left:3px solid var(--line)}
+footer{margin-top:26px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Session 12 · quantitative practical</p>
+  <h1>VAJA survey lab</h1>
+  <p class="sub">A real student survey: 77 answers about a health-focused carbonated drink, 18 ratings and
+  7 demographics. Clean it, describe it, cross it and segment it &mdash; and then do the same with your own
+  file. Nothing leaves this browser.</p>
+  <div class="chips">
+    <span class="chip" id="chipRows">loading the case...</span>
+    <span class="chip" id="chipSource">source: VAJA 2024</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab on" data-tab="case">1 · The case</button>
+  <button class="tab" data-tab="data">2 · Your data</button>
+  <button class="tab" data-tab="desc">3 · Describe</button>
+  <button class="tab" data-tab="cross">4 · Cross</button>
+  <button class="tab" data-tab="clust">5 · Segment</button>
+  <button class="tab" data-tab="read">6 · Read it</button>
+</div>
+
+<div class="pane on" id="pane-case">
+  <section>
+    <h2>The survey</h2>
+    <p class="hint">A group of students designed and ran this survey for VAJA, a carbonated drink built
+    around birch sap: allergy relief, immune boost and relaxation without caffeine. They asked 18 rating
+    questions on a 1 to 5 scale and 7 demographic questions, and got 77 complete answers.</p>
+    <p class="hint">That is a small sample and a self-selected one: everything you find here is a
+    hypothesis about the market, not a measurement of it. It is still enough to practise every analysis of
+    the session, and to see what a real dataset looks like when it arrives.</p>
+    <h3>The codebook</h3>
+    <p class="hint">Every analysis starts here: what was asked, how it was measured, and what each number
+    means. Without it, a column of 1s and 5s says nothing.</p>
+    <div class="scroll"><table id="codebook"></table></div>
+  </section>
+</div>
+
+<div class="pane" id="pane-data">
+  <section>
+    <h2>The data clinic</h2>
+    <p class="hint">Download the template, put your survey in that shape, and drop it here. The clinic
+    checks it the way you would have to check it by hand, says what is wrong and repairs what can be
+    repaired.</p>
+    <div class="row">
+      <a class="btn" id="dlTemplate" download="survey_template.csv">Download the template</a>
+      <a class="btn" id="dlMessy" download="veja_survey_messy.csv">Download a messy example</a>
+      <a class="btn" id="dlClean" download="veja_survey_clean.csv">Download the clean VAJA file</a>
+    </div>
+    <h3>Your file</h3>
+    <p class="hint">CSV or Excel. One row per respondent, one column per question, the first row the
+    header. Nothing is uploaded: the file is read here, in your browser.</p>
+    <input type="file" id="file" accept=".csv,.xlsx,.xls">
+    <div id="report"></div>
+    <div class="row" id="fixRow" style="display:none">
+      <button class="btn solid" id="btnFix">Repair what can be repaired</button>
+      <button class="btn" id="btnExport">Export the clean file</button>
+      <button class="btn" id="btnBack" style="font-weight:400">Back to the VAJA case</button>
+    </div>
+  </section>
+  <section>
+    <h3>What the clinic looks for</h3>
+    <table>
+      <tr><th>Check</th><th>Why it matters</th><th>What the clinic does</th></tr>
+      <tr><td><b>Text in a rating column</b></td><td>A column with "Agree" in it cannot be averaged, and most tools will simply drop it.</td><td>Maps the words it recognises to codes, and tells you which it could not.</td></tr>
+      <tr><td><b>Out of range</b></td><td>A 7 in a 1 to 5 column means somebody changed scale halfway, or a typo.</td><td>Flags every value outside the range and leaves it for you to decide.</td></tr>
+      <tr><td><b>Blanks</b></td><td>A blank is not a zero. Averaging it as zero moves the mean down.</td><td>Counts them per column and excludes them from the statistics.</td></tr>
+      <tr><td><b>Duplicated rows</b></td><td>The same submission twice counts that person twice.</td><td>Finds identical rows and removes the copies.</td></tr>
+      <tr><td><b>Straight-liners</b></td><td>Somebody who answered 5 to everything did not read the questions.</td><td>Flags rows with no variation across the ratings.</td></tr>
+      <tr><td><b>Empty or extra columns</b></td><td>Timestamps, comments and empty columns break the analysis tools.</td><td>Lists them and leaves them out of the analysis.</td></tr>
+    </table>
+  </section>
+</div>
+
+<div class="pane" id="pane-desc">
+  <section>
+    <h2>Describe: one variable at a time</h2>
+    <p class="hint">For a 1 to 5 rating: the mean, how spread the answers are, and the share who answered
+    4 or 5 &mdash; the top-two box, which is what a client reads. For a category: the frequency table.</p>
+    <div id="descRatings"></div>
+    <h3>Categories</h3>
+    <label class="f" for="descCat">Pick a categorical variable</label>
+    <select id="descCat"></select>
+    <div id="descCatOut"></div>
+  </section>
+</div>
+
+<div class="pane" id="pane-cross">
+  <section>
+    <h2>Cross: does the answer depend on the group?</h2>
+    <p class="hint">Two categorical variables. Row percentages, expected counts, chi-square, and the
+    validity check before the p-value. To cross a rating, the lab bands it into low (1-2), middle (3) and
+    high (4-5).</p>
+    <div class="grid2">
+      <div><label class="f" for="crossRow">Rows (the group)</label><select id="crossRow"></select></div>
+      <div><label class="f" for="crossCol">Columns (what you are explaining)</label><select id="crossCol"></select></div>
+    </div>
+    <div id="crossOut"></div>
+  </section>
+</div>
+
+<div class="pane" id="pane-clust">
+  <section>
+    <h2>Segment: k-means on the ratings</h2>
+    <p class="hint">The 18 rating questions describe what each respondent wants. K-means groups the people
+    whose answers look alike, and the centroid table tells you what each group is. Choose how many segments
+    and read the table, not the algorithm.</p>
+    <div class="grid2">
+      <div><label class="f" for="k">How many segments</label><select id="k"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+      <div><label class="f" for="clustVars">Which variables</label><select id="clustVars">
+        <option value="ratings" selected>the 18 ratings</option>
+        <option value="buy">the four buying-intent ratings</option>
+      </select></div>
+    </div>
+    <div class="row"><button class="btn solid" id="btnRun">Run the segmentation</button>
+      <span class="hint" id="clustState"></span></div>
+    <div id="clustOut"></div>
+  </section>
+</div>
+
+<div class="pane" id="pane-read">
+  <section>
+    <h2>Read the results</h2>
+    <p class="hint">Eight questions about the numbers this lab just produced from the VAJA data. They are
+    not about formulas: they are about what you may and may not conclude. Answer, then read why.</p>
+    <div id="quiz"></div>
+    <div class="note" id="quizScore">Not checked yet.</div>
+    <div class="row"><button class="btn solid" id="btnMark">Check my answers</button></div>
+  </section>
+</div>
+
+<footer>VAJA survey lab · Marketing Fundamentals 26-27. The data is a student survey from the course
+archive, used with the group's permission for teaching. For heavier analysis, the same file opens in the
+course tools: <b>cmoreno34.github.io/mkt3600-analysis</b> (univariate, crosstab, correlation) and
+<b>cmoreno34.github.io/marketing-analytics-ufv</b> (segmentation lab).</footer>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = (x, d) => (x === null || x === undefined || Number.isNaN(x)) ? '-' : Number(x).toFixed(d === undefined ? 2 : d);
+
+let DATA = null;           // {name, vars:[{name,type,question,codes}], rows:[{var:value}]}
+let CODEBOOK = [];
+let RAW = null;            // the uploaded file before repair
+
+// ---------------------------------------------------------------- loading
+function parseCSV(text) {
+  const out = [];
+  let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"' && text[i + 1] === '"') { cur += '"'; i++; }
+      else if (c === '"') q = false;
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === '\n') { row.push(cur); out.push(row); row = []; cur = ''; }
+    else if (c !== '\r') cur += c;
+  }
+  if (cur.length || row.length) { row.push(cur); out.push(row); }
+  return out.filter((r) => r.some((c) => String(c).trim() !== ''));
+}
+
+function tableToData(rows, name) {
+  const header = rows[0].map((h) => String(h).trim());
+  const body = rows.slice(1).filter((r) => !String(r[0]).startsWith('#'));
+  const vars = header.map((h) => ({ name: h, type: 'unknown' }));
+  const objs = body.map((r) => {
+    const o = {};
+    header.forEach((h, i) => { o[h] = r[i] === undefined ? '' : String(r[i]).trim(); });
+    return o;
+  });
+  return { name, vars, rows: objs };
+}
+
+function classify(d) {
+  d.vars.forEach((v) => {
+    const vals = d.rows.map((r) => r[v.name]).filter((x) => x !== '' && x !== undefined);
+    const nums = vals.filter((x) => /^-?\d+(\.\d+)?$/.test(x)).map(Number);
+    const uniq = new Set(nums);
+    const meta = CODEBOOK.find((c) => c.variable === v.name);
+    v.question = meta ? meta.question : '';
+    v.codes = meta ? meta.codes : '';
+    if (/^(id|respondent|timestamp|date|hora|comments?|notes?|email)$/i.test(v.name)) v.type = 'meta';
+    else if (!vals.length) v.type = 'empty';
+    else if (nums.length < vals.length * 0.6) v.type = 'text';
+    else if (nums.length < vals.length) v.type = (meta && meta.type === 'category') ? 'category' : 'rating';
+    else if (uniq.size <= 2 && /respondent|^id$/i.test(v.name)) v.type = 'id';
+    else if (meta && meta.type === 'rating') v.type = 'rating';
+    else if (meta && meta.type === 'category') v.type = 'category';
+    else if (Math.min(...nums) >= 1 && Math.max(...nums) <= 5 && uniq.size <= 5) v.type = 'rating';
+    else if (uniq.size <= 12) v.type = 'category';
+    else v.type = 'number';
+    if (/^(id|respondent)$/i.test(v.name)) v.type = 'meta';
+  });
+  return d;
+}
+
+const ratings = () => DATA.vars.filter((v) => v.type === 'rating');
+const cats = () => DATA.vars.filter((v) => v.type === 'category');
+const num = (r, v) => { const x = r[v]; return x === '' || x === undefined ? null : Number(x); };
+
+async function loadCase() {
+  const [clean, book] = await Promise.all([
+    fetch('data/veja_survey_clean.csv').then((r) => r.text()),
+    fetch('data/veja_codebook.csv').then((r) => r.text()),
+  ]);
+  const bk = parseCSV(book);
+  CODEBOOK = bk.slice(1).map((r) => ({ variable: r[0], question: r[1], type: r[2], codes: r[3] }));
+  DATA = classify(tableToData(parseCSV(clean), 'VAJA 2024'));
+  $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
+  renderCodebook(); fillSelects(); renderDesc(); renderCross(); buildQuiz();
+  ['dlTemplate:data/survey_template.csv', 'dlMessy:data/veja_survey_messy.csv', 'dlClean:data/veja_survey_clean.csv']
+    .forEach((pair) => { const [id, href] = pair.split(':'); $('#' + id).href = href; });
+}
+
+function renderCodebook() {
+  const t = ['<tr><th>Variable</th><th>What was asked</th><th>Type</th><th>Codes</th></tr>'];
+  CODEBOOK.forEach((c) => t.push(`<tr><td><b>${esc(c.variable)}</b></td><td>${esc(c.question)}</td>
+    <td>${esc(c.type)}</td><td class="hint">${esc(c.codes)}</td></tr>`));
+  $('#codebook').innerHTML = t.join('');
+}
+
+// ---------------------------------------------------------------- the clinic
+const WORDS = {
+  'strongly disagree': 1, 'disagree': 2, 'neither': 3, 'neutral': 3, 'agree': 4, 'strongly agree': 5,
+  'not at all': 1, 'slightly': 2, 'moderately': 3, 'very': 4, 'extremely': 5,
+  'male': 1, 'female': 2, 'non-binary': 3, 'prefer not to say': 3,
+  '16-20': 1, '21-25': 2, 'under 16': 3, '26-35': 4, '36-50': 5, 'over 50': 6,
+};
+
+function diagnose(d) {
+  const issues = [];
+  const header = d.vars.map((v) => v.name);
+  const seen = new Map(); const dupes = [];
+  d.rows.forEach((r, i) => {
+    const key = header.map((h) => r[h]).join('|');
+    if (seen.has(key)) dupes.push(i + 2); else seen.set(key, i);
+  });
+  if (dupes.length) issues.push({ kind: 'dupes', rows: dupes, level: 'bad',
+    title: dupes.length + ' duplicated row' + (dupes.length > 1 ? 's' : ''),
+    what: 'The same answers appear more than once (rows ' + dupes.join(', ') + '). The same person would count twice in every table.',
+    fix: 'The copies are removed and the first one kept.' });
+
+  d.vars.forEach((v) => {
+    if (v.type === 'meta') return;        // id, timestamp, comments: kept aside, not analysed
+    const vals = d.rows.map((r) => r[v.name]);
+    const blanks = vals.filter((x) => x === '' || x === undefined).length;
+    const nonNum = vals.filter((x) => x !== '' && !/^-?\d+(\.\d+)?$/.test(x));
+    const nums = vals.filter((x) => /^-?\d+(\.\d+)?$/.test(x)).map(Number);
+    if (!vals.some((x) => x !== '')) {
+      issues.push({ kind: 'empty', col: v.name, level: 'warn', title: 'Empty column: ' + v.name,
+        what: 'Nothing was recorded in it.', fix: 'Left out of the analysis.' });
+      return;
+    }
+    if (nonNum.length) {
+      const mapped = nonNum.filter((x) => WORDS[String(x).toLowerCase().trim()] !== undefined).length;
+      issues.push({ kind: 'text', col: v.name, level: 'bad',
+        title: 'Text in a numeric column: ' + v.name,
+        what: nonNum.length + ' answer' + (nonNum.length > 1 ? 's are' : ' is') + ' written in words, for example "' + esc(String(nonNum[0]).slice(0, 24)) + '". A column with words in it cannot be averaged.',
+        fix: mapped ? mapped + ' of them match a known label and are turned into their code; the rest are left blank for you to decide.' : 'None of them matches a known label: map them by hand in your file.' });
+    }
+    if (v.type === 'rating' && nums.length) {
+      const bad = nums.filter((x) => x < 1 || x > 5);
+      if (bad.length) issues.push({ kind: 'range', col: v.name, level: 'bad',
+        title: 'Out of range in ' + v.name,
+        what: bad.length + ' value' + (bad.length > 1 ? 's are' : ' is') + ' outside 1 to 5 (for example ' + bad[0] + '). Somebody used another scale, or it is a typo.',
+        fix: 'Flagged and left out of the statistics until you fix the source.' });
+    }
+    if (blanks) issues.push({ kind: 'blank', col: v.name, level: 'warn',
+      title: blanks + ' blank' + (blanks > 1 ? 's' : '') + ' in ' + v.name,
+      what: 'A blank is not a zero: averaging it as zero would move the mean down.',
+      fix: 'Excluded from the statistics of that variable, and the n is reported.' });
+  });
+
+  const rat = d.vars.filter((v) => v.type === 'rating').map((v) => v.name);
+  if (rat.length > 4) {
+    const flat = [];
+    d.rows.forEach((r, i) => {
+      const vals = rat.map((n) => Number(r[n])).filter((x) => !Number.isNaN(x));
+      if (vals.length > 4 && new Set(vals).size === 1) flat.push(i + 2);
+    });
+    if (flat.length) issues.push({ kind: 'flat', rows: flat, level: 'warn',
+      title: flat.length + ' straight-liner' + (flat.length > 1 ? 's' : ''),
+      what: 'Row' + (flat.length > 1 ? 's ' : ' ') + flat.join(', ') + ' answered the same number to every rating. That is a person who did not read the questions.',
+      fix: 'Flagged. Decide whether to keep them: say what you decided in the report.' });
+  }
+  return issues;
+}
+
+function renderReport(issues, d) {
+  const box = $('#report');
+  if (!issues.length) {
+    box.innerHTML = '<div class="flag ok"><b>Clean</b>' + d.rows.length + ' rows, ' + d.vars.length +
+      ' columns, nothing to repair. It is ready for the analysis tabs.</div>';
+  } else {
+    box.innerHTML = '<h3>' + issues.length + ' thing' + (issues.length > 1 ? 's' : '') + ' to look at</h3>' +
+      issues.map((i) => `<div class="flag ${i.level === 'bad' ? 'bad' : ''}"><b>${esc(i.title)}</b>
+        ${i.what}<br><i>${esc(i.fix)}</i></div>`).join('');
+  }
+  $('#fixRow').style.display = 'flex';
+}
+
+function repair(d, issues) {
+  const header = d.vars.map((v) => v.name);
+  const seen = new Set();
+  let rows = d.rows.filter((r) => {
+    const key = header.map((h) => r[h]).join('|');
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  rows.forEach((r) => {
+    d.vars.forEach((v) => {
+      const x = r[v.name];
+      if (x === '' || x === undefined) return;
+      if (/^-?\d+(\.\d+)?$/.test(x)) {
+        if (v.type === 'rating') { const n = Number(x); if (n < 1 || n > 5) r[v.name] = ''; }
+        return;
+      }
+      const code = WORDS[String(x).toLowerCase().trim()];
+      r[v.name] = code === undefined ? '' : String(code);
+    });
+  });
+  const keep = d.vars.filter((v) => v.type !== 'empty' && v.type !== 'text' && v.type !== 'meta');
+  return { name: d.name + ' (repaired)', vars: keep, rows };
+}
+
+function toCSV(d) {
+  const header = d.vars.map((v) => v.name);
+  return [header.join(',')].concat(d.rows.map((r) => header.map((h) => r[h]).join(','))).join('\n');
+}
+
+// ---------------------------------------------------------------- statistics
+function stats(name) {
+  const v = DATA.rows.map((r) => num(r, name)).filter((x) => x !== null && !Number.isNaN(x));
+  const n = v.length;
+  if (!n) return { n: 0 };
+  const mean = v.reduce((a, b) => a + b, 0) / n;
+  const sd = Math.sqrt(v.reduce((a, b) => a + (b - mean) ** 2, 0) / (n > 1 ? n - 1 : 1));
+  const sorted = [...v].sort((a, b) => a - b);
+  const med = n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+  const top2 = v.filter((x) => x >= 4).length / n * 100;
+  const bot2 = v.filter((x) => x <= 2).length / n * 100;
+  return { n, mean, sd, med, top2, bot2 };
+}
+
+function freq(name) {
+  const m = new Map();
+  DATA.rows.forEach((r) => { const x = r[name]; if (x === '' || x === undefined) return; m.set(x, (m.get(x) || 0) + 1); });
+  const total = [...m.values()].reduce((a, b) => a + b, 0);
+  return { total, rows: [...m.entries()].sort((a, b) => Number(a[0]) - Number(b[0])) };
+}
+
+function codeLabel(varName, code) {
+  const meta = CODEBOOK.find((c) => c.variable === varName);
+  if (!meta || meta.type !== 'category') return String(code);
+  const hit = (meta.codes || '').split('|').map((s) => s.trim()).find((s) => s.startsWith(code + ' ='));
+  return hit ? hit.split('=')[1].trim() + ' (' + code + ')' : String(code);
+}
+
+function lgamma(x) {
+  const c = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155,
+             0.1208650973866179e-2, -0.5395239384953e-5];
+  let y = x, tmp = x + 5.5;
+  tmp -= (x + 0.5) * Math.log(tmp);
+  let ser = 1.000000000190015;
+  for (let j = 0; j < 6; j++) ser += c[j] / ++y;
+  return -tmp + Math.log(2.5066282746310005 * ser / x);
+}
+function gammainc(a, x) {                       // regularised lower incomplete gamma
+  if (x < 0 || a <= 0) return 0;
+  if (x < a + 1) {
+    let ap = a, sum = 1 / a, del = sum;
+    for (let i = 0; i < 200; i++) { ap++; del *= x / ap; sum += del; if (Math.abs(del) < Math.abs(sum) * 1e-12) break; }
+    return sum * Math.exp(-x + a * Math.log(x) - lgamma(a));
+  }
+  let b = x + 1 - a, c = 1e300, d = 1 / b, h = d;
+  for (let i = 1; i <= 200; i++) {
+    const an = -i * (i - a);
+    b += 2; d = an * d + b; if (Math.abs(d) < 1e-300) d = 1e-300;
+    c = b + an / c; if (Math.abs(c) < 1e-300) c = 1e-300;
+    d = 1 / d; const del = d * c; h *= del;
+    if (Math.abs(del - 1) < 1e-12) break;
+  }
+  return 1 - Math.exp(-x + a * Math.log(x) - lgamma(a)) * h;
+}
+const chiP = (chi, df) => (df <= 0 ? 1 : 1 - gammainc(df / 2, chi / 2));
+
+function band(name, value) {
+  const v = Number(value);
+  if (Number.isNaN(v)) return null;
+  const isRating = DATA.vars.find((x) => x.name === name && x.type === 'rating');
+  if (!isRating) return String(value);
+  return v <= 2 ? 'low (1-2)' : v === 3 ? 'middle (3)' : 'high (4-5)';
+}
+
+function crosstab(rowVar, colVar) {
+  const rows = new Map();
+  const colSet = new Set();
+  DATA.rows.forEach((r) => {
+    const a = band(rowVar, r[rowVar]), b = band(colVar, r[colVar]);
+    if (a === null || b === null || a === '' || b === '') return;
+    if (!rows.has(a)) rows.set(a, new Map());
+    rows.get(a).set(b, (rows.get(a).get(b) || 0) + 1);
+    colSet.add(b);
+  });
+  const rowKeys = [...rows.keys()].sort();
+  const colKeys = [...colSet].sort();
+  const obs = rowKeys.map((rk) => colKeys.map((ck) => rows.get(rk).get(ck) || 0));
+  const rt = obs.map((r) => r.reduce((a, b) => a + b, 0));
+  const ct = colKeys.map((_, j) => obs.reduce((a, r) => a + r[j], 0));
+  const n = rt.reduce((a, b) => a + b, 0);
+  let chi = 0, minE = Infinity, small = 0;
+  obs.forEach((r, i) => r.forEach((o, j) => {
+    const e = rt[i] * ct[j] / n;
+    minE = Math.min(minE, e); if (e < 5) small++;
+    if (e > 0) chi += (o - e) ** 2 / e;
+  }));
+  const df = (rowKeys.length - 1) * (colKeys.length - 1);
+  const cells = rowKeys.length * colKeys.length;
+  return { rowKeys, colKeys, obs, rt, ct, n, chi, df, p: chiP(chi, df), minE, small, cells,
+           v: Math.sqrt(chi / (n * Math.min(rowKeys.length - 1, colKeys.length - 1) || 1)) };
+}
+
+// ---------------------------------------------------------------- k-means
+function kmeans(names, k, seed) {
+  const pts = DATA.rows.map((r) => names.map((n) => num(r, n))).filter((p) => p.every((x) => x !== null && !Number.isNaN(x)));
+  if (pts.length < k) return null;
+  let s = seed || 7;
+  const rnd = () => { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
+  let best = null;
+  for (let attempt = 0; attempt < 12; attempt++) {
+    let cent = [pts[Math.floor(rnd() * pts.length)].slice()];
+    while (cent.length < k) {                       // k-means++
+      const d2 = pts.map((p) => Math.min(...cent.map((c) => p.reduce((a, x, i) => a + (x - c[i]) ** 2, 0))));
+      const tot = d2.reduce((a, b) => a + b, 0) || 1;
+      let t = rnd() * tot, idx = 0;
+      for (let i = 0; i < pts.length; i++) { t -= d2[i]; if (t <= 0) { idx = i; break; } }
+      cent.push(pts[idx].slice());
+    }
+    let assign = new Array(pts.length).fill(0);
+    for (let it = 0; it < 60; it++) {
+      let moved = false;
+      pts.forEach((p, i) => {
+        let bi = 0, bd = Infinity;
+        cent.forEach((c, j) => { const d = p.reduce((a, x, q) => a + (x - c[q]) ** 2, 0); if (d < bd) { bd = d; bi = j; } });
+        if (assign[i] !== bi) { assign[i] = bi; moved = true; }
+      });
+      cent = cent.map((_, j) => {
+        const mem = pts.filter((p, i) => assign[i] === j);
+        return mem.length ? names.map((_, q) => mem.reduce((a, p) => a + p[q], 0) / mem.length) : cent[j];
+      });
+      if (!moved) break;
+    }
+    const wss = pts.reduce((a, p, i) => a + p.reduce((b, x, q) => b + (x - cent[assign[i]][q]) ** 2, 0), 0);
+    if (!best || wss < best.wss) best = { cent, assign, wss, n: pts.length };
+  }
+  return { ...best, names };
+}
+
+// ---------------------------------------------------------------- rendering
+function fillSelects() {
+  const catOpts = cats().map((v) => `<option value="${esc(v.name)}">${esc(v.name)}</option>`).join('');
+  const allOpts = DATA.vars.filter((v) => v.type === 'rating' || v.type === 'category')
+    .map((v) => `<option value="${esc(v.name)}">${esc(v.name)}${v.type === 'rating' ? ' (rating)' : ''}</option>`).join('');
+  $('#descCat').innerHTML = catOpts;
+  $('#crossRow').innerHTML = allOpts;
+  $('#crossCol').innerHTML = allOpts;
+  const cs = cats().map((v) => v.name);
+  if (cs.includes('age_group')) $('#crossRow').value = 'age_group';
+  const rs = ratings().map((v) => v.name);
+  if (rs.includes('buy_the_benefits')) $('#crossCol').value = 'buy_the_benefits';
+}
+
+function renderDesc() {
+  const rows = ratings().map((v) => {
+    const s = stats(v.name);
+    return `<tr><td><b>${esc(v.name)}</b><br><span class="hint">${esc((v.question || '').slice(0, 86))}</span></td>
+      <td class="num">${s.n}</td><td class="num">${fmt(s.mean)}</td><td class="num">${fmt(s.sd)}</td>
+      <td class="num">${fmt(s.top2, 0)}%</td><td class="num">${fmt(s.bot2, 0)}%</td>
+      <td><span class="bar" style="width:${(s.mean / 5 * 110).toFixed(0)}px"></span></td></tr>`;
+  });
+  $('#descRatings').innerHTML = `<table><tr><th>Rating</th><th class="num">n</th><th class="num">mean</th>
+    <th class="num">sd</th><th class="num">top 2 (4-5)</th><th class="num">bottom 2 (1-2)</th><th></th></tr>${rows.join('')}</table>`;
+  renderDescCat();
+}
+
+function renderDescCat() {
+  const name = $('#descCat').value;
+  if (!name) { $('#descCatOut').innerHTML = ''; return; }
+  const f = freq(name);
+  const rows = f.rows.map(([code, n]) => `<tr><td>${esc(codeLabel(name, code))}</td><td class="num">${n}</td>
+    <td class="num">${fmt(n / f.total * 100, 1)}%</td><td><span class="bar" style="width:${(n / f.total * 220).toFixed(0)}px"></span></td></tr>`);
+  $('#descCatOut').innerHTML = `<table><tr><th>${esc(name)}</th><th class="num">n</th><th class="num">%</th><th></th></tr>${rows.join('')}</table>
+    <p class="hint">n = ${f.total}</p>`;
+}
+
+function renderCross() {
+  const a = $('#crossRow').value, b = $('#crossCol').value;
+  if (!a || !b || a === b) { $('#crossOut').innerHTML = '<p class="hint">Pick two different variables.</p>'; return; }
+  const t = crosstab(a, b);
+  if (!t.n) { $('#crossOut').innerHTML = '<p class="hint">No complete answers for those two.</p>'; return; }
+  const head = ['<tr><th>' + esc(a) + ' \\ ' + esc(b) + '</th>'].concat(t.colKeys.map((c) => '<th class="num">' + esc(codeLabel(b, c)) + '</th>'))
+    .concat(['<th class="num">total</th></tr>']).join('');
+  const body = t.rowKeys.map((rk, i) => {
+    const cells = t.obs[i].map((o) => `<td class="num">${o}<br><span class="hint">${fmt(o / t.rt[i] * 100, 0)}%</span></td>`).join('');
+    return `<tr><td><b>${esc(codeLabel(a, rk))}</b></td>${cells}<td class="num">${t.rt[i]}</td></tr>`;
+  }).join('');
+  const valid = t.minE >= 5 || t.small / t.cells <= 0.2;
+  $('#crossOut').innerHTML = `<table>${head}${body}</table>
+    <div class="flag ${valid ? 'ok' : 'bad'}"><b>${valid ? 'The test can be read' : 'The test is not valid'}</b>
+      Smallest expected count ${fmt(t.minE, 2)}; ${t.small} of ${t.cells} cells below 5.
+      ${valid ? '' : 'Collapse categories that genuinely belong together, or report it as not testable.'}</div>
+    <div class="note"><b>Chi-square ${fmt(t.chi)}</b> with ${t.df} degrees of freedom, p = ${t.p < 0.001 ? '&lt; 0.001' : fmt(t.p, 3)}.
+      Cramer's V = ${fmt(t.v)} &mdash; ${t.v < 0.1 ? 'negligible' : t.v < 0.3 ? 'small' : t.v < 0.5 ? 'moderate' : 'strong'} association.
+      ${t.p < 0.05 ? 'The difference between the groups is bigger than chance alone would produce.' : 'What you see is within what chance produces: no difference to report.'}</div>`;
+}
+
+function renderClust() {
+  const k = Number($('#k').value);
+  const which = $('#clustVars').value;
+  const names = which === 'buy'
+    ? ['buy_the_benefits', 'try_relaxing_drink', 'pay_premium', 'replace_energy_drinks'].filter((n) => DATA.vars.some((v) => v.name === n))
+    : ratings().map((v) => v.name);
+  const res = kmeans(names, k, 7);
+  if (!res) { $('#clustOut').innerHTML = '<p class="hint">Not enough complete rows.</p>'; return; }
+  const sizes = res.cent.map((_, j) => res.assign.filter((a) => a === j).length);
+  const spread = names.map((n, q) => {
+    const vals = res.cent.map((c) => c[q]);
+    return { n, range: Math.max(...vals) - Math.min(...vals) };
+  }).sort((x, y) => y.range - x.range);
+  const top = spread.slice(0, 6).map((s) => s.n);
+  const head = ['<tr><th>Variable</th>'].concat(res.cent.map((_, j) => `<th class="num">segment ${j + 1}</th>`)).concat(['<th class="num">spread</th></tr>']).join('');
+  const body = top.map((n) => {
+    const q = names.indexOf(n);
+    const cells = res.cent.map((c) => `<td class="num">${fmt(c[q])}</td>`).join('');
+    const sp = spread.find((s) => s.n === n).range;
+    return `<tr><td>${esc(n)}</td>${cells}<td class="num">${fmt(sp)}</td></tr>`;
+  }).join('');
+  const sizeRow = '<tr><td><b>size</b></td>' + sizes.map((s) => `<td class="num"><b>${s}</b><br><span class="hint">${fmt(s / res.n * 100, 0)}%</span></td>`).join('') + '<td></td></tr>';
+  $('#clustOut').innerHTML = `<table>${head}${sizeRow}${body}</table>
+    <div class="note"><b>How to read it.</b> Each column is a segment and each number is the average answer
+    of its members. Read the rows with the biggest spread first: those are what separate the groups, and
+    they are what you would name the segment after. A segment with 4 people is not a segment, it is noise.</div>
+    <div class="flag"><b>What this is not</b>The algorithm always returns ${k} groups, even when there are
+    none. Change k and see whether the story survives: if the segments change completely, the structure is
+    weak and you should say so.</div>`;
+  $('#clustState').textContent = res.n + ' complete rows · ' + names.length + ' variables · within-cluster error ' + fmt(res.wss, 1);
+}
+
+// ---------------------------------------------------------------- the guided quiz
+let QUIZ = [], PICK = {};
+function buildQuiz() {
+  const sBuy = stats('buy_the_benefits'), sPay = stats('pay_premium'), sTrust = stats('trust_new_brands');
+  const fAge = freq('age_group');
+  const topAge = fAge.rows.slice().sort((a, b) => b[1] - a[1])[0];
+  const t = crosstab('age_group', 'buy_the_benefits');
+  QUIZ = [
+    { q: `The mean of "buy the benefits" is ${fmt(sBuy.mean)} out of 5, with a standard deviation of ${fmt(sBuy.sd)}. What does that tell a client?`,
+      o: ['That the market will buy it: the average is above the midpoint',
+          'That the average is favourable, but the spread says the room is not one block',
+          'That 77 people will buy it',
+          'Nothing: a mean of a 1 to 5 scale cannot be computed'],
+      k: 1,
+      why: 'The mean is above the middle, which is encouraging, and the standard deviation is what stops you reading it as agreement: with a spread of this size the answers run from 2 to 5. The next move is to find out who the low scores are, which is what the crosstab and the segmentation do.' },
+    { q: `"Willingness to pay a premium" has a top-two box of ${fmt(sPay.top2, 0)}% (answers 4 or 5). Which sentence is honest in a report?`,
+      o: [`${fmt(sPay.top2, 0)}% of the market will pay more`,
+          `${fmt(sPay.top2, 0)}% of the people who answered say they would pay more`,
+          'The price can be raised by 20%',
+          'Nobody will pay a premium'],
+      k: 1,
+      why: 'Two corrections at once: it is the people who answered, not the market, because the sample is self-selected; and it is what they say, not what they do. Stated willingness to pay is systematically higher than real willingness to pay.' },
+    { q: `The most frequent age group is code ${topAge[0]} with ${topAge[1]} of ${fAge.total} answers. What does that mean for everything else in the study?`,
+      o: ['Nothing: the sample is random',
+          'That the findings describe mostly that group, and have to be read as such',
+          'That the other groups should be removed',
+          'That the survey is invalid'],
+      k: 1,
+      why: 'A sample that is dominated by one group is not useless: it is a sample of that group. Say so in the report, and be careful with any statement about "the market" as a whole.' },
+    { q: `Crossing age group against buying intention gives chi-square ${fmt(t.chi)} with ${t.df} degrees of freedom, p = ${t.p < 0.001 ? '< 0.001' : fmt(t.p, 3)}, and the smallest expected count is ${fmt(t.minE, 2)}. What do you do first?`,
+      o: ['Read the p-value and conclude',
+          'Check the expected counts before reading anything',
+          'Increase the sample',
+          'Report Cramer\'s V only'],
+      k: 1,
+      why: 'Validity before significance, always. With expected counts below 5 the chi-square distribution is not a good approximation and the p-value cannot be trusted, however attractive it looks. With few respondents per cell the fix is to collapse categories that genuinely belong together, and to say that you did.' },
+    { q: 'The segmentation returns three segments. One of them has 6 members. What is the right reading?',
+      o: ['A niche worth targeting',
+          'A group too small to be a segment in a sample of 77: report it as noise or merge it',
+          'Proof that three is the right number of segments',
+          'An error in the algorithm'],
+      k: 1,
+      why: 'K-means always returns the number of groups you ask for. With 77 respondents a cluster of 6 is not a market segment, it is six people; naming it and building a strategy on it is the classic mistake of a first segmentation.' },
+    { q: 'Which variables should you name a segment after?',
+      o: ['The ones with the highest average overall',
+          'The ones where the segments differ most from each other',
+          'The demographics, always',
+          'All of them, in order'],
+      k: 1,
+      why: 'A variable everybody rates 4.5 tells you nothing about who is who. The spread column in the centroid table is exactly this: it ranks the variables by how far apart the segments are on them.' },
+    { q: `"Trust in claims from new brands" averages ${fmt(sTrust.mean)}. The team concludes that advertising should stress the scientific evidence. Is that a conclusion from the data?`,
+      o: ['Yes, it follows directly',
+          'It is a hypothesis the data supports but does not prove',
+          'No, the variable is irrelevant',
+          'Only if the p-value is below 0.05'],
+      k: 1,
+      why: 'The survey measures a low level of trust. That makes "evidence in the message" a reasonable hypothesis, not a proven cause: what proves it is a test of two messages, which is an experiment, not a survey.' },
+    { q: 'The same questionnaire is run again next month with another 77 people and the means move by 0.1 or 0.2. What is happening?',
+      o: ['The market changed',
+          'Sampling variation: two samples of the same population differ',
+          'The questionnaire is faulty',
+          'Somebody manipulated the data'],
+      k: 1,
+      why: 'That is sampling error, and it is the only error that shrinks when the sample grows. Reporting a difference of 0.1 between two small samples as a change in the market is reading noise as news.' },
+  ];
+  const SHIFT = [2, 0, 3, 1, 3, 1, 0, 2];
+  QUIZ.forEach((q, i) => {
+    const sh = SHIFT[i] % q.o.length;
+    if (sh) { q.o = q.o.slice(-sh).concat(q.o.slice(0, -sh)); q.k = (q.k + sh) % q.o.length; }
+  });
+  $('#quiz').innerHTML = QUIZ.map((q, i) => `<div class="q" data-qi="${i}">
+      <div class="n">Question ${i + 1}</div><div>${esc(q.q)}</div>
+      <div class="opts">${q.o.map((o, j) => `<button class="opt" data-qi="${i}" data-oi="${j}">${esc(o)}</button>`).join('')}</div>
+      <div class="why" id="why${i}" style="display:none"></div></div>`).join('');
+}
+
+function markQuiz() {
+  let right = 0, answered = 0;
+  QUIZ.forEach((q, i) => {
+    if (PICK[i] === undefined) return;
+    answered++;
+    const ok = PICK[i] === q.k;
+    if (ok) right++;
+    document.querySelectorAll(`[data-qi="${i}"][data-oi]`).forEach((b) => {
+      const j = Number(b.dataset.oi);
+      b.classList.remove('good', 'bad');
+      if (j === q.k) b.classList.add('good'); else if (j === PICK[i]) b.classList.add('bad');
+    });
+    const w = $('#why' + i);
+    w.style.display = 'block';
+    w.innerHTML = '<b>' + (ok ? 'Right. ' : 'Not this one. ') + '</b>' + esc(q.why);
+  });
+  $('#quizScore').textContent = answered ? right + ' of ' + answered + ' answered correctly.' : 'Answer at least one question.';
+}
+
+// ---------------------------------------------------------------- wiring
+document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
+  document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('on', p.id === 'pane-' + t.dataset.tab));
+}));
+$('#descCat').addEventListener('change', renderDescCat);
+$('#crossRow').addEventListener('change', renderCross);
+$('#crossCol').addEventListener('change', renderCross);
+$('#btnRun').addEventListener('click', renderClust);
+$('#btnMark').addEventListener('click', markQuiz);
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.opt');
+  if (!b) return;
+  PICK[b.dataset.qi] = Number(b.dataset.oi);
+  document.querySelectorAll(`[data-qi="${b.dataset.qi}"][data-oi]`).forEach((x) => x.classList.toggle('sel', x === b));
+});
+
+$('#file').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  let rows;
+  if (/\.csv$/i.test(f.name)) rows = parseCSV(await f.text());
+  else {
+    if (typeof XLSX === 'undefined') { $('#report').innerHTML = '<div class="flag bad"><b>Excel not available</b>Save it as CSV and try again.</div>'; return; }
+    const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
+    rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' });
+    rows = rows.filter((r) => r.some((c) => String(c).trim() !== ''));
+  }
+  RAW = classify(tableToData(rows, f.name));
+  renderReport(diagnose(RAW), RAW);
+});
+
+$('#btnFix').addEventListener('click', () => {
+  if (!RAW) return;
+  const fixed = repair(RAW, diagnose(RAW));
+  DATA = classify(fixed);
+  $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
+  $('#chipSource').textContent = 'source: ' + DATA.name;
+  fillSelects(); renderDesc(); renderCross();
+  $('#report').innerHTML += '<div class="flag ok"><b>Repaired</b>' + DATA.rows.length + ' rows and ' +
+    DATA.vars.length + ' columns are now loaded in the analysis tabs.</div>';
+});
+$('#btnExport').addEventListener('click', () => {
+  const blob = new Blob([toCSV(DATA)], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'survey_clean.csv'; a.click();
+});
+$('#btnBack').addEventListener('click', () => location.reload());
+
+loadCase();
+</script>
+</body>
+</html>
