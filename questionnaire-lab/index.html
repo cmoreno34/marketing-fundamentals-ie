@@ -74,7 +74,20 @@ pre.prompt{background:var(--sunk);border:1px solid var(--line);border-radius:8px
 .check input{margin-top:4px;width:18px;height:18px;accent-color:var(--ok)}
 .score{background:var(--ok-soft);border:1px solid var(--ok);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:16px}
 footer{margin-top:26px;color:var(--muted);font-size:14.5px}
-@media print{ body{background:#fff} .btn,.row{display:none!important} pre.prompt{max-height:none} }
+#printout{display:none}
+@media print{
+  @page{size:A4;margin:14mm 13mm}
+  body{background:#fff;color:#000;padding:0;font-size:10pt}
+  .wrap > :not(#printout){display:none!important}
+  #printout{display:block!important}
+  #printout h1{font-size:17pt;margin:0 0 2mm;border-bottom:1.5pt solid #000;padding-bottom:2mm}
+  #printout h2{font-size:11.5pt;margin:5mm 0 1.5mm;border-bottom:.5pt solid #999;padding-bottom:1mm}
+  #printout .id{font-size:10pt;margin:0 0 3mm}
+  #printout .blk{margin:2mm 0;page-break-inside:avoid}
+  #printout .blk b{display:block;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;color:#444}
+  #printout pre{white-space:pre-wrap;font-family:monospace;font-size:8.5pt;line-height:1.35;margin:1mm 0}
+  #printout .foot{margin-top:6mm;font-size:8pt;color:#444;border-top:.5pt solid #999;padding-top:2mm}
+}
 </style>
 </head>
 <body>
@@ -162,6 +175,35 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
   <div id="checks"></div>
   <div class="score" id="score">0 of 6 checked.</div>
 </section>
+
+<section id="deliver">
+  <h2><span class="n">5</span>Your work</h2>
+  <p class="hint">Paste the questionnaire you kept after cutting the draft, say what you deleted and why,
+  and download the PDF. Everything here saves in this browser as you type.</p>
+  <div class="grid2">
+    <div>
+      <label class="f" for="names">Names of the pair</label>
+      <input type="text" id="names" data-k placeholder="e.g. Marta Ruiz and Alex Chen">
+    </div>
+    <div>
+      <label class="f" for="group">Group</label>
+      <input type="text" id="group" data-k placeholder="e.g. Group C">
+    </div>
+  </div>
+  <label class="f" for="draft">The questionnaire you are keeping</label>
+  <textarea id="draft" data-k style="min-height:220px" placeholder="Paste here what the assistant wrote, already cut to the length you asked for and with your corrections."></textarea>
+  <label class="f" for="cuts">The three questions you deleted, each with the fault it had</label>
+  <textarea id="cuts" data-k placeholder="1. ...&#10;2. ...&#10;3. ..."></textarea>
+  <label class="f" for="rewrite">The one you rewrote: before, after, and why</label>
+  <textarea id="rewrite" data-k placeholder="Before: ...&#10;After: ...&#10;Why: ..."></textarea>
+  <div class="row">
+    <button class="btn solid" id="btnPdf">Download the PDF</button>
+    <button class="btn" id="btnClear" style="font-weight:400">Start again</button>
+    <span class="hint" id="saveState">Saved in this browser.</span>
+  </div>
+</section>
+
+<div id="printout"></div>
 
 <footer>Session 12 · Marketing Fundamentals 26-27. Short version of the questionnaire builder of Estudios
 de Mercado I. Nothing you type leaves this browser.</footer>
@@ -328,7 +370,8 @@ function buildPrompt() {
 // ---------------------------------------------------------------- wiring
 document.addEventListener('input', (e) => {
   const t = e.target;
-  if (t.dataset.k !== undefined) { S[t.id] = t.value; save(); progress(); }
+  if (t.dataset.k !== undefined) { S[t.id] = t.value; save(); progress();
+    const st = document.getElementById('saveState'); if (st) { st.textContent = 'Saved.'; clearTimeout(window.__sv); window.__sv = setTimeout(() => { st.textContent = 'Saved in this browser.'; }, 1200); } }
   if (t.dataset.need !== undefined) { S.needs[t.dataset.need].t = t.value; save(); progress(); }
   if (t.dataset.an !== undefined) { S.needs[t.dataset.an].a = Number(t.value); save();
     const el = document.getElementById('anwhy' + t.dataset.an); if (el) el.innerHTML = anWhy(Number(t.value)); }
@@ -352,7 +395,52 @@ $('#btnCopy').addEventListener('click', () => {
 });
 $('#btnPrint').addEventListener('click', () => window.print());
 
-['topic', 'decision', 'pop', 'reach', 'n', 'lang'].forEach((id) => {
+
+// ---------------------------------------------------------------- the PDF
+function buildPrint() {
+  const needs = S.needs.filter((x) => (x.t || '').trim());
+  const blocks = BLOCKS.filter(([id]) => S.blocks[id]).map(([id, name]) => name);
+  const demos = DEMOS.filter(([id]) => S.demos[id]).map(([id, name]) => name);
+  const ticked = CHECKS.filter((c, i) => S.checked[i]);
+  const missing = CHECKS.filter((c, i) => !S.checked[i]);
+  const blk = (t, body) => `<div class="blk"><b>${t}</b>${body}</div>`;
+  let h = `<h1>Questionnaire lab &middot; Session 12</h1>
+    <div class="id"><b>Names</b> ${esc(val('names') || '\u2014')} &nbsp; <b>Group</b> ${esc(val('group') || '\u2014')}
+    &nbsp; <b>Date</b> ${new Date().toLocaleDateString()}</div>`;
+  h += '<h2>1. The decision</h2>';
+  h += blk('Topic', esc(val('topic') || '\u2014'));
+  h += blk('What will be decided', esc(val('decision') || '\u2014'));
+  h += blk('Who answers, and how', esc(val('pop') || '\u2014') + ' &middot; ' + esc(val('reach') || '\u2014'));
+  h += '<h2>2. What we need to learn</h2>';
+  h += needs.length
+    ? needs.map((nd, i) => blk('Line ' + (i + 1), esc(nd.t.trim()) + '<br><i>ends in ' + esc(ANALYSES[Number(nd.a) || 0].label) + '</i>')).join('')
+    : blk('Lines', '\u2014');
+  h += '<h2>3. Length and blocks</h2>';
+  h += blk('Length', (val('n') || '12') + ' questions, about ' + Math.max(2, Math.round(Number(val('n') || 12) * 20 / 60)) + ' minutes, in ' + esc(val('lang') || 'English'));
+  h += blk('Blocks', blocks.join(' &middot; ') || '\u2014');
+  h += blk('Demographics', demos.join(' &middot; ') || '\u2014');
+  h += '<h2>4. The prompt we used</h2>';
+  h += '<pre>' + esc($('#prompt').textContent) + '</pre>';
+  h += '<h2>5. The questionnaire we are keeping</h2>';
+  h += '<pre>' + esc(val('draft') || '(not pasted)') + '</pre>';
+  h += blk('Deleted, and why', esc(val('cuts') || '\u2014').replace(/\n/g, '<br>'));
+  h += blk('Rewritten', esc(val('rewrite') || '\u2014').replace(/\n/g, '<br>'));
+  h += '<h2>6. The checks</h2>';
+  h += blk('Ticked (' + ticked.length + ' of ' + CHECKS.length + ')', ticked.map(esc).join('<br>') || '\u2014');
+  if (missing.length) h += blk('Still to fix', missing.map(esc).join('<br>'));
+  h += '<div class="foot">Questionnaire lab &middot; Marketing Fundamentals 26-27 &middot; the decisions are the student\'s, the draft is the assistant\'s.</div>';
+  $('#printout').innerHTML = h;
+}
+
+$('#btnPdf').addEventListener('click', () => { buildPrompt(); buildPrint(); window.print(); });
+window.addEventListener('beforeprint', () => { buildPrint(); });
+$('#btnClear').addEventListener('click', () => {
+  if (!confirm('Clear everything on this page?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  location.reload();
+});
+
+['topic', 'decision', 'pop', 'reach', 'n', 'lang', 'names', 'group', 'draft', 'cuts', 'rewrite'].forEach((id) => {
   if (S[id] !== undefined && document.getElementById(id)) document.getElementById(id).value = S[id];
 });
 needRows(); boxes('#blocks', BLOCKS, S.blocks); boxes('#demos', DEMOS, S.demos); checkRows(); progress();
