@@ -106,7 +106,6 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
   <button class="tab" data-tab="desc">3 · Describe</button>
   <button class="tab" data-tab="cross">4 · Cross</button>
   <button class="tab" data-tab="clust">5 · Segment</button>
-  <button class="tab" data-tab="read">6 · Read it</button>
 </div>
 
 <div class="pane on" id="pane-case">
@@ -166,6 +165,11 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
     <h2>Describe: one variable at a time</h2>
     <p class="hint">For a 1 to 5 rating: the mean, how spread the answers are, and the share who answered
     4 or 5 &mdash; the top-two box, which is what a client reads. For a category: the frequency table.</p>
+    <div class="note"><b>What these columns are.</b> <b>n</b>: how many people answered that question.
+    <b>mean</b>: the average answer, from 1 to 5. <b>sd</b>: how spread the answers are around the average
+    &mdash; under 0.8 the room agrees, above 1.2 it is split. <b>top 2</b>: the percentage who answered 4
+    or 5, which is the number a client reads. <b>bottom 2</b>: the percentage who answered 1 or 2, which is
+    the objection you will have to deal with.</div>
     <div id="descRatings"></div>
     <h3>Categories</h3>
     <label class="f" for="descCat">Pick a categorical variable</label>
@@ -180,10 +184,19 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
     <p class="hint">Two categorical variables. Row percentages, expected counts, chi-square, and the
     validity check before the p-value. To cross a rating, the lab bands it into low (1-2), middle (3) and
     high (4-5).</p>
+    <div class="row"><button class="btn solid" id="btnScan">Scan every pair and show what is significant</button>
+      <span class="hint" id="scanState"></span></div>
+    <div id="scanOut"></div>
+    <h3>Or look at one pair</h3>
     <div class="grid2">
       <div><label class="f" for="crossRow">Rows (the group)</label><select id="crossRow"></select></div>
       <div><label class="f" for="crossCol">Columns (what you are explaining)</label><select id="crossCol"></select></div>
     </div>
+    <div class="note"><b>What a crosstab is.</b> One question split by another: the answers of each group,
+    side by side. The percentage is read inside each row &mdash; of the people in that group. <b>Chi-square</b>
+    asks whether a gap that size would appear by chance; <b>p</b> is how often it would. <b>Cramer's V</b>
+    says how strong the link is, from 0 to 1. And before any of that, the <b>expected counts</b>: with fewer
+    than 5 expected in most cells the test cannot be read at all.</div>
     <div id="crossOut"></div>
   </section>
 </div>
@@ -196,30 +209,31 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
     and read the table, not the algorithm.</p>
     <div class="grid2">
       <div><label class="f" for="k">How many segments</label><select id="k"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
-      <div><label class="f" for="clustVars">Which variables</label><select id="clustVars">
-        <option value="ratings" selected>the 18 ratings</option>
-        <option value="buy">the four buying-intent ratings</option>
-      </select></div>
+      <div><label class="f">Which variables go in</label>
+        <div class="row" style="margin-top:4px">
+          <button class="btn" id="pickAll" style="padding:6px 12px;font-size:14px">all ratings</button>
+          <button class="btn" id="pickBuy" style="padding:6px 12px;font-size:14px">buying intent only</button>
+          <button class="btn" id="pickNone" style="padding:6px 12px;font-size:14px">none</button>
+        </div>
+      </div>
     </div>
+    <div class="opts" id="varPicker" style="margin-top:10px"></div>
     <div class="row"><button class="btn solid" id="btnRun">Run the segmentation</button>
       <span class="hint" id="clustState"></span></div>
+    <div class="note"><b>What segmentation does.</b> It groups the people whose answers look alike. The
+    <b>centroid table</b> is the average answer of each group to every question: the rows where the groups
+    are furthest apart are what separates them, and what you name them after. The <b>silhouette</b> scores
+    how well separated the groups are, from -1 to 1: above 0.5 is a clear structure, 0.25 to 0.5 is weak
+    but usable, below 0.25 means the groups are mostly an artefact of asking for them. <b>Variance
+    explained</b> is how much of the differences between people the grouping accounts for.</div>
     <div id="clustOut"></div>
   </section>
 </div>
 
-<div class="pane" id="pane-read">
-  <section>
-    <h2>Read the results</h2>
-    <p class="hint">Eight questions about the numbers this lab just produced from the VAJA data. They are
-    not about formulas: they are about what you may and may not conclude. Answer, then read why.</p>
-    <div id="quiz"></div>
-    <div class="note" id="quizScore">Not checked yet.</div>
-    <div class="row"><button class="btn solid" id="btnMark">Check my answers</button></div>
-  </section>
-</div>
+
 
 <footer>VAJA survey lab · Marketing Fundamentals 26-27. The data is a student survey from the course
-archive, used with the group's permission for teaching. For heavier analysis, the same file opens in the
+archive, used with the group's permission for teaching. The questions on how to read these numbers are in the Blackboard test of the session. For heavier analysis, the same file opens in the
 course tools: <b>cmoreno34.github.io/mkt3600-analysis</b> (univariate, crosstab, correlation) and
 <b>cmoreno34.github.io/marketing-analytics-ufv</b> (segmentation lab).</footer>
 </div>
@@ -300,7 +314,7 @@ async function loadCase() {
   CODEBOOK = bk.slice(1).map((r) => ({ variable: r[0], question: r[1], type: r[2], codes: r[3] }));
   DATA = classify(tableToData(parseCSV(clean), 'VAJA 2024'));
   $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
-  renderCodebook(); fillSelects(); renderDesc(); renderCross(); buildQuiz();
+  renderCodebook(); fillSelects(); renderDesc(); renderCross(); renderVarPicker();
   ['dlTemplate:data/survey_template.csv', 'dlMessy:data/veja_survey_messy.csv', 'dlClean:data/veja_survey_clean.csv']
     .forEach((pair) => { const [id, href] = pair.split(':'); $('#' + id).href = href; });
 }
@@ -514,7 +528,98 @@ function crosstab(rowVar, colVar) {
 }
 
 // ---------------------------------------------------------------- k-means
-function kmeans(names, k, seed) {
+
+function renderVarPicker() {
+  const vs = DATA.vars.filter((v) => v.type === 'rating' || v.type === 'category');
+  if (!window.PICKED) window.PICKED = {};
+  vs.forEach((v) => { if (window.PICKED[v.name] === undefined) window.PICKED[v.name] = v.type === 'rating'; });
+  $('#varPicker').innerHTML = vs.map((v) => `<label class="opt" style="display:flex;gap:8px;align-items:flex-start">
+      <input type="checkbox" data-var="${esc(v.name)}" ${window.PICKED[v.name] ? 'checked' : ''} style="margin-top:4px">
+      <span>${esc(v.name)}<br><span class="hint">${v.type === 'rating' ? 'rating 1-5' : 'category'}</span></span></label>`).join('');
+}
+
+function silhouette(pts, assign, cats, k) {
+  const n = pts.length;
+  if (n > 1200) return null;                       // too many rows to do it pair by pair
+  const d = (p, q) => {
+    let s = 0;
+    for (let i = 0; i < p.length; i++) s += cats[i] ? (p[i] === q[i] ? 0 : 1) : (p[i] - q[i]) ** 2;
+    return Math.sqrt(s);
+  };
+  let tot = 0, used = 0;
+  for (let i = 0; i < n; i++) {
+    const own = [], others = new Map();
+    for (let j = 0; j < n; j++) {
+      if (i === j) continue;
+      const dist = d(pts[i], pts[j]);
+      if (assign[j] === assign[i]) own.push(dist);
+      else { if (!others.has(assign[j])) others.set(assign[j], []); others.get(assign[j]).push(dist); }
+    }
+    if (!own.length || !others.size) continue;
+    const a = own.reduce((x, y) => x + y, 0) / own.length;
+    const b = Math.min(...[...others.values()].map((arr) => arr.reduce((x, y) => x + y, 0) / arr.length));
+    tot += (b - a) / Math.max(a, b); used++;
+  }
+  return used ? tot / used : null;
+}
+
+function cluster(names, k, seed) {
+  const cats = names.map((n) => (DATA.vars.find((v) => v.name === n) || {}).type === 'category');
+  const pts = DATA.rows.map((r) => names.map((n) => num(r, n))).filter((p) => p.every((x) => x !== null && !Number.isNaN(x)));
+  if (pts.length < k) return null;
+  const numIdx = names.map((_, i) => i).filter((i) => !cats[i]);
+  const gamma = 1.0;                                // weight of a categorical mismatch
+  const dist = (p, c) => {
+    let s = 0;
+    for (let i = 0; i < p.length; i++) s += cats[i] ? (p[i] === c[i] ? 0 : gamma) : (p[i] - c[i]) ** 2;
+    return s;
+  };
+  let s = seed || 7;
+  const rnd = () => { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
+  let best = null;
+  for (let attempt = 0; attempt < 12; attempt++) {
+    let cent = [pts[Math.floor(rnd() * pts.length)].slice()];
+    while (cent.length < k) {
+      const d2 = pts.map((p) => Math.min(...cent.map((c) => dist(p, c))));
+      const tot = d2.reduce((a, b) => a + b, 0) || 1;
+      let t = rnd() * tot, idx = 0;
+      for (let i = 0; i < pts.length; i++) { t -= d2[i]; if (t <= 0) { idx = i; break; } }
+      cent.push(pts[idx].slice());
+    }
+    let assign = new Array(pts.length).fill(0);
+    for (let it = 0; it < 60; it++) {
+      let moved = false;
+      pts.forEach((p, i) => {
+        let bi = 0, bd = Infinity;
+        cent.forEach((c, j) => { const dd = dist(p, c); if (dd < bd) { bd = dd; bi = j; } });
+        if (assign[i] !== bi) { assign[i] = bi; moved = true; }
+      });
+      cent = cent.map((c, j) => {
+        const mem = pts.filter((p, i) => assign[i] === j);
+        if (!mem.length) return c;
+        return names.map((_, q) => {
+          if (!cats[q]) return mem.reduce((a, p) => a + p[q], 0) / mem.length;
+          const f = new Map();                       // the mode, which is what k-prototypes uses
+          mem.forEach((p) => f.set(p[q], (f.get(p[q]) || 0) + 1));
+          return [...f.entries()].sort((a, b) => b[1] - a[1])[0][0];
+        });
+      });
+      if (!moved) break;
+    }
+    const wss = pts.reduce((a, p, i) => a + dist(p, cent[assign[i]]), 0);
+    if (!best || wss < best.wss) best = { cent, assign, wss };
+  }
+  // total dispersion around the overall centre, for the share of variance explained
+  const grand = names.map((_, q) => (cats[q] ? null : pts.reduce((a, p) => a + p[q], 0) / pts.length));
+  const tss = pts.reduce((a, p) => a + numIdx.reduce((b, q) => b + (p[q] - grand[q]) ** 2, 0), 0);
+  const wssNum = pts.reduce((a, p, i) => a + numIdx.reduce((b, q) => b + (p[q] - best.cent[best.assign[i]][q]) ** 2, 0), 0);
+  return { ...best, names, cats, n: pts.length, pts,
+           method: cats.some(Boolean) ? 'k-prototypes (ratings and categories together)' : 'k-means (ratings only)',
+           explained: tss > 0 ? 1 - wssNum / tss : null,
+           sil: silhouette(pts, best.assign, cats, k) };
+}
+
+function _unused_kmeans(names, k, seed) {
   const pts = DATA.rows.map((r) => names.map((n) => num(r, n))).filter((p) => p.every((x) => x !== null && !Number.isNaN(x)));
   if (pts.length < k) return null;
   let s = seed || 7;
@@ -586,6 +691,41 @@ function renderDescCat() {
     <p class="hint">n = ${f.total}</p>`;
 }
 
+
+function scanAll() {
+  const vars = DATA.vars.filter((v) => v.type === 'rating' || v.type === 'category').map((v) => v.name);
+  const out = [];
+  for (let i = 0; i < vars.length; i++) {
+    for (let j = i + 1; j < vars.length; j++) {
+      const t = crosstab(vars[i], vars[j]);
+      if (!t.n || !t.df) continue;
+      const valid = t.minE >= 5 || t.small / t.cells <= 0.2;
+      out.push({ a: vars[i], b: vars[j], chi: t.chi, df: t.df, p: t.p, v: t.v, valid, n: t.n,
+                 minE: t.minE, small: t.small, cells: t.cells });
+    }
+  }
+  const sig = out.filter((r) => r.valid && r.p < 0.05).sort((x, y) => x.p - y.p);
+  const notValid = out.filter((r) => !r.valid).length;
+  const rows = sig.slice(0, 40).map((r) => `<tr class="pair" data-a="${esc(r.a)}" data-b="${esc(r.b)}">
+      <td><b>${esc(r.a)}</b> &times; ${esc(r.b)}</td><td class="num">${r.n}</td>
+      <td class="num">${fmt(r.chi)}</td><td class="num">${r.df}</td>
+      <td class="num">${r.p < 0.001 ? '&lt; 0.001' : fmt(r.p, 3)}</td>
+      <td class="num">${fmt(r.v)}</td><td class="hint">${r.v < 0.1 ? 'negligible' : r.v < 0.3 ? 'small' : r.v < 0.5 ? 'moderate' : 'strong'}</td>
+      <td><button class="btn" style="padding:4px 10px;font-size:14px">open</button></td></tr>`).join('');
+  $('#scanOut').innerHTML = sig.length
+    ? `<table><tr><th>Pair</th><th class="num">n</th><th class="num">chi-square</th><th class="num">df</th>
+         <th class="num">p</th><th class="num">V</th><th>strength</th><th></th></tr>${rows}</table>
+       <div class="note">${sig.length} pair${sig.length > 1 ? 's' : ''} out of ${out.length} come out
+       significant <i>and</i> with a readable test. ${notValid} test${notValid === 1 ? '' : 's'} had too
+       many small cells to be read at all, and are not in this list. Open one and read the percentages
+       before you believe it: with ${DATA.rows.length} answers a significant result can still rest on a
+       handful of people.</div>`
+    : `<div class="flag"><b>Nothing survives</b>No pair is both significant and valid in this file.
+       With ${DATA.rows.length} answers that is a normal outcome: report it, and say what you would need
+       to test it properly.</div>`;
+  $('#scanState').textContent = out.length + ' pairs tested · ' + sig.length + ' significant and valid · ' + notValid + ' not testable';
+}
+
 function renderCross() {
   const a = $('#crossRow').value, b = $('#crossCol').value;
   if (!a || !b || a === b) { $('#crossOut').innerHTML = '<p class="hint">Pick two different variables.</p>'; return; }
@@ -609,130 +749,47 @@ function renderCross() {
 
 function renderClust() {
   const k = Number($('#k').value);
-  const which = $('#clustVars').value;
-  const names = which === 'buy'
-    ? ['buy_the_benefits', 'try_relaxing_drink', 'pay_premium', 'replace_energy_drinks'].filter((n) => DATA.vars.some((v) => v.name === n))
-    : ratings().map((v) => v.name);
-  const res = kmeans(names, k, 7);
+  const names = Object.keys(window.PICKED || {}).filter((n) => window.PICKED[n] && DATA.vars.some((v) => v.name === n));
+  if (names.length < 2) { $('#clustOut').innerHTML = '<div class="flag bad"><b>Pick at least two variables</b>A segmentation needs something to compare people on.</div>'; return; }
+  const res = cluster(names, k, 7);
   if (!res) { $('#clustOut').innerHTML = '<p class="hint">Not enough complete rows.</p>'; return; }
   const sizes = res.cent.map((_, j) => res.assign.filter((a) => a === j).length);
   const spread = names.map((n, q) => {
+    if (res.cats[q]) return { n, range: null };
     const vals = res.cent.map((c) => c[q]);
     return { n, range: Math.max(...vals) - Math.min(...vals) };
-  }).sort((x, y) => y.range - x.range);
-  const top = spread.slice(0, 6).map((s) => s.n);
-  const head = ['<tr><th>Variable</th>'].concat(res.cent.map((_, j) => `<th class="num">segment ${j + 1}</th>`)).concat(['<th class="num">spread</th></tr>']).join('');
-  const body = top.map((n) => {
+  }).sort((x, y) => (y.range || 0) - (x.range || 0));
+  const show = spread.slice(0, 8).map((s) => s.n);
+  const head = ['<tr><th>Variable</th>'].concat(res.cent.map((_, j) => `<th class="num">segment ${j + 1}</th>`))
+    .concat(['<th class="num">spread</th></tr>']).join('');
+  const body = show.map((n) => {
     const q = names.indexOf(n);
-    const cells = res.cent.map((c) => `<td class="num">${fmt(c[q])}</td>`).join('');
+    const cells = res.cent.map((c) => `<td class="num">${res.cats[q] ? esc(codeLabel(n, c[q])) : fmt(c[q])}</td>`).join('');
     const sp = spread.find((s) => s.n === n).range;
-    return `<tr><td>${esc(n)}</td>${cells}<td class="num">${fmt(sp)}</td></tr>`;
+    return `<tr><td>${esc(n)}</td>${cells}<td class="num">${sp === null ? '-' : fmt(sp)}</td></tr>`;
   }).join('');
   const sizeRow = '<tr><td><b>size</b></td>' + sizes.map((s) => `<td class="num"><b>${s}</b><br><span class="hint">${fmt(s / res.n * 100, 0)}%</span></td>`).join('') + '<td></td></tr>';
+  const sil = res.sil;
+  const quality = sil === null ? 'too many rows to score pair by pair'
+    : sil >= 0.5 ? 'clear structure: the groups really are apart'
+    : sil >= 0.25 ? 'weak but usable: the groups overlap, so treat them as a working hypothesis'
+    : 'no real structure: the algorithm split people who look alike because you asked it to';
+  const smallest = Math.min(...sizes);
   $('#clustOut').innerHTML = `<table>${head}${sizeRow}${body}</table>
-    <div class="note"><b>How to read it.</b> Each column is a segment and each number is the average answer
-    of its members. Read the rows with the biggest spread first: those are what separate the groups, and
-    they are what you would name the segment after. A segment with 4 people is not a segment, it is noise.</div>
-    <div class="flag"><b>What this is not</b>The algorithm always returns ${k} groups, even when there are
-    none. Change k and see whether the story survives: if the segments change completely, the structure is
-    weak and you should say so.</div>`;
-  $('#clustState').textContent = res.n + ' complete rows · ' + names.length + ' variables · within-cluster error ' + fmt(res.wss, 1);
+    <div class="note"><b>How good is this division?</b><br>
+      Method: <b>${esc(res.method)}</b>, on ${names.length} variable${names.length > 1 ? 's' : ''} and ${res.n} complete answers.<br>
+      Silhouette <b>${sil === null ? '-' : fmt(sil)}</b> &mdash; ${quality}.<br>
+      It explains <b>${res.explained === null ? '-' : fmt(res.explained * 100, 0) + '%'}</b> of the differences between respondents.<br>
+      Smallest segment: <b>${smallest}</b> people${smallest < 10 ? ' &mdash; too few to name as a segment in a sample this size' : ''}.</div>
+    <div class="flag"><b>Before you believe it</b>Run it again with ${k === 2 ? 3 : k - 1} and ${k + 1} groups.
+      If the same two or three groups keep appearing, they are real; if the picture changes completely, say
+      in your report that the structure is weak. And read the rows with the biggest spread: those are the
+      questions that separate the segments, and the only honest basis for naming them.</div>`;
+  $('#clustState').textContent = res.n + ' rows · ' + names.length + ' variables · ' + res.method;
 }
 
 // ---------------------------------------------------------------- the guided quiz
-let QUIZ = [], PICK = {};
-function buildQuiz() {
-  const sBuy = stats('buy_the_benefits'), sPay = stats('pay_premium'), sTrust = stats('trust_new_brands');
-  const fAge = freq('age_group');
-  const topAge = fAge.rows.slice().sort((a, b) => b[1] - a[1])[0];
-  const t = crosstab('age_group', 'buy_the_benefits');
-  QUIZ = [
-    { q: `The mean of "buy the benefits" is ${fmt(sBuy.mean)} out of 5, with a standard deviation of ${fmt(sBuy.sd)}. What does that tell a client?`,
-      o: ['That the market will buy it: the average is above the midpoint',
-          'That the average is favourable, but the spread says the room is not one block',
-          'That 77 people will buy it',
-          'Nothing: a mean of a 1 to 5 scale cannot be computed'],
-      k: 1,
-      why: 'The mean is above the middle, which is encouraging, and the standard deviation is what stops you reading it as agreement: with a spread of this size the answers run from 2 to 5. The next move is to find out who the low scores are, which is what the crosstab and the segmentation do.' },
-    { q: `"Willingness to pay a premium" has a top-two box of ${fmt(sPay.top2, 0)}% (answers 4 or 5). Which sentence is honest in a report?`,
-      o: [`${fmt(sPay.top2, 0)}% of the market will pay more`,
-          `${fmt(sPay.top2, 0)}% of the people who answered say they would pay more`,
-          'The price can be raised by 20%',
-          'Nobody will pay a premium'],
-      k: 1,
-      why: 'Two corrections at once: it is the people who answered, not the market, because the sample is self-selected; and it is what they say, not what they do. Stated willingness to pay is systematically higher than real willingness to pay.' },
-    { q: `The most frequent age group is code ${topAge[0]} with ${topAge[1]} of ${fAge.total} answers. What does that mean for everything else in the study?`,
-      o: ['Nothing: the sample is random',
-          'That the findings describe mostly that group, and have to be read as such',
-          'That the other groups should be removed',
-          'That the survey is invalid'],
-      k: 1,
-      why: 'A sample that is dominated by one group is not useless: it is a sample of that group. Say so in the report, and be careful with any statement about "the market" as a whole.' },
-    { q: `Crossing age group against buying intention gives chi-square ${fmt(t.chi)} with ${t.df} degrees of freedom, p = ${t.p < 0.001 ? '< 0.001' : fmt(t.p, 3)}, and the smallest expected count is ${fmt(t.minE, 2)}. What do you do first?`,
-      o: ['Read the p-value and conclude',
-          'Check the expected counts before reading anything',
-          'Increase the sample',
-          'Report Cramer\'s V only'],
-      k: 1,
-      why: 'Validity before significance, always. With expected counts below 5 the chi-square distribution is not a good approximation and the p-value cannot be trusted, however attractive it looks. With few respondents per cell the fix is to collapse categories that genuinely belong together, and to say that you did.' },
-    { q: 'The segmentation returns three segments. One of them has 6 members. What is the right reading?',
-      o: ['A niche worth targeting',
-          'A group too small to be a segment in a sample of 77: report it as noise or merge it',
-          'Proof that three is the right number of segments',
-          'An error in the algorithm'],
-      k: 1,
-      why: 'K-means always returns the number of groups you ask for. With 77 respondents a cluster of 6 is not a market segment, it is six people; naming it and building a strategy on it is the classic mistake of a first segmentation.' },
-    { q: 'Which variables should you name a segment after?',
-      o: ['The ones with the highest average overall',
-          'The ones where the segments differ most from each other',
-          'The demographics, always',
-          'All of them, in order'],
-      k: 1,
-      why: 'A variable everybody rates 4.5 tells you nothing about who is who. The spread column in the centroid table is exactly this: it ranks the variables by how far apart the segments are on them.' },
-    { q: `"Trust in claims from new brands" averages ${fmt(sTrust.mean)}. The team concludes that advertising should stress the scientific evidence. Is that a conclusion from the data?`,
-      o: ['Yes, it follows directly',
-          'It is a hypothesis the data supports but does not prove',
-          'No, the variable is irrelevant',
-          'Only if the p-value is below 0.05'],
-      k: 1,
-      why: 'The survey measures a low level of trust. That makes "evidence in the message" a reasonable hypothesis, not a proven cause: what proves it is a test of two messages, which is an experiment, not a survey.' },
-    { q: 'The same questionnaire is run again next month with another 77 people and the means move by 0.1 or 0.2. What is happening?',
-      o: ['The market changed',
-          'Sampling variation: two samples of the same population differ',
-          'The questionnaire is faulty',
-          'Somebody manipulated the data'],
-      k: 1,
-      why: 'That is sampling error, and it is the only error that shrinks when the sample grows. Reporting a difference of 0.1 between two small samples as a change in the market is reading noise as news.' },
-  ];
-  const SHIFT = [2, 0, 3, 1, 3, 1, 0, 2];
-  QUIZ.forEach((q, i) => {
-    const sh = SHIFT[i] % q.o.length;
-    if (sh) { q.o = q.o.slice(-sh).concat(q.o.slice(0, -sh)); q.k = (q.k + sh) % q.o.length; }
-  });
-  $('#quiz').innerHTML = QUIZ.map((q, i) => `<div class="q" data-qi="${i}">
-      <div class="n">Question ${i + 1}</div><div>${esc(q.q)}</div>
-      <div class="opts">${q.o.map((o, j) => `<button class="opt" data-qi="${i}" data-oi="${j}">${esc(o)}</button>`).join('')}</div>
-      <div class="why" id="why${i}" style="display:none"></div></div>`).join('');
-}
 
-function markQuiz() {
-  let right = 0, answered = 0;
-  QUIZ.forEach((q, i) => {
-    if (PICK[i] === undefined) return;
-    answered++;
-    const ok = PICK[i] === q.k;
-    if (ok) right++;
-    document.querySelectorAll(`[data-qi="${i}"][data-oi]`).forEach((b) => {
-      const j = Number(b.dataset.oi);
-      b.classList.remove('good', 'bad');
-      if (j === q.k) b.classList.add('good'); else if (j === PICK[i]) b.classList.add('bad');
-    });
-    const w = $('#why' + i);
-    w.style.display = 'block';
-    w.innerHTML = '<b>' + (ok ? 'Right. ' : 'Not this one. ') + '</b>' + esc(q.why);
-  });
-  $('#quizScore').textContent = answered ? right + ' of ' + answered + ' answered correctly.' : 'Answer at least one question.';
-}
 
 // ---------------------------------------------------------------- wiring
 document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
@@ -742,14 +799,24 @@ document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () 
 $('#descCat').addEventListener('change', renderDescCat);
 $('#crossRow').addEventListener('change', renderCross);
 $('#crossCol').addEventListener('change', renderCross);
-$('#btnRun').addEventListener('click', renderClust);
-$('#btnMark').addEventListener('click', markQuiz);
+$('#btnScan').addEventListener('click', scanAll);
 document.addEventListener('click', (e) => {
-  const b = e.target.closest('.opt');
-  if (!b) return;
-  PICK[b.dataset.qi] = Number(b.dataset.oi);
-  document.querySelectorAll(`[data-qi="${b.dataset.qi}"][data-oi]`).forEach((x) => x.classList.toggle('sel', x === b));
+  const tr = e.target.closest('.pair');
+  if (!tr) return;
+  $('#crossRow').value = tr.dataset.a; $('#crossCol').value = tr.dataset.b;
+  renderCross();
+  $('#crossOut').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
+$('#pickAll').addEventListener('click', () => { DATA.vars.forEach((v) => { if (v.type === 'rating') window.PICKED[v.name] = true; else if (v.type === 'category') window.PICKED[v.name] = false; }); renderVarPicker(); });
+$('#pickBuy').addEventListener('click', () => { Object.keys(window.PICKED).forEach((n) => { window.PICKED[n] = ['buy_the_benefits', 'try_relaxing_drink', 'pay_premium', 'replace_energy_drinks'].includes(n); }); renderVarPicker(); });
+$('#pickNone').addEventListener('click', () => { Object.keys(window.PICKED).forEach((n) => { window.PICKED[n] = false; }); renderVarPicker(); });
+document.addEventListener('change', (e) => {
+  if (e.target.dataset && e.target.dataset.var !== undefined) {
+    window.PICKED[e.target.dataset.var] = e.target.checked;
+    e.target.closest('.opt').classList.toggle('sel', e.target.checked);
+  }
+});
+$('#btnRun').addEventListener('click', renderClust);
 
 $('#file').addEventListener('change', async (e) => {
   const f = e.target.files[0];
@@ -772,7 +839,7 @@ $('#btnFix').addEventListener('click', () => {
   DATA = classify(fixed);
   $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
   $('#chipSource').textContent = 'source: ' + DATA.name;
-  fillSelects(); renderDesc(); renderCross();
+  fillSelects(); renderDesc(); renderCross(); window.PICKED = {}; renderVarPicker();
   $('#report').innerHTML += '<div class="flag ok"><b>Repaired</b>' + DATA.rows.length + ' rows and ' +
     DATA.vars.length + ' columns are now loaded in the analysis tabs.</div>';
 });
