@@ -218,6 +218,7 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
       <div><label class="f" for="k">How many segments</label><select id="k"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
       <div><label class="f">Which variables go in</label>
         <div class="row" style="margin-top:4px">
+          <button class="btn" id="pickEvery" style="padding:6px 12px;font-size:14px">everything</button>
           <button class="btn" id="pickAll" style="padding:6px 12px;font-size:14px">all ratings</button>
           <button class="btn" id="pickBuy" style="padding:6px 12px;font-size:14px">buying intent only</button>
           <button class="btn" id="pickNone" style="padding:6px 12px;font-size:14px">none</button>
@@ -789,12 +790,33 @@ function renderClust() {
     const vals = res.cent.map((c) => c[q]);
     return { n, range: Math.max(...vals) - Math.min(...vals) };
   }).sort((x, y) => (y.range || 0) - (x.range || 0));
-  const show = spread.slice(0, 8).map((s) => s.n);
+  const catNames = names.filter((n, q) => res.cats[q]);
+  const numShow = spread.filter((s) => s.range !== null).slice(0, 8).map((s) => s.n);
+  const show = numShow.concat(catNames);
+  // for a category there is no average: what describes a segment is its most common answer
+  const modeOf = (q, seg) => {
+    const f = new Map();
+    res.pts.forEach((p, i) => { if (res.assign[i] === seg) f.set(p[q], (f.get(p[q]) || 0) + 1); });
+    if (!f.size) return null;
+    const [val, cnt] = [...f.entries()].sort((a, b) => b[1] - a[1])[0];
+    const tot = [...f.values()].reduce((a, b) => a + b, 0);
+    return { val, share: cnt / tot };
+  };
   const head = ['<tr><th>Variable</th>'].concat(res.cent.map((_, j) => `<th class="num">segment ${j + 1}</th>`))
     .concat(['<th class="num">spread</th></tr>']).join('');
   const body = show.map((n) => {
     const q = names.indexOf(n);
-    const cells = res.cent.map((c) => `<td class="num">${res.cats[q] ? esc(codeLabel(n, c[q])) : fmt(c[q])}</td>`).join('');
+    if (res.cats[q]) {
+      const cells = res.cent.map((c, j) => {
+        const m = modeOf(q, j);
+        return `<td class="num">${m ? esc(codeLabel(n, m.val)) : '-'}<br><span class="hint">${m ? fmt(m.share * 100, 0) + '% of the segment' : ''}</span></td>`;
+      }).join('');
+      const vals = res.cent.map((_, j) => { const m = modeOf(q, j); return m ? m.val : null; });
+      const differs = new Set(vals.filter((v) => v !== null)).size > 1;
+      return `<tr><td>${esc(n)} <span class="hint">(category)</span></td>${cells}
+        <td class="num">${differs ? 'differs' : 'same'}</td></tr>`;
+    }
+    const cells = res.cent.map((c) => `<td class="num">${fmt(c[q])}</td>`).join('');
     const sp = spread.find((s) => s.n === n).range;
     return `<tr><td>${esc(n)}</td>${cells}<td class="num">${sp === null ? '-' : fmt(sp)}</td></tr>`;
   }).join('');
@@ -810,6 +832,7 @@ function renderClust() {
       Method: <b>${esc(res.method)}</b>, on ${names.length} variable${names.length > 1 ? 's' : ''} and ${res.n} complete answers.<br>
       Silhouette <b>${sil === null ? '-' : fmt(sil)}</b> &mdash; ${quality}.<br>
       It explains <b>${res.explained === null ? '-' : fmt(res.explained * 100, 0) + '%'}</b> of the differences between respondents.<br>
+      Categories are read by their most common answer and how much of the segment shares it, not by an average.<br>
       Smallest segment: <b>${smallest}</b> people${smallest < 10 ? ' &mdash; too few to name as a segment in a sample this size' : ''}.</div>
     <div class="flag"><b>Before you believe it</b>Run it again with ${k === 2 ? 3 : k - 1} and ${k + 1} groups.
       If the same two or three groups keep appearing, they are real; if the picture changes completely, say
@@ -837,6 +860,7 @@ document.addEventListener('click', (e) => {
   renderCross();
   $('#crossOut').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
+$('#pickEvery').addEventListener('click', () => { DATA.vars.forEach((v) => { if (v.type === 'rating' || v.type === 'category') window.PICKED[v.name] = true; }); renderVarPicker(); });
 $('#pickAll').addEventListener('click', () => { DATA.vars.forEach((v) => { if (v.type === 'rating') window.PICKED[v.name] = true; else if (v.type === 'category') window.PICKED[v.name] = false; }); renderVarPicker(); });
 $('#pickBuy').addEventListener('click', () => { Object.keys(window.PICKED).forEach((n) => { window.PICKED[n] = ['buy_the_benefits', 'try_relaxing_drink', 'pay_premium', 'replace_energy_drinks'].includes(n); }); renderVarPicker(); });
 $('#pickNone').addEventListener('click', () => { Object.keys(window.PICKED).forEach((n) => { window.PICKED[n] = false; }); renderVarPicker(); });
