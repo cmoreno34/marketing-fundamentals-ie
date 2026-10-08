@@ -141,7 +141,8 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
     <input type="file" id="file" accept=".csv,.xlsx,.xls">
     <div id="report"></div>
     <div class="row" id="fixRow" style="display:none">
-      <button class="btn solid" id="btnFix">Repair what can be repaired</button>
+      <button class="btn solid" id="btnUse">Use this file for the analysis</button>
+      <button class="btn" id="btnFix">Repair what can be repaired, then use it</button>
       <button class="btn" id="btnExport">Export the clean file</button>
       <button class="btn" id="btnBack" style="font-weight:400">Back to the VAJA case</button>
     </div>
@@ -163,6 +164,8 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
 <div class="pane" id="pane-desc">
   <section>
     <h2>Describe: one variable at a time</h2>
+    <div class="flag ok" id="src-desc" style="margin-top:0"><b>Analysing</b><span class="srcName">the VAJA case</span></div>
+    
     <p class="hint">For a 1 to 5 rating: the mean, how spread the answers are, and the share who answered
     4 or 5 &mdash; the top-two box, which is what a client reads. For a category: the frequency table.</p>
     <div class="note"><b>What these columns are.</b> <b>n</b>: how many people answered that question.
@@ -181,6 +184,8 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
 <div class="pane" id="pane-cross">
   <section>
     <h2>Cross: does the answer depend on the group?</h2>
+    <div class="flag ok" id="src-cross" style="margin-top:0"><b>Analysing</b><span class="srcName">the VAJA case</span></div>
+    
     <p class="hint">Two categorical variables. Row percentages, expected counts, chi-square, and the
     validity check before the p-value. To cross a rating, the lab bands it into low (1-2), middle (3) and
     high (4-5).</p>
@@ -204,6 +209,8 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
 <div class="pane" id="pane-clust">
   <section>
     <h2>Segment: k-means on the ratings</h2>
+    <div class="flag ok" id="src-clust" style="margin-top:0"><b>Analysing</b><span class="srcName">the VAJA case</span></div>
+    
     <p class="hint">The 18 rating questions describe what each respondent wants. K-means groups the people
     whose answers look alike, and the centroid table tells you what each group is. Choose how many segments
     and read the table, not the algorithm.</p>
@@ -314,7 +321,7 @@ async function loadCase() {
   CODEBOOK = bk.slice(1).map((r) => ({ variable: r[0], question: r[1], type: r[2], codes: r[3] }));
   DATA = classify(tableToData(parseCSV(clean), 'VAJA 2024'));
   $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
-  renderCodebook(); fillSelects(); renderDesc(); renderCross(); renderVarPicker();
+  renderCodebook(); fillSelects(); renderDesc(); renderCross(); renderVarPicker(); setSource();
   ['dlTemplate:data/survey_template.csv', 'dlMessy:data/veja_survey_messy.csv', 'dlClean:data/veja_survey_clean.csv']
     .forEach((pair) => { const [id, href] = pair.split(':'); $('#' + id).href = href; });
 }
@@ -433,6 +440,29 @@ function repair(d, issues) {
 function toCSV(d) {
   const header = d.vars.map((v) => v.name);
   return [header.join(',')].concat(d.rows.map((r) => header.map((h) => r[h]).join(','))).join('\n');
+}
+
+
+function useFile(repairFirst) {
+  if (!RAW) return;
+  const d = repairFirst ? repair(RAW, diagnose(RAW)) : { name: RAW.name, vars: RAW.vars.filter((v) => v.type !== 'empty' && v.type !== 'meta'), rows: RAW.rows };
+  DATA = classify(d);
+  window.PICKED = {};
+  $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
+  $('#chipSource').textContent = 'source: ' + DATA.name;
+  fillSelects(); renderDesc(); renderCross(); renderVarPicker(); setSource();
+  $('#scanOut').innerHTML = ''; $('#scanState').textContent = ''; $('#clustOut').innerHTML = '';
+  $('#report').innerHTML += '<div class="flag ok"><b>Loaded</b>' + DATA.rows.length + ' rows and ' +
+    DATA.vars.length + ' columns are now what the Describe, Cross and Segment tabs analyse. ' +
+    (repairFirst ? 'The repairs were applied.' : 'Nothing was repaired: the file is used as it is.') + '</div>';
+  document.querySelector('[data-tab="desc"]').click();
+}
+
+function setSource() {
+  const txt = DATA.name === 'VAJA 2024'
+    ? 'the VAJA case · 77 answers · change it in tab 2'
+    : 'your file: ' + DATA.name + ' · ' + DATA.rows.length + ' answers';
+  document.querySelectorAll('.srcName').forEach((el) => { el.textContent = txt; });
 }
 
 // ---------------------------------------------------------------- statistics
@@ -833,16 +863,8 @@ $('#file').addEventListener('change', async (e) => {
   renderReport(diagnose(RAW), RAW);
 });
 
-$('#btnFix').addEventListener('click', () => {
-  if (!RAW) return;
-  const fixed = repair(RAW, diagnose(RAW));
-  DATA = classify(fixed);
-  $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
-  $('#chipSource').textContent = 'source: ' + DATA.name;
-  fillSelects(); renderDesc(); renderCross(); window.PICKED = {}; renderVarPicker();
-  $('#report').innerHTML += '<div class="flag ok"><b>Repaired</b>' + DATA.rows.length + ' rows and ' +
-    DATA.vars.length + ' columns are now loaded in the analysis tabs.</div>';
-});
+$('#btnFix').addEventListener('click', () => useFile(true));
+$('#btnUse').addEventListener('click', () => useFile(false));
 $('#btnExport').addEventListener('click', () => {
   const blob = new Blob([toCSV(DATA)], { type: 'text/csv' });
   const a = document.createElement('a');
