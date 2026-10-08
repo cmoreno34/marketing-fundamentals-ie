@@ -127,17 +127,24 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
 <div class="pane" id="pane-data">
   <section>
     <h2>The data clinic</h2>
-    <p class="hint">Download the template, put your survey in that shape, and drop it here. The clinic
-    checks it the way you would have to check it by hand, says what is wrong and repairs what can be
-    repaired.</p>
+    <div class="note"><b>You do not have to clean anything to use this lab.</b> The VAJA case is
+    already clean and already loaded: go to <b>Describe</b> and the analyses are there. This tab is
+    for the other two things.<br>
+    <b>To see what a raw export looks like:</b> download the raw VAJA export, open it in Excel, and
+    then drop it here. The clinic names every defect - a duplicated submission, blanks, a 1 to 10
+    answer in a 1 to 5 column, words where codes should be, a straight-liner - and repairs what can
+    be repaired. Fixing it by hand in Excel first and comparing is the exercise, if there is time.<br>
+    <b>For your own project:</b> start from the template, put your answers in that shape, and bring
+    it back here.</div>
     <div class="row">
-      <a class="btn" id="dlTemplate" download="survey_template.csv">Download the template</a>
-      <a class="btn" id="dlMessy" download="veja_survey_messy.csv">Download a messy example</a>
-      <a class="btn" id="dlClean" download="veja_survey_clean.csv">Download the clean VAJA file</a>
+      <a class="btn" id="dlTemplate" download="survey_template.xlsx">Download the template (Excel)</a>
+      <a class="btn solid" id="dlMessy" download="veja_survey_messy.xlsx">Download the raw VAJA export (Excel)</a>
+      <a class="btn" id="dlClean" download="veja_survey_clean.xlsx">Download the clean VAJA file (Excel)</a>
     </div>
     <h3>Your file</h3>
-    <p class="hint">CSV or Excel. One row per respondent, one column per question, the first row the
-    header. Nothing is uploaded: the file is read here, in your browser.</p>
+    <p class="hint">Excel (.xlsx) or CSV. One row per respondent, one column per question, the first
+    row the header; the first sheet is the one that is read. Nothing is uploaded: the file is read
+    here, in your browser.</p>
     <input type="file" id="file" accept=".csv,.xlsx,.xls">
     <div id="report"></div>
     <div class="row" id="fixRow" style="display:none">
@@ -166,8 +173,17 @@ footer{margin-top:26px;color:var(--muted);font-size:14px}
     <h2>Describe: one variable at a time</h2>
     <div class="flag ok" id="src-desc" style="margin-top:0"><b>Analysing</b><span class="srcName">the VAJA case</span></div>
     
-    <p class="hint">For a 1 to 5 rating: the mean, how spread the answers are, and the share who answered
-    4 or 5 &mdash; the top-two box, which is what a client reads. For a category: the frequency table.</p>
+    <p class="hint">Describing means answering, question by question: <b>what did they say, and did
+    they agree?</b> One row per question of the survey. No groups yet, no causes: that is the next tab.</p>
+    <div class="note"><b>What you do here (not just look at it).</b>
+    <b>1.</b> Find the three questions with the highest <b>top 2</b>: that is what the idea has going
+    for it. <b>2.</b> Find the three lowest: that is the objection you will have to answer.
+    <b>3.</b> Find the highest <b>sd</b>: that question split the room, so somewhere there are two
+    kinds of people - remember it for the segmentation. <b>4.</b> Write one sentence per finding,
+    always with the number and the base: <i>&ldquo;71% of the 77 who answered rate their intention 4
+    or 5 out of 5&rdquo;</i>. Those sentences are the findings section of your report; the table is
+    not.</div>
+    <div id="descRead"></div>
     <div class="note"><b>What these columns are.</b> <b>n</b>: how many people answered that question.
     <b>mean</b>: the average answer, from 1 to 5. <b>sd</b>: how spread the answers are around the average
     &mdash; under 0.8 the room agrees, above 1.2 it is split. <b>top 2</b>: the percentage who answered 4
@@ -323,7 +339,7 @@ async function loadCase() {
   DATA = classify(tableToData(parseCSV(clean), 'VAJA 2024'));
   $('#chipRows').textContent = DATA.rows.length + ' respondents · ' + ratings().length + ' ratings · ' + cats().length + ' categories';
   renderCodebook(); fillSelects(); renderDesc(); renderCross(); renderVarPicker(); setSource();
-  ['dlTemplate:data/survey_template.csv', 'dlMessy:data/veja_survey_messy.csv', 'dlClean:data/veja_survey_clean.csv']
+  ['dlTemplate:data/survey_template.xlsx', 'dlMessy:data/veja_survey_messy.xlsx', 'dlClean:data/veja_survey_clean.xlsx']
     .forEach((pair) => { const [id, href] = pair.split(':'); $('#' + id).href = href; });
 }
 
@@ -709,7 +725,29 @@ function renderDesc() {
   });
   $('#descRatings').innerHTML = `<table><tr><th>Rating</th><th class="num">n</th><th class="num">mean</th>
     <th class="num">sd</th><th class="num">top 2 (4-5)</th><th class="num">bottom 2 (1-2)</th><th></th></tr>${rows.join('')}</table>`;
+  renderDescRead();
   renderDescCat();
+}
+
+// the table read out loud: what the three steps above produce, so nobody has to guess
+function renderDescRead() {
+  const s = ratings().map((v) => Object.assign({ name: v.name }, stats(v.name)))
+    .filter((x) => x.n > 0);
+  if (!s.length) { $('#descRead').innerHTML = ''; return; }
+  const byTop = [...s].sort((a, b) => b.top2 - a.top2);
+  const bySd = [...s].sort((a, b) => b.sd - a.sd);
+  const line = (x) => `<b>${esc(x.name)}</b> (${fmt(x.top2, 0)}% answered 4 or 5, mean ${fmt(x.mean)}, n = ${x.n})`;
+  const strong = byTop.slice(0, 3).map(line).join('; ');
+  const weak = byTop.slice(-3).reverse().map(line).join('; ');
+  const split = bySd[0];
+  $('#descRead').innerHTML = `<div class="flag ok"><b>What this table says</b>
+    <u>Going for it:</u> ${strong}.<br>
+    <u>Against it:</u> ${weak}.<br>
+    <u>Most divided:</u> <b>${esc(split.name)}</b>, sd ${fmt(split.sd)} - ${fmt(split.top2, 0)}% answered 4 or 5
+    and ${fmt(split.bot2, 0)}% answered 1 or 2, so the average of ${fmt(split.mean)} describes almost nobody.
+    Two kinds of people hide in that question.<br>
+    <span class="hint">Now write it in your own words, with the base. This box is the example, not the report.</span>
+    </div>`;
 }
 
 function renderDescCat() {
@@ -890,6 +928,18 @@ $('#file').addEventListener('change', async (e) => {
 $('#btnFix').addEventListener('click', () => useFile(true));
 $('#btnUse').addEventListener('click', () => useFile(false));
 $('#btnExport').addEventListener('click', () => {
+  // the file goes back out as Excel, which is what it was opened in
+  if (typeof XLSX !== 'undefined') {
+    const rows = [DATA.vars.map((v) => v.name)].concat(
+      DATA.rows.map((r) => DATA.vars.map((v) => (r[v.name] === '' ? '' : (isNaN(Number(r[v.name])) ? r[v.name] : Number(r[v.name]))))));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'responses');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(
+      [['variable', 'what was asked', 'type', 'codes']].concat(
+        CODEBOOK.map((c) => [c.variable, c.question, c.type, c.codes]))), 'codebook');
+    XLSX.writeFile(wb, 'survey_clean.xlsx');
+    return;
+  }
   const blob = new Blob([toCSV(DATA)], { type: 'text/csv' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = 'survey_clean.csv'; a.click();
