@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offer lab: product, service and brand</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%A6%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<!--
+  Offer lab, Session 16 of Marketing Fundamentals.
+
+  One case, every decision that turns an idea into an offer: the three levels, the
+  attributes, the brand, the packaging and the label, the supplementary services, and - when
+  there is a service inside, which there almost always is - what is actually rented, who
+  receives it, how much contact it needs and what the blueprint looks like.
+
+  The service half follows Lovelock and Wirtz as the Productos, Servicios y Marca deck
+  teaches it: services are rented and not owned, the flower of service separates
+  facilitating from enhancing, and the 7 Ps are what the marketing mix becomes when the
+  product is intangible.
+
+  Everything runs in the browser: nothing is uploaded, the draft is saved on the device and
+  the offer sheet is printed to PDF.
+-->
+<style>
+:root{
+  --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
+  --ink:#16161D; --muted:#4A4A58; --line:#D9D9E3;
+  --ind:#3F3D8C; --ind-soft:#E7E6F5;
+  --a:#1F6F6B; --a-soft:#DDEFED; --b:#A4501E; --b-soft:#F7E7DA;
+  --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+}}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.6;margin:0;padding:0 clamp(16px,3vw,44px) 90px}
+.wrap{width:100%;max-width:1400px;margin:0 auto}
+h1,h2,h3{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
+header{padding:30px 0 18px;border-bottom:2px solid var(--ink);margin-bottom:18px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ind);margin:0 0 8px;font-weight:600}
+h1{font-size:clamp(32px,5vw,50px);line-height:1.05;margin:0 0 10px;font-weight:700}
+.sub{font-size:19px;margin:0;max-width:92ch}
+.plan{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.plan span{font-family:"IBM Plex Mono",monospace;font-size:13px;padding:5px 11px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:var(--surface)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;padding:20px 24px}
+h2{font-size:25px;margin:0 0 4px}
+h2 .n{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ind);margin-right:10px}
+h3{font-size:19px;margin:20px 0 2px}
+.hint{color:var(--muted);font-size:16px}
+label.f{display:block;font-size:15.5px;color:var(--muted);margin:14px 0 4px}
+input[type=text],textarea,select{width:100%;font-family:inherit;font-size:17px;color:var(--ink);background:var(--surface);
+  border:1.5px solid #A6A6B5;border-radius:6px;padding:11px 14px;min-height:48px}
+textarea{min-height:76px;resize:vertical}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 22px,calc(100% - 14px) 22px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:44px}
+input:focus,textarea:focus,select:focus{outline:3px solid rgba(63,61,140,.3);border-color:var(--ind)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0 22px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.chk{display:flex;gap:9px;align-items:flex-start;border:1.5px solid var(--line);border-radius:6px;padding:9px 12px;cursor:pointer;font-size:16px}
+.chk:hover{border-color:var(--ind)} .chk.on{border-color:var(--ind);background:var(--ind-soft)}
+.chk input{margin-top:4px;width:18px;height:18px;accent-color:var(--ind)}
+.chk small{display:block;color:var(--muted);font-size:13.5px;line-height:1.35}
+.btn{font-family:inherit;font-size:17px;font-weight:600;padding:12px 22px;border:1.5px solid var(--ind);background:var(--surface);color:var(--ind);border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--ind-soft)} .btn.solid{background:var(--ind);color:#fff}.btn.solid:hover{opacity:.9}
+.btn.ghost{border-color:var(--line);color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:10px}
+.case{border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;background:var(--surface)}
+.case:hover{border-color:var(--ind)} .case.on{border-color:var(--ind);background:var(--ind-soft)}
+.case b{display:block;font-family:"Archivo Narrow",sans-serif;font-size:19px}
+.case small{color:var(--muted);font-size:14.5px;line-height:1.4;display:block;margin-top:2px}
+.rules{background:var(--a-soft);border-left:5px solid var(--a);border-radius:6px;padding:12px 16px;margin-top:12px;font-size:16px}
+.rules b{display:block;font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--a);margin-bottom:4px}
+.note{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:12px 15px;margin-top:14px;font-size:16px}
+.note b{font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--warn);display:block;margin-bottom:3px}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:10px}
+.lv{border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--sunk)}
+.lv b{font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ind)}
+.lv p{margin:2px 0 0;font-size:15px;color:var(--muted)}
+.slider{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;margin-top:12px}
+.slider span{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--ind);min-height:30px}
+.live{background:var(--ind-soft);border:1px solid var(--ind);border-radius:6px;padding:10px 14px;margin-top:10px;font-size:16px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:16px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.flower{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:0 22px}
+.score{background:var(--ok-soft);border:1px solid var(--ok);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:16px}
+.bad{background:var(--b-soft);border-color:var(--b)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:16.5px}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--ok)}
+footer{margin-top:26px;color:var(--muted);font-size:14.5px}
+.themebtn{position:fixed;right:14px;top:14px;z-index:5;font-family:inherit;font-size:14px;padding:7px 12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--muted);border-radius:6px;cursor:pointer}
+#printout{display:none}
+@media print{
+  @page{size:A4;margin:14mm 13mm}
+  body{background:#fff;color:#000;padding:0;font-size:10pt}
+  .wrap > :not(#printout){display:none!important}
+  .themebtn{display:none!important}
+  #printout{display:block!important}
+  #printout h1{font-size:17pt;margin:0 0 2mm;border-bottom:1.5pt solid #000;padding-bottom:2mm}
+  #printout h2{font-size:11.5pt;margin:5mm 0 1.5mm;border-bottom:.5pt solid #999;padding-bottom:1mm}
+  #printout .id{font-size:10pt;margin:0 0 3mm}
+  #printout .blk{margin:2mm 0;page-break-inside:avoid}
+  #printout .blk b{display:block;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;color:#444}
+  #printout table{font-size:9pt}
+  #printout .foot{margin-top:6mm;font-size:8pt;color:#444;border-top:.5pt solid #999;padding-top:2mm}
+}
+</style>
+</head>
+<body>
+<button class="themebtn" id="theme">&#9689; Theme</button>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Session 16 &middot; activity A</p>
+  <h1>Offer lab</h1>
+  <p class="sub">Take one case and turn it into an offer: the three levels, the attributes, the brand,
+  the packaging, the services around it &mdash; and, because almost every offer today has a service
+  inside, what is actually rented, who receives it and how it is delivered. Seven steps, one page out.</p>
+  <div class="plan">
+    <span>1 &middot; the offer</span><span>2 &middot; the three levels</span><span>3 &middot; attributes</span>
+    <span>4 &middot; brand</span><span>5 &middot; packaging and label</span><span>6 &middot; services around it</span>
+    <span>7 &middot; the service inside</span><span id="prog">0 of 24 filled</span>
+  </div>
+</header>
+
+<!-- ============================================================== 1 -->
+<section>
+  <h2><span class="n">1</span>The offer, and where it sits</h2>
+  <p class="hint">Pick a case or write your own. Then say what need it satisfies &mdash; not what it is,
+  what it does for somebody.</p>
+  <div class="cases" id="cases"></div>
+  <div class="grid2">
+    <div>
+      <label class="f" for="offer">The offer, in one line</label>
+      <input type="text" id="offer" data-k placeholder="e.g. a gym you can bring your dog to">
+      <label class="f" for="need">The need or want it satisfies</label>
+      <textarea id="need" data-k placeholder="e.g. training without leaving the dog alone at home, which is what stops this owner from going"></textarea>
+    </div>
+    <div>
+      <label class="f" for="who">Who it is for</label>
+      <input type="text" id="who" data-k placeholder="e.g. dog owners aged 25-40 living within 15 minutes">
+      <label class="f" for="ptype">Type of product, if it is a good</label>
+      <select id="ptype" data-k>
+        <option value="">pick one</option>
+        <option>Convenience: bought often, little effort, little comparison</option>
+        <option>Shopping: compared on quality, price and style before buying</option>
+        <option>Specialty: a brand the buyer makes a special effort to get</option>
+        <option>Unsought: not thought about until a need appears (insurance, a repair)</option>
+        <option>Industrial / B2B: bought to be used in a business or resold</option>
+      </select>
+      <label class="f" for="evalatt">How can the buyer judge it before paying?</label>
+      <select id="evalatt" data-k>
+        <option value="">pick one</option>
+        <option>Search attributes: can be checked before buying (size, price, ingredients)</option>
+        <option>Experience attributes: only after using it (taste, the class, the trip)</option>
+        <option>Credence attributes: hard to judge even after (surgery, legal advice, a repair)</option>
+      </select>
+    </div>
+  </div>
+  <div class="slider">
+    <span>pure good</span><input type="range" id="tang" data-k min="0" max="100" value="30"><span>pure service</span>
+  </div>
+  <div class="live" id="tangOut"></div>
+  <div class="rules"><b>Why this matters</b>The further right you sit, the less the buyer can judge
+  before paying, and the more of your marketing has to be about evidence, people and process rather
+  than about the thing itself.</div>
+</section>
+
+<!-- ============================================================== 2 -->
+<section>
+  <h2><span class="n">2</span>The three levels</h2>
+  <p class="hint">Every offer is three offers at once. Write each one for your case.</p>
+  <div class="levels">
+    <div class="lv"><b>Core benefit</b><p>What the buyer is really buying. A benefit, never a feature:
+    not "a 50-minute class" but "the one hour of the day that is mine".</p></div>
+    <div class="lv"><b>Actual product</b><p>What is delivered: features, design, quality level, brand
+    name, packaging. The thing you can point at.</p></div>
+    <div class="lv"><b>Augmented product</b><p>Everything around it: support, warranty, delivery,
+    credit, after-sales, the app, the community.</p></div>
+  </div>
+  <div class="grid3">
+    <div><label class="f" for="core">Core benefit</label>
+      <textarea id="core" data-k placeholder="the benefit, in the buyer's words"></textarea></div>
+    <div><label class="f" for="actual">Actual product or service</label>
+      <textarea id="actual" data-k placeholder="what is delivered, concretely"></textarea></div>
+    <div><label class="f" for="augmented">Augmented layer</label>
+      <textarea id="augmented" data-k placeholder="what you add around it"></textarea></div>
+  </div>
+  <div class="note" id="coreWarn" style="display:none"><b>Check the core benefit</b>What you wrote reads
+  like a feature or a thing. Ask "and what does that do for them?" one more time, and write that answer.</div>
+</section>
+
+<!-- ============================================================== 3 -->
+<section>
+  <h2><span class="n">3</span>Attributes: quality, features, design</h2>
+  <p class="hint">Two different decisions hide inside "quality": the <b>level</b> you aim at, and the
+  <b>consistency</b> with which you hit it. A cheap sandwich that is always the same has high
+  consistency at a low level, and that is a strategy.</p>
+  <div class="grid2">
+    <div>
+      <label class="f" for="qlevel">Quality level, and against whom</label>
+      <input type="text" id="qlevel" data-k placeholder="e.g. above the municipal gym, below a boutique studio">
+      <label class="f" for="qcons">How you keep it consistent</label>
+      <input type="text" id="qcons" data-k placeholder="e.g. one trainer per 8 people, every session, checked monthly">
+    </div>
+    <div>
+      <label class="f" for="design">Design and style: what it looks and feels like</label>
+      <textarea id="design" data-k placeholder="e.g. no mirrors, wooden floor, dog water points every 10 m"></textarea>
+    </div>
+  </div>
+  <h3>Three features, and the benefit each one carries</h3>
+  <table>
+    <tr><th>Feature</th><th>So that&hellip; (the benefit)</th></tr>
+    <tr><td><input type="text" id="f1" data-k placeholder="feature 1"></td><td><input type="text" id="f1b" data-k placeholder="so that..."></td></tr>
+    <tr><td><input type="text" id="f2" data-k placeholder="feature 2"></td><td><input type="text" id="f2b" data-k placeholder="so that..."></td></tr>
+    <tr><td><input type="text" id="f3" data-k placeholder="feature 3"></td><td><input type="text" id="f3b" data-k placeholder="so that..."></td></tr>
+  </table>
+  <div class="rules"><b>The test</b>If a feature has no "so that", it is a cost, not an attribute. Cut it
+  or find its benefit.</div>
+</section>
+
+<!-- ============================================================== 4 -->
+<section>
+  <h2><span class="n">4</span>The brand</h2>
+  <p class="hint">A brand is a name, a term, a sign, a symbol, a design or a combination of these that
+  identifies the offer and separates it from the competition. Here you choose the elements, the
+  positioning and the strategy.</p>
+  <div class="grid2">
+    <div>
+      <label class="f" for="bname">Brand name</label>
+      <input type="text" id="bname" data-k placeholder="e.g. Pawsome">
+      <label class="f" for="bslogan">Slogan or tagline</label>
+      <input type="text" id="bslogan" data-k placeholder="e.g. train together">
+      <label class="f" for="belements">Other elements: logo, character, colour, packaging, sound</label>
+      <textarea id="belements" data-k placeholder="what else carries the brand"></textarea>
+    </div>
+    <div>
+      <label class="f">The name test &mdash; tick what your name passes</label>
+      <div class="opts" id="nameTest">
+        <label class="chk"><input type="checkbox" data-k id="n1"><span>Says something about the benefit<small>evocative, not empty</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="n2"><span>Easy to say and to remember<small>short, one reading</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="n3"><span>Works in other languages<small>no accident abroad</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="n4"><span>Can be registered<small>free as a trademark and as a domain</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="n5"><span>Fits who it is for<small>the target would say it out loud</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="n6"><span>Still works if you grow<small>not boxed into one product</small></span></label>
+      </div>
+      <div class="score" id="nameScore">0 of 6 &mdash; tick as you check them.</div>
+    </div>
+  </div>
+  <h3>Positioning: climb the ladder</h3>
+  <p class="hint">The weakest positioning is on attributes, the strongest on beliefs and values. Write
+  all three for your brand and keep the strongest as the one you would advertise.</p>
+  <div class="grid3">
+    <div><label class="f" for="posatt">On attributes</label><input type="text" id="posatt" data-k placeholder="what it has"></div>
+    <div><label class="f" for="posben">On benefits</label><input type="text" id="posben" data-k placeholder="what it does for them"></div>
+    <div><label class="f" for="posval">On beliefs and values</label><input type="text" id="posval" data-k placeholder="what it stands for"></div>
+  </div>
+  <div class="grid2">
+    <div>
+      <label class="f" for="bsponsor">Brand sponsorship</label>
+      <select id="bsponsor" data-k>
+        <option value="">pick one</option>
+        <option>Single brand: the same name for everything the company sells</option>
+        <option>Multiple brands: a different name per product or line</option>
+        <option>Second brand: a cheaper name under a bigger one, to reach another segment</option>
+        <option>Vertical brand: the store and the brand are the same thing</option>
+        <option>Manufacturer's brand sold through others' shops</option>
+        <option>Private label: the distributor's own brand</option>
+        <option>Co-branding or licensing: two names on one offer</option>
+      </select>
+    </div>
+    <div>
+      <label class="f" for="bdev">If it grows, how?</label>
+      <select id="bdev" data-k>
+        <option value="">pick one</option>
+        <option>Line extension: more variants inside the same category</option>
+        <option>Brand extension: the same name into a new category</option>
+        <option>Multibrands: another brand in the same category</option>
+        <option>New brand: a new name for a new category</option>
+      </select>
+      <label class="f" for="bdevwhy">Why that one, and what it risks</label>
+      <input type="text" id="bdevwhy" data-k placeholder="e.g. line extension: cheap, but it can confuse the core">
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== 5 -->
+<section>
+  <h2><span class="n">5</span>Packaging and label</h2>
+  <p class="hint">If your offer has nothing physical, say so here and move on &mdash; but most services
+  still have a physical carrier: a card, an app screen, a cup, a van.</p>
+  <div class="grid2">
+    <div>
+      <label class="f">What the packaging has to do for you</label>
+      <div class="opts">
+        <label class="chk"><input type="checkbox" data-k id="p1"><span>Protect and keep it safe or hygienic</span></label>
+        <label class="chk"><input type="checkbox" data-k id="p2"><span>Make it easy to carry, use, store, dispose of</span></label>
+        <label class="chk"><input type="checkbox" data-k id="p3"><span>Communicate: it is the first advertising the buyer reads</span></label>
+        <label class="chk"><input type="checkbox" data-k id="p4"><span>Differentiate: the shelf recognises it from two metres</span></label>
+        <label class="chk"><input type="checkbox" data-k id="p5"><span>Build loyalty: the ritual of opening and reusing it</span></label>
+        <label class="chk"><input type="checkbox" data-k id="p6"><span>Answer for sustainability: material, refill, return</span></label>
+      </div>
+      <label class="f" for="packdesc">Describe it in one line</label>
+      <input type="text" id="packdesc" data-k placeholder="e.g. no packaging: a reusable towel and a QR wristband">
+    </div>
+    <div>
+      <label class="f">What the label must carry</label>
+      <div class="opts">
+        <label class="chk"><input type="checkbox" data-k id="l1"><span>Name of the product</span></label>
+        <label class="chk"><input type="checkbox" data-k id="l2"><span>Who makes, packs or sells it</span></label>
+        <label class="chk"><input type="checkbox" data-k id="l3"><span>What it is made of</span></label>
+        <label class="chk"><input type="checkbox" data-k id="l4"><span>Use-by or best-before date</span></label>
+        <label class="chk"><input type="checkbox" data-k id="l5"><span>Quantity: units, weight, volume</span></label>
+        <label class="chk"><input type="checkbox" data-k id="l6"><span>Instructions, warnings, batch and origin</span></label>
+      </div>
+      <div class="note"><b>Not a design question</b>Most of that list is law, not taste. The design
+      decision is what you put next to it, and what you leave out.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== 6 -->
+<section>
+  <h2><span class="n">6</span>The services around it: the flower of service</h2>
+  <p class="hint">Supplementary services come in two families. <b>Facilitating</b> ones are needed for
+  the offer to work at all; <b>enhancing</b> ones add value nobody demanded. Pick what you will
+  actually deliver, and write how.</p>
+  <div class="flower">
+    <div>
+      <h3>Facilitating</h3>
+      <div class="opts">
+        <label class="chk"><input type="checkbox" data-k id="s1"><span>Information<small>hours, prices, how it works, what to bring</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="s2"><span>Order taking<small>booking, subscription, application</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="s3"><span>Billing<small>a bill that is readable and right</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="s4"><span>Payment<small>how and when they pay, and how easy it is</small></span></label>
+      </div>
+    </div>
+    <div>
+      <h3>Enhancing</h3>
+      <div class="opts">
+        <label class="chk"><input type="checkbox" data-k id="s5"><span>Consultation<small>advice, a plan, training</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="s6"><span>Hospitality<small>how the customer is received and treated</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="s7"><span>Safekeeping<small>looking after their things: parking, lockers, the dog</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="s8"><span>Exceptions<small>special requests, complaints, refunds, problems</small></span></label>
+      </div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div><label class="f" for="svcwow">The one supplementary service that makes people talk</label>
+      <input type="text" id="svcwow" data-k placeholder="e.g. the trainer walks your dog while you shower"></div>
+    <div><label class="f" for="svccut">The one you will not do, and why</label>
+      <input type="text" id="svccut" data-k placeholder="e.g. no nutrition plans: we cannot deliver them well yet"></div>
+  </div>
+</section>
+
+<!-- ============================================================== 7 -->
+<section>
+  <h2><span class="n">7</span>The service inside</h2>
+  <p class="hint">A service is an economic activity offered by one party to another, where the value is
+  intangible and the customer <b>rents</b> rather than owns: access to goods, labour, skills,
+  facilities, networks or somebody's time. So the first question is never "what do we sell" but
+  <b>what are they renting</b>.</p>
+  <div class="grid2">
+    <div>
+      <label class="f" for="rent">What is being rented?</label>
+      <select id="rent" data-k>
+        <option value="">pick one</option>
+        <option>Labour and skill: somebody does something for them (a trainer, a lawyer)</option>
+        <option>A physical good: they use it and give it back (a bike, a car, a room)</option>
+        <option>A defined space: a seat, a desk, a square metre, a shelf</option>
+        <option>A system or network: access to electricity, data, payments, a platform</option>
+        <option>Time and access: a slot, a queue position, a membership</option>
+        <option>Nothing: it is a pure good and they own it afterwards</option>
+      </select>
+      <label class="f" for="receptor">Who or what receives the service?</label>
+      <select id="receptor" data-k>
+        <option value="">pick one</option>
+        <option>The customer's body: they must be present (a gym, a flight, a haircut)</option>
+        <option>The customer's mind: attention, not presence (a class, a concert, advice)</option>
+        <option>Their possessions: the thing is treated, not the person (a repair, a cleaner, a vet)</option>
+        <option>Their information: data is processed (a bank, an insurer, an account)</option>
+      </select>
+      <label class="f" for="contact">Level of contact</label>
+      <select id="contact" data-k>
+        <option value="">pick one</option>
+        <option>High contact: they come to us and stay through the delivery</option>
+        <option>Medium: they come, but briefly, or only at the start and the end</option>
+        <option>Low contact: delivered at arm's length, usually electronically</option>
+      </select>
+      <label class="f" for="hardsoft">Hard or soft service?</label>
+      <select id="hardsoft" data-k>
+        <option value="">pick one</option>
+        <option>Hard: produced and consumed at the same time, nothing to take away, hard to export</option>
+        <option>Soft: can be prepared in advance, leaves a physical or digital result, exportable</option>
+      </select>
+    </div>
+    <div>
+      <label class="f">The three extra Ps &mdash; what the mix becomes when the product is intangible</label>
+      <label class="f" for="pprocess">Process: the steps the customer goes through, in order</label>
+      <textarea id="pprocess" data-k placeholder="e.g. book in the app - arrive - dog to the pen - 50 min class - shower - pay monthly"></textarea>
+      <label class="f" for="pphysical">Physical evidence: what makes the intangible visible</label>
+      <input type="text" id="pphysical" data-k placeholder="e.g. the smell, the towel, the dog tag, the app history">
+      <label class="f" for="ppeople">People: who the customer meets, and what they must be able to do</label>
+      <input type="text" id="ppeople" data-k placeholder="e.g. one trainer who knows every dog by name">
+    </div>
+  </div>
+  <h3>The blueprint, cut down to size</h3>
+  <p class="hint">Frontstage is what the customer sees; backstage is what has to happen for it to work.
+  Then name the step most likely to fail, and the moment that decides whether they come back.</p>
+  <table>
+    <tr><th>Frontstage: the customer</th><th>Backstage: us</th></tr>
+    <tr><td><input type="text" id="fs1" data-k placeholder="step 1"></td><td><input type="text" id="bs1" data-k placeholder="what has to happen"></td></tr>
+    <tr><td><input type="text" id="fs2" data-k placeholder="step 2"></td><td><input type="text" id="bs2" data-k placeholder="what has to happen"></td></tr>
+    <tr><td><input type="text" id="fs3" data-k placeholder="step 3"></td><td><input type="text" id="bs3" data-k placeholder="what has to happen"></td></tr>
+  </table>
+  <div class="grid2">
+    <div><label class="f" for="failpoint">The likely failure point, and your prevention</label>
+      <input type="text" id="failpoint" data-k placeholder="e.g. two dogs that do not get on: separate pens and a first-visit check"></div>
+    <div><label class="f" for="truth">The moment of truth</label>
+      <input type="text" id="truth" data-k placeholder="e.g. the first thirty seconds at the door, with the dog pulling"></div>
+  </div>
+  <div class="rules"><b>Zone of tolerance</b>Customers hold two levels in their head: the service they
+  <i>desire</i> and the minimum they will <i>accept</i>. Between the two you are forgiven; below it you
+  are not. Say in one line where your minimum sits.</div>
+  <label class="f" for="tolerance">Our minimum acceptable delivery &mdash; the line we never cross</label>
+  <input type="text" id="tolerance" data-k placeholder="e.g. a class never starts more than 5 minutes late and never exceeds 10 people">
+</section>
+
+<!-- ============================================================== out -->
+<section>
+  <h2><span class="n">8</span>Your offer sheet</h2>
+  <p class="hint">This is what you hand in and what you present: one page, every decision, no slides
+  needed. Fill in the names first.</p>
+  <div class="grid2">
+    <div><label class="f" for="team">Group and members</label>
+      <input type="text" id="team" data-k placeholder="e.g. Group 4 - Ana, Marco, Lucia, Tom"></div>
+    <div><label class="f" for="section">Section and date</label>
+      <input type="text" id="section" data-k placeholder="e.g. BBA1 section B, 16 Oct 2026"></div>
+  </div>
+  <div id="verdict"></div>
+  <h3>Before you hand it in</h3>
+  <div id="checks"></div>
+  <div class="row">
+    <button class="btn solid" id="btnPdf">Download the PDF</button>
+    <button class="btn" id="btnSave">Save the draft</button>
+    <button class="btn" id="btnLoad">Load the draft</button>
+    <button class="btn ghost" id="btnReset">Clear everything</button>
+    <span class="hint" id="saveState"></span>
+  </div>
+</section>
+
+<footer>
+  Session 16 &middot; Marketing Fundamentals 26-27 &middot; IE University. Product levels, attributes,
+  branding and the product life cycle follow Kotler and Armstrong; the service half &mdash; what is
+  rented, the receptor, contact level, hard and soft services, the flower of service, the blueprint and
+  the zone of tolerance &mdash; follows Lovelock and Wirtz, <i>Services Marketing</i>, and Zeithaml,
+  Berry and Parasuraman on expectations. Nothing you type leaves this device.
+</footer>
+
+<div id="printout"></div>
+</div>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const KEY = 'mf26_offer_lab_v1';
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---------------------------------------------------------------- the cases
+const CASES = [
+  { id: 'gym', t: 'The dog gym', d: 'A gym where you train with your dog in the room',
+    offer: 'a gym you can bring your dog to', need: 'training without leaving the dog alone, which is what stops this owner going at all',
+    who: 'dog owners aged 25-40 living within 15 minutes' },
+  { id: 'drink', t: 'The birch-sap drink', d: 'A sparkling drink of birch sap, no caffeine, low sugar',
+    offer: 'a sparkling birch-sap drink that relaxes instead of energising', need: 'something to drink in the afternoon that is not coffee, alcohol or an energy drink',
+    who: 'students and young professionals who have dropped energy drinks' },
+  { id: 'bikes', t: 'Campus bikes', d: 'A bike subscription for the campus, repairs included',
+    offer: 'a monthly bike subscription with repairs and parking included', need: 'getting across the city without buying, storing and fixing a bike',
+    who: 'students living 2-6 km from campus with no parking at home' },
+  { id: 'voice', t: 'The calm assistant', d: 'A voice device built around sleep, focus and mindful living',
+    offer: 'a voice assistant built for calm, not productivity', need: 'help winding down and sleeping, without another screen',
+    who: 'people in their thirties who feel their devices speed them up' },
+  { id: 'own', t: 'Our own idea', d: 'Write it yourselves', offer: '', need: '', who: '' },
+];
+
+function renderCases() {
+  $('#cases').innerHTML = CASES.map((c) => `<div class="case" data-case="${c.id}">
+    <b>${esc(c.t)}</b><small>${esc(c.d)}</small></div>`).join('');
+  $$('.case').forEach((el) => el.addEventListener('click', () => {
+    const c = CASES.find((x) => x.id === el.dataset.case);
+    $$('.case').forEach((x) => x.classList.toggle('on', x === el));
+    if (c.offer && !$('#offer').value) { $('#offer').value = c.offer; $('#need').value = c.need; $('#who').value = c.who; }
+    localStorage.setItem(KEY + '_case', c.id);
+    sync();
+  }));
+}
+
+// ---------------------------------------------------------------- live reading of the slider
+function tangLine() {
+  const v = Number($('#tang').value);
+  let t;
+  if (v <= 15) t = '<b>Almost a pure good.</b> They can judge it before paying and they own it afterwards. Your marketing can talk about the thing itself.';
+  else if (v <= 40) t = '<b>A good with services around it.</b> The thing is still the centre, but delivery, support and warranty are part of what they are buying.';
+  else if (v <= 60) t = '<b>A mixed offer.</b> Neither side is decoration: price the good and design the service, or one of them will be an afterthought.';
+  else if (v <= 85) t = '<b>A service with something physical attached.</b> The physical part is evidence: it is how the buyer judges something they cannot see.';
+  else t = '<b>Almost a pure service.</b> Nothing is owned afterwards. Process, people and physical evidence are your product now - steps 6 and 7 are the heart of your work.';
+  $('#tangOut').innerHTML = t;
+}
+
+// ---------------------------------------------------------------- warnings and scores
+const FEATUREISH = /^(a |an |the )?\d|^(a |an )?(class|bottle|app|device|session|bike|drink|machine|room|card)\b/i;
+function coreCheck() {
+  const v = $('#core').value.trim();
+  $('#coreWarn').style.display = v && (FEATUREISH.test(v) || v.split(/\s+/).length < 3) ? 'block' : 'none';
+}
+
+function nameScore() {
+  const n = ['n1', 'n2', 'n3', 'n4', 'n5', 'n6'].filter((i) => $('#' + i).checked).length;
+  const el = $('#nameScore');
+  el.className = 'score' + (n <= 3 ? ' bad' : '');
+  el.innerHTML = n + ' of 6' + (n === 6 ? ' &mdash; the name survives every test. Register it before you print anything.'
+    : n >= 4 ? ' &mdash; good enough to work with. Name the ones it fails and say why you accept that.'
+    : ' &mdash; this name will cost you later. Try three more before you settle.');
+}
+
+// ---------------------------------------------------------------- the fields that make a complete sheet
+const REQUIRED = [
+  ['offer', 'the offer in one line'], ['need', 'the need it satisfies'], ['who', 'who it is for'],
+  ['ptype', 'the type of product'], ['evalatt', 'how it can be judged before paying'],
+  ['core', 'the core benefit'], ['actual', 'the actual product'], ['augmented', 'the augmented layer'],
+  ['qlevel', 'the quality level'], ['qcons', 'how quality stays consistent'], ['design', 'design and style'],
+  ['f1', 'feature 1'], ['f1b', 'the benefit of feature 1'],
+  ['bname', 'the brand name'], ['posben', 'positioning on benefits'], ['posval', 'positioning on values'],
+  ['bsponsor', 'the sponsorship decision'], ['bdev', 'how the brand grows'],
+  ['packdesc', 'the packaging in one line'],
+  ['svcwow', 'the supplementary service that makes people talk'],
+  ['rent', 'what is being rented'], ['receptor', 'who receives the service'],
+  ['pprocess', 'the process'], ['truth', 'the moment of truth'],
+];
+
+function filled(id) {
+  const el = $('#' + id);
+  return el && el.type !== 'checkbox' && String(el.value || '').trim() !== '';
+}
+
+function verdict() {
+  const missing = REQUIRED.filter(([id]) => !filled(id));
+  $('#prog').textContent = (REQUIRED.length - missing.length) + ' of ' + REQUIRED.length + ' filled';
+  const v = $('#verdict');
+  if (!missing.length) {
+    v.className = 'score';
+    v.innerHTML = '<b>Complete.</b> Every decision of the session is on the sheet. Read it out loud once: '
+      + 'if the core benefit and the positioning on values say the same thing twice, cut one.';
+  } else {
+    v.className = 'score bad';
+    v.innerHTML = '<b>' + missing.length + ' decision' + (missing.length > 1 ? 's' : '') + ' still open:</b> '
+      + missing.slice(0, 8).map(([, label]) => esc(label)).join(' &middot; ')
+      + (missing.length > 8 ? ' &middot; and ' + (missing.length - 8) + ' more' : '');
+  }
+}
+
+const CHECKS = [
+  'The core benefit is a benefit, not a thing: somebody outside the group understood it first time.',
+  'Every feature has a "so that".',
+  'The positioning we would advertise is the strongest rung we can actually deliver.',
+  'We said what is being rented, not only what is being sold.',
+  'The flower has both families: something facilitating and something enhancing.',
+  'The blueprint has a backstage line for every frontstage step.',
+  'We named one failure point and what prevents it.',
+  'Nothing on the sheet is a promise we cannot keep on a normal Tuesday.',
+];
+function renderChecks() {
+  $('#checks').innerHTML = CHECKS.map((c, i) => `<label class="check"><input type="checkbox" data-k id="ck${i}">
+    <span>${esc(c)}</span></label>`).join('');
+}
+
+// ---------------------------------------------------------------- the printed sheet
+function pick(ids) {
+  return ids.map((id) => {
+    const el = $('#' + id);
+    return el && el.checked ? el.parentElement.textContent.trim().split('\n')[0] : null;
+  }).filter(Boolean);
+}
+
+function blk(label, value) {
+  const v = String(value || '').trim();
+  return v ? `<div class="blk"><b>${esc(label)}</b>${esc(v)}</div>` : '';
+}
+
+function buildPrint() {
+  const val = (id) => ($('#' + id) ? $('#' + id).value : '');
+  const feats = [['f1', 'f1b'], ['f2', 'f2b'], ['f3', 'f3b']]
+    .filter(([a]) => val(a).trim())
+    .map(([a, b]) => `<tr><td>${esc(val(a))}</td><td>${esc(val(b))}</td></tr>`).join('');
+  const steps = [['fs1', 'bs1'], ['fs2', 'bs2'], ['fs3', 'bs3']]
+    .filter(([a, b]) => val(a).trim() || val(b).trim())
+    .map(([a, b]) => `<tr><td>${esc(val(a))}</td><td>${esc(val(b))}</td></tr>`).join('');
+  const nameT = pick(['n1', 'n2', 'n3', 'n4', 'n5', 'n6']);
+  const packF = pick(['p1', 'p2', 'p3', 'p4', 'p5', 'p6']);
+  const labelF = pick(['l1', 'l2', 'l3', 'l4', 'l5', 'l6']);
+  const fac = pick(['s1', 's2', 's3', 's4']);
+  const enh = pick(['s5', 's6', 's7', 's8']);
+  $('#printout').innerHTML = `
+    <h1>Offer sheet &mdash; ${esc(val('offer') || 'untitled offer')}</h1>
+    <p class="id">${esc(val('team'))}${val('section') ? ' &middot; ' + esc(val('section')) : ''}
+      &middot; Session 16, Marketing Fundamentals 26-27</p>
+    <h2>1. The offer</h2>
+    ${blk('Need it satisfies', val('need'))}${blk('Who it is for', val('who'))}
+    ${blk('Type of product', val('ptype'))}${blk('How it can be judged before paying', val('evalatt'))}
+    ${blk('Where it sits', 'good 0 - service 100: ' + val('tang'))}
+    <h2>2. The three levels</h2>
+    ${blk('Core benefit', val('core'))}${blk('Actual product', val('actual'))}${blk('Augmented', val('augmented'))}
+    <h2>3. Attributes</h2>
+    ${blk('Quality level', val('qlevel'))}${blk('Quality consistency', val('qcons'))}${blk('Design and style', val('design'))}
+    ${feats ? `<table><tr><th>Feature</th><th>So that</th></tr>${feats}</table>` : ''}
+    <h2>4. Brand</h2>
+    ${blk('Name', val('bname'))}${blk('Slogan', val('bslogan'))}${blk('Other elements', val('belements'))}
+    ${blk('Name test passed', nameT.join(' / ') + ' (' + nameT.length + ' of 6)')}
+    ${blk('Positioning on attributes', val('posatt'))}${blk('On benefits', val('posben'))}${blk('On beliefs and values', val('posval'))}
+    ${blk('Sponsorship', val('bsponsor'))}${blk('Growth', val('bdev'))}${blk('Why, and the risk', val('bdevwhy'))}
+    <h2>5. Packaging and label</h2>
+    ${blk('Packaging', val('packdesc'))}${blk('It has to', packF.join(' / '))}${blk('Label carries', labelF.join(' / '))}
+    <h2>6. Services around it</h2>
+    ${blk('Facilitating', fac.join(' / '))}${blk('Enhancing', enh.join(' / '))}
+    ${blk('The one that makes people talk', val('svcwow'))}${blk('The one we will not do', val('svccut'))}
+    <h2>7. The service inside</h2>
+    ${blk('What is rented', val('rent'))}${blk('Receptor', val('receptor'))}
+    ${blk('Contact level', val('contact'))}${blk('Hard or soft', val('hardsoft'))}
+    ${blk('Process', val('pprocess'))}${blk('Physical evidence', val('pphysical'))}${blk('People', val('ppeople'))}
+    ${steps ? `<table><tr><th>Frontstage</th><th>Backstage</th></tr>${steps}</table>` : ''}
+    ${blk('Failure point and prevention', val('failpoint'))}${blk('Moment of truth', val('truth'))}
+    ${blk('Minimum acceptable delivery', val('tolerance'))}
+    <p class="foot">Offer lab &middot; product levels, attributes and branding after Kotler and Armstrong;
+    the service half after Lovelock and Wirtz. Printed from the lab, no data left the device.</p>`;
+}
+
+// ---------------------------------------------------------------- state
+function state() {
+  const o = {};
+  $$('[data-k]').forEach((el) => { o[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
+  return o;
+}
+function restore(o) {
+  Object.keys(o || {}).forEach((id) => {
+    const el = $('#' + id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!o[id]; else el.value = o[id];
+  });
+  sync();
+}
+function sync() {
+  $$('.chk').forEach((l) => { const i = l.querySelector('input'); if (i) l.classList.toggle('on', i.checked); });
+  tangLine(); coreCheck(); nameScore(); verdict();
+  try { localStorage.setItem(KEY + '_auto', JSON.stringify(state())); } catch (e) {}
+}
+
+// ---------------------------------------------------------------- wiring
+renderCases();
+renderChecks();
+document.addEventListener('input', sync);
+document.addEventListener('change', sync);
+
+$('#btnPdf').addEventListener('click', () => { buildPrint(); window.print(); });
+window.addEventListener('beforeprint', buildPrint);
+$('#btnSave').addEventListener('click', () => {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state()));
+    $('#saveState').textContent = 'draft saved on this device, ' + new Date().toLocaleTimeString();
+  } catch (e) { $('#saveState').textContent = 'the browser would not save it (private window?)'; }
+});
+$('#btnLoad').addEventListener('click', () => {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) { $('#saveState').textContent = 'no saved draft on this device'; return; }
+    restore(JSON.parse(raw));
+    $('#saveState').textContent = 'draft loaded';
+  } catch (e) { $('#saveState').textContent = 'the saved draft could not be read'; }
+});
+$('#btnReset').addEventListener('click', () => {
+  if (!confirm('Clear every field on this page? The saved draft stays.')) return;
+  $$('[data-k]').forEach((el) => { if (el.type === 'checkbox') el.checked = false; else if (el.type === 'range') el.value = 30; else el.value = ''; });
+  $$('.case').forEach((x) => x.classList.remove('on'));
+  $('#saveState').textContent = 'cleared';
+  sync();
+});
+$('#theme').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+});
+
+try {
+  const auto = localStorage.getItem(KEY + '_auto');
+  if (auto) restore(JSON.parse(auto));
+  const c = localStorage.getItem(KEY + '_case');
+  if (c) { const el = document.querySelector('[data-case="' + c + '"]'); if (el) el.classList.add('on'); }
+} catch (e) {}
+sync();
+</script>
+</body>
+</html>
