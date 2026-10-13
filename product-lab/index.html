@@ -12,14 +12,16 @@
   Offer lab, Session 16 of Marketing Fundamentals.
 
   One case, every decision that turns an idea into an offer: the three levels, the
-  attributes, the brand, the packaging and the label, the supplementary services, and - when
-  there is a service inside, which there almost always is - what is actually rented, who
-  receives it, how much contact it needs and what the blueprint looks like.
+  attributes, the brand, the packaging and the label, and - when there is a service inside,
+  which there almost always is - what is actually rented, who receives it and how much
+  contact it needs.
 
-  The service half follows Lovelock and Wirtz as the Productos, Servicios y Marca deck
-  teaches it: services are rented and not owned, the flower of service separates
-  facilitating from enhancing, and the 7 Ps are what the marketing mix becomes when the
-  product is intangible.
+  The lab asks for exactly what the deck of the session teaches, and nothing else: the
+  service half follows Lovelock and Wirtz as the Productos, Servicios y Marca deck teaches
+  it - services are rented and not owned, the receptor can be a body, a mind, a possession
+  or a file, contact level and hard/soft change the operation, and the 7 Ps are what the
+  marketing mix becomes when the product is intangible. The flower of service and the
+  service blueprint are deliberately not here: they are not in the session's slides.
 
   Everything runs in the browser: nothing is uploaded, the draft is saved on the device and
   the offer sheet is printed to PDF.
@@ -91,7 +93,6 @@ input[type=range]{width:100%;accent-color:var(--ind);min-height:30px}
 table{width:100%;border-collapse:collapse;margin-top:10px;font-size:16px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-family:"IBM Plex Mono",monospace;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.flower{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:0 22px}
 .score{background:var(--ok-soft);border:1px solid var(--ok);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:16px}
 .bad{background:var(--b-soft);border-color:var(--b)}
 .check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:16.5px}
@@ -124,12 +125,12 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
   <p class="eyebrow">Session 16 &middot; activity A</p>
   <h1>Offer lab</h1>
   <p class="sub">Take one case and turn it into an offer: the three levels, the attributes, the brand,
-  the packaging, the services around it &mdash; and, because almost every offer today has a service
-  inside, what is actually rented, who receives it and how it is delivered. Seven steps, one page out.</p>
+  the packaging &mdash; and, because almost every offer today has a service inside, what is actually
+  rented, who receives it and how it is delivered. Six steps, one page out.</p>
   <div class="plan">
     <span>1 &middot; the offer</span><span>2 &middot; the three levels</span><span>3 &middot; attributes</span>
-    <span>4 &middot; brand</span><span>5 &middot; packaging and label</span><span>6 &middot; services around it</span>
-    <span>7 &middot; the service inside</span><span id="prog">0 of 24 filled</span>
+    <span>4 &middot; brand</span><span>5 &middot; packaging and label</span>
+    <span>6 &middot; the service inside</span><span id="prog">nothing filled yet</span>
   </div>
 </header>
 
@@ -331,41 +332,7 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 
 <!-- ============================================================== 6 -->
 <section>
-  <h2><span class="n">6</span>The services around it: the flower of service</h2>
-  <p class="hint">Supplementary services come in two families. <b>Facilitating</b> ones are needed for
-  the offer to work at all; <b>enhancing</b> ones add value nobody demanded. Pick what you will
-  actually deliver, and write how.</p>
-  <div class="flower">
-    <div>
-      <h3>Facilitating</h3>
-      <div class="opts">
-        <label class="chk"><input type="checkbox" data-k id="s1"><span>Information<small>hours, prices, how it works, what to bring</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="s2"><span>Order taking<small>booking, subscription, application</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="s3"><span>Billing<small>a bill that is readable and right</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="s4"><span>Payment<small>how and when they pay, and how easy it is</small></span></label>
-      </div>
-    </div>
-    <div>
-      <h3>Enhancing</h3>
-      <div class="opts">
-        <label class="chk"><input type="checkbox" data-k id="s5"><span>Consultation<small>advice, a plan, training</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="s6"><span>Hospitality<small>how the customer is received and treated</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="s7"><span>Safekeeping<small>looking after their things: parking, lockers, the dog</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="s8"><span>Exceptions<small>special requests, complaints, refunds, problems</small></span></label>
-      </div>
-    </div>
-  </div>
-  <div class="grid2">
-    <div><label class="f" for="svcwow">The one supplementary service that makes people talk</label>
-      <input type="text" id="svcwow" data-k placeholder="e.g. the trainer walks your dog while you shower"></div>
-    <div><label class="f" for="svccut">The one you will not do, and why</label>
-      <input type="text" id="svccut" data-k placeholder="e.g. no nutrition plans: we cannot deliver them well yet"></div>
-  </div>
-</section>
-
-<!-- ============================================================== 7 -->
-<section>
-  <h2><span class="n">7</span>The service inside</h2>
+  <h2><span class="n">6</span>The service inside</h2>
   <p class="hint">A service is an economic activity offered by one party to another, where the value is
   intangible and the customer <b>rents</b> rather than owns: access to goods, labour, skills,
   facilities, networks or somebody's time. So the first question is never "what do we sell" but
@@ -414,31 +381,14 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
       <input type="text" id="ppeople" data-k placeholder="e.g. one trainer who knows every dog by name">
     </div>
   </div>
-  <h3>The blueprint, cut down to size</h3>
-  <p class="hint">Frontstage is what the customer sees; backstage is what has to happen for it to work.
-  Then name the step most likely to fail, and the moment that decides whether they come back.</p>
-  <table>
-    <tr><th>Frontstage: the customer</th><th>Backstage: us</th></tr>
-    <tr><td><input type="text" id="fs1" data-k placeholder="step 1"></td><td><input type="text" id="bs1" data-k placeholder="what has to happen"></td></tr>
-    <tr><td><input type="text" id="fs2" data-k placeholder="step 2"></td><td><input type="text" id="bs2" data-k placeholder="what has to happen"></td></tr>
-    <tr><td><input type="text" id="fs3" data-k placeholder="step 3"></td><td><input type="text" id="bs3" data-k placeholder="what has to happen"></td></tr>
-  </table>
-  <div class="grid2">
-    <div><label class="f" for="failpoint">The likely failure point, and your prevention</label>
-      <input type="text" id="failpoint" data-k placeholder="e.g. two dogs that do not get on: separate pens and a first-visit check"></div>
-    <div><label class="f" for="truth">The moment of truth</label>
-      <input type="text" id="truth" data-k placeholder="e.g. the first thirty seconds at the door, with the dog pulling"></div>
-  </div>
-  <div class="rules"><b>Zone of tolerance</b>Customers hold two levels in their head: the service they
-  <i>desire</i> and the minimum they will <i>accept</i>. Between the two you are forgiven; below it you
-  are not. Say in one line where your minimum sits.</div>
-  <label class="f" for="tolerance">Our minimum acceptable delivery &mdash; the line we never cross</label>
-  <input type="text" id="tolerance" data-k placeholder="e.g. a class never starts more than 5 minutes late and never exceeds 10 people">
+  <div class="rules"><b>The three extra Ps are the mix of a service</b>Promotion can promise anything;
+  process decides whether it was true. Write them as decisions, not as descriptions: a step somebody
+  has to carry out, a thing the customer can see, a person who has to be able to do something.</div>
 </section>
 
 <!-- ============================================================== out -->
 <section>
-  <h2><span class="n">8</span>Your offer sheet</h2>
+  <h2><span class="n">7</span>Your offer sheet</h2>
   <p class="hint">This is what you hand in and what you present: one page, every decision, no slides
   needed. Fill in the names first.</p>
   <div class="grid2">
@@ -462,9 +412,8 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 <footer>
   Session 16 &middot; Marketing Fundamentals 26-27 &middot; IE University. Product levels, attributes,
   branding and the product life cycle follow Kotler and Armstrong; the service half &mdash; what is
-  rented, the receptor, contact level, hard and soft services, the flower of service, the blueprint and
-  the zone of tolerance &mdash; follows Lovelock and Wirtz, <i>Services Marketing</i>, and Zeithaml,
-  Berry and Parasuraman on expectations. Nothing you type leaves this device.
+  rented, the receptor, contact level, hard and soft services and the three extra Ps &mdash; follows
+  Lovelock and Wirtz, <i>Services Marketing</i>. Nothing you type leaves this device.
 </footer>
 
 <div id="printout"></div>
@@ -544,9 +493,9 @@ const REQUIRED = [
   ['bname', 'the brand name'], ['posben', 'positioning on benefits'], ['posval', 'positioning on values'],
   ['bsponsor', 'the sponsorship decision'], ['bdev', 'how the brand grows'],
   ['packdesc', 'the packaging in one line'],
-  ['svcwow', 'the supplementary service that makes people talk'],
   ['rent', 'what is being rented'], ['receptor', 'who receives the service'],
-  ['pprocess', 'the process'], ['truth', 'the moment of truth'],
+  ['contact', 'the level of contact'], ['hardsoft', 'hard or soft'],
+  ['pprocess', 'the process'], ['pphysical', 'the physical evidence'], ['ppeople', 'the people'],
 ];
 
 function filled(id) {
@@ -573,11 +522,12 @@ function verdict() {
 const CHECKS = [
   'The core benefit is a benefit, not a thing: somebody outside the group understood it first time.',
   'Every feature has a "so that".',
+  'Quality level and quality consistency are two different sentences.',
   'The positioning we would advertise is the strongest rung we can actually deliver.',
+  'The brand name was checked against the six tests, and we accept the ones it fails.',
   'We said what is being rented, not only what is being sold.',
-  'The flower has both families: something facilitating and something enhancing.',
-  'The blueprint has a backstage line for every frontstage step.',
-  'We named one failure point and what prevents it.',
+  'The receptor and the contact level match the premises and the hours we are assuming.',
+  'Process, physical evidence and people are written as decisions, not as descriptions.',
   'Nothing on the sheet is a promise we cannot keep on a normal Tuesday.',
 ];
 function renderChecks() {
@@ -603,14 +553,9 @@ function buildPrint() {
   const feats = [['f1', 'f1b'], ['f2', 'f2b'], ['f3', 'f3b']]
     .filter(([a]) => val(a).trim())
     .map(([a, b]) => `<tr><td>${esc(val(a))}</td><td>${esc(val(b))}</td></tr>`).join('');
-  const steps = [['fs1', 'bs1'], ['fs2', 'bs2'], ['fs3', 'bs3']]
-    .filter(([a, b]) => val(a).trim() || val(b).trim())
-    .map(([a, b]) => `<tr><td>${esc(val(a))}</td><td>${esc(val(b))}</td></tr>`).join('');
   const nameT = pick(['n1', 'n2', 'n3', 'n4', 'n5', 'n6']);
   const packF = pick(['p1', 'p2', 'p3', 'p4', 'p5', 'p6']);
   const labelF = pick(['l1', 'l2', 'l3', 'l4', 'l5', 'l6']);
-  const fac = pick(['s1', 's2', 's3', 's4']);
-  const enh = pick(['s5', 's6', 's7', 's8']);
   $('#printout').innerHTML = `
     <h1>Offer sheet &mdash; ${esc(val('offer') || 'untitled offer')}</h1>
     <p class="id">${esc(val('team'))}${val('section') ? ' &middot; ' + esc(val('section')) : ''}
@@ -631,16 +576,10 @@ function buildPrint() {
     ${blk('Sponsorship', val('bsponsor'))}${blk('Growth', val('bdev'))}${blk('Why, and the risk', val('bdevwhy'))}
     <h2>5. Packaging and label</h2>
     ${blk('Packaging', val('packdesc'))}${blk('It has to', packF.join(' / '))}${blk('Label carries', labelF.join(' / '))}
-    <h2>6. Services around it</h2>
-    ${blk('Facilitating', fac.join(' / '))}${blk('Enhancing', enh.join(' / '))}
-    ${blk('The one that makes people talk', val('svcwow'))}${blk('The one we will not do', val('svccut'))}
-    <h2>7. The service inside</h2>
+    <h2>6. The service inside</h2>
     ${blk('What is rented', val('rent'))}${blk('Receptor', val('receptor'))}
     ${blk('Contact level', val('contact'))}${blk('Hard or soft', val('hardsoft'))}
     ${blk('Process', val('pprocess'))}${blk('Physical evidence', val('pphysical'))}${blk('People', val('ppeople'))}
-    ${steps ? `<table><tr><th>Frontstage</th><th>Backstage</th></tr>${steps}</table>` : ''}
-    ${blk('Failure point and prevention', val('failpoint'))}${blk('Moment of truth', val('truth'))}
-    ${blk('Minimum acceptable delivery', val('tolerance'))}
     <p class="foot">Offer lab &middot; product levels, attributes and branding after Kotler and Armstrong;
     the service half after Lovelock and Wirtz. Printed from the lab, no data left the device.</p>`;
 }
