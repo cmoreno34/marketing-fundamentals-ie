@@ -280,7 +280,7 @@ function mqConnect(code,onMsg){
     try{ c=mqtt.connect(url,{clientId:'mf26n-'+Math.random().toString(16).slice(2),keepalive:30,
         reconnectPeriod:0,connectTimeout:6000,clean:true}); }catch(e){ return tryNext(); }
     const giveUp=setTimeout(()=>{ if(!mqReady){ try{c.end(true);}catch(e){} tryNext(); } },7000);
-    c.on('connect',()=>{ clearTimeout(giveUp); mq=c; mqReady=true; mqUrl=url;
+    c.on('connect',()=>{ clearTimeout(giveUp); mq=c; mqReady=true; mqUrl=url; setTimeout(flushOut,200);
       try{ c.subscribe(mqTopic(code),{qos:0}); }catch(e){} });
     c.on('message',(t,payload)=>{ try{ onMsg(payload.toString()); }catch(e){} });
     c.on('error',()=>{ clearTimeout(giveUp); if(!mqReady){ try{c.end(true);}catch(e){} tryNext(); } });
@@ -294,6 +294,23 @@ function mqPublish(obj){
   try{ mq.publish(mqTopic(S.room),JSON.stringify(obj),{qos:0,retain:!!obj.ctrl}); return true; }
   catch(e){ return false; }
 }
+
+
+/* ---------- OUTBOX: a message never gets lost because the broker was not up yet ---------- */
+const OUT=[];                      // {o,ok,key} waiting for a connection
+function enqueue(o,ok){
+  const key=(o.u?('u'+o.u):'ctrl')+':'+(o.r||0);
+  const i=OUT.findIndex(q=>q.key===key);
+  if(i>=0) OUT[i]={o,ok,key}; else OUT.push({o,ok,key});   // only the latest per phone per round
+}
+function flushOut(){
+  for(let i=OUT.length-1;i>=0;i--){
+    if(mqPublish(OUT[i].o)){ const q=OUT.splice(i,1)[0]; if(q.ok) q.ok(); }
+  }
+  const el=$('#stuStatus');
+  if(el&&S.role==='student'&&OUT.length) el.textContent='still sending, waiting for the connection...';
+}
+setInterval(flushOut,2000);
 
 /* ---------- QR ---------- */
 function drawQR(url){const box=$('#qr');try{const qr=qrcode(0,'M');qr.addData(url);qr.make();box.innerHTML=qr.createSvgTag({cellSize:6,margin:0,scalable:true});}catch(e){box.innerHTML='<div class="hint" style="padding:8px">Read the code aloud.</div>';}}
@@ -632,6 +649,12 @@ $('#btnSubmit').onclick=()=>{
 /* ---------- publish: MQTT if it is up, ntfy as the backup ---------- */
 function post(obj,ok){
   const body=JSON.stringify(obj); const t=topicOf(S.room);
+  if(!mqReady){                    // queue it and keep trying: public ntfy rate-limits a shared IP
+    enqueue(obj,ok);
+    const el=$('#stuStatus'); if(el&&S.role==='student') el.textContent='sending...';
+    try{ live().forEach(sv=>tfetch(sv+t,{method:'POST',body},4000).catch(()=>{})); }catch(e){}
+    return;
+  }
   const say=(m)=>{const el=$('#stuStatus'); if(el&&S.role==='student') el.textContent=m;};
   if(mqPublish(obj)){ if(ok)ok();
     // one best-effort copy over ntfy, so a phone still on the old page keeps up
