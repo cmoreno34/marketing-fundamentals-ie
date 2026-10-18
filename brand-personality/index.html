@@ -15,11 +15,11 @@
   motivations - Freedom, Ego, Social, Order - with three archetypes each, and the two
   examples of the slide (Mercedes as the Ruler, Dove as the Innocent).
 
-  The page does not hand the answer over. Six forced choices build the motivation profile,
+  The page does not hand the answer over. Five quick questions build the motivation profile,
   the three archetypes of the leading motivation are then explained so the student picks the
   primary one, and a choice that contradicts the diagnostic has to be justified in writing.
   Then the traits, the values with the behaviour that proves each one, and the brand essence
-  line of the composite model: benefit, substantiator, differentiation, values, personality.
+  one essence line, kept to three to six words.
 
   Everything runs in the browser: nothing is uploaded, the draft is kept on the device and
   the sheet is printed to PDF.
@@ -131,10 +131,10 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
   <p class="eyebrow">Branding &middot; brand personality</p>
   <h1>The twelve archetypes</h1>
   <p class="sub">Jung found twelve characters that recur in every culture. Brands that are easy to
-  recognise have picked one and stayed with it. Here you choose a brand, place it with the model of
-  the session, and write the values and the essence line that go with the character you chose.</p>
+  recognise lean on one of them. Pick a brand, answer five questions about how it behaves, choose its
+  character, and write the traits, the values and the one line that go with it.</p>
   <div class="plan">
-    <span>1 &middot; the brand</span><span>2 &middot; the diagnostic</span><span>3 &middot; the archetype</span>
+    <span>1 &middot; the brand</span><span>2 &middot; five questions</span><span>3 &middot; the archetype</span>
     <span>4 &middot; traits and voice</span><span>5 &middot; values</span><span>6 &middot; the essence line</span>
     <span id="prog">nothing filled yet</span>
   </div>
@@ -166,9 +166,10 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 <!-- ============================================================== 2 -->
 <section>
   <h2><span class="n">2</span>The diagnostic: what moves this brand?</h2>
-  <p class="hint">Six forced choices. Answer for the brand as it <b>behaves</b>, not as its
-  advertising says it is. The four motivations are the four families of the model:
-  <b>Freedom</b>, <b>Ego</b>, <b>Social</b> and <b>Order</b>.</p>
+  <p class="hint">Five questions, one click each. Answer for the brand as it <b>behaves</b>, not as
+  it would like to be seen. The four columns are the four motivations of the model:
+  <b>Freedom</b>, <b>Ego</b>, <b>Social</b> and <b>Order</b> - and there is no right answer, only the
+  one that fits this brand.</p>
   <div id="quiz"></div>
   <div class="bars" id="profile"></div>
   <div id="diagOut"></div>
@@ -177,7 +178,13 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 <!-- ============================================================== 3 -->
 <section>
   <h2><span class="n">3</span>The archetype</h2>
-  <p class="hint" id="archHint">Answer the six questions and the three archetypes of the leading
+  <div class="rules"><b>No, a brand is not locked into one character</b>Real brands usually lean on
+  one and borrow from another: Mercedes is a <b>Ruler</b> with a bit of <b>Creator</b> in the
+  engineering; Nike is a <b>Hero</b> with a bit of <b>Outlaw</b>. What you choose here is the
+  <b>primary</b>: the one it is recognised by, the one that decides the tone when the two disagree.
+  The secondary is optional and goes below. The only thing that does not work is three or four at
+  once &mdash; then nobody can tell what the brand is like.</div>
+  <p class="hint" id="archHint">Answer the five questions and the three archetypes of the leading
   motivation appear here, with what each one promises and what it fears. Pick the primary one.</p>
   <div class="row" style="margin-top:8px">
     <button class="btn ghost" id="btnAll">Show all twelve</button>
@@ -191,8 +198,10 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
       <textarea id="evidence" data-k placeholder="e.g. the grille is the same shape it was in 1933; the ads never mention the price"></textarea>
     </div>
     <div>
-      <label class="f" for="second">Secondary archetype, if it has one (optional)</label>
+      <label class="f" for="second">Secondary archetype &mdash; what it borrows (optional)</label>
       <select id="second" data-k><option value="">none</option></select>
+      <p class="hint">Leave it at none if the brand is pure. If you pick one, the primary still wins
+      whenever the two would say different things.</p>
       <label class="f" for="override">If you disagreed with the diagnostic, why is it wrong here?</label>
       <input type="text" id="override" data-k placeholder="only if your choice is not the leading motivation">
     </div>
@@ -234,28 +243,25 @@ footer{margin-top:26px;color:var(--muted);font-size:14.5px}
 <!-- ============================================================== 6 -->
 <section>
   <h2><span class="n">6</span>The essence line</h2>
-  <p class="hint">The composite model of the session, in five lines: the benefit, what makes it
-  credible, what separates it, the values and the personality &mdash; and then the one line that holds
-  them together, like <i>Coca-Cola: sharing and happiness</i> or <i>Apple: empowering people through
-  technology</i>.</p>
+  <p class="hint">One line that says what the brand is about, in three to six words. Like the ones in
+  the chapter: <i>Coca-Cola &mdash; sharing and happiness</i>, <i>Apple &mdash; empowering people
+  through technology</i>, <i>BMW &mdash; sheer driving pleasure</i>.</p>
   <div class="grid2">
-    <div>
-      <label class="f" for="benefit">Benefit delivered to the customer</label>
-      <input type="text" id="benefit" data-k placeholder="what they get, in their words">
-      <label class="f" for="subst">Substantiator: the fact that makes it believable</label>
-      <input type="text" id="subst" data-k placeholder="the proof, not the promise">
-      <label class="f" for="diff">Differentiation: what the others cannot say</label>
-      <input type="text" id="diff" data-k placeholder="and that is true">
-    </div>
     <div>
       <label class="f" for="essence">The essence, in three to six words</label>
       <input type="text" id="essence" data-k placeholder="e.g. engineered authority">
+      <label class="f" for="benefit">And what the customer gets out of it, in one sentence</label>
+      <input type="text" id="benefit" data-k placeholder="e.g. arriving as somebody whose judgement is not questioned">
+    </div>
+    <div>
       <label class="f" for="team">Group and members</label>
       <input type="text" id="team" data-k placeholder="e.g. Group 4 - Ana, Marco, Lucia, Tom">
       <label class="f" for="sect">Section and date</label>
       <input type="text" id="sect" data-k placeholder="e.g. BBA1 section B, 20 Oct 2026">
     </div>
   </div>
+  <div class="rules"><b>The test of the line</b>Cover the logo and read it to somebody. If it could be
+  any brand in the category, it is a slogan, not an essence.</div>
   <div id="verdict"></div>
   <h3>Before you hand it in</h3>
   <div id="checks"></div>
@@ -359,25 +365,23 @@ const ARCH = [
 const byKey = (k) => ARCH.find((a) => a.k === k);
 
 const QUIZ = [
-  { q: 'What does the brand promise above everything else?',
-    o: { freedom: 'Understanding, discovery, a simpler life', ego: 'Performance, transformation, winning',
-         social: 'Belonging, pleasure, laughter', order: 'Care, control, something that lasts' } },
-  { q: 'What does its customer most want to avoid?',
-    o: { freedom: 'Being trapped, or being fooled', ego: 'Being powerless, or being ordinary',
-         social: 'Being alone, or being left out', order: 'Chaos, risk, losing what they have' } },
-  { q: 'How does it actually talk?',
-    o: { freedom: 'Calm, curious, it explains', ego: 'Direct, challenging, confident',
-         social: 'Warm, playful, personal', order: 'Precise, reassuring, with authority' } },
-  { q: 'What would it never do?',
-    o: { freedom: 'Patronise you, or lock you in', ego: 'Play it safe',
-         social: 'Exclude anybody, or be cold', order: 'Improvise, or cut a corner' } },
-  { q: 'What is the moment it is bought for?',
-    o: { freedom: 'When you need to understand something, or get away', ego: 'When you need to win, or to change something',
-         social: 'When you want to be with people, or enjoy yourself', order: 'When it simply has to work, and keep working' } },
-  { q: 'If it disappeared tomorrow, what would be missed?',
-    o: { freedom: 'The horizon, and the explanation', ego: 'The edge, and the push',
-         social: 'The company, and the fun', order: 'The certainty, and the standard' } },
+  { q: 'What does this brand really sell?',
+    o: { freedom: 'Knowing more, or getting away', ego: 'Winning, or going further',
+         social: 'Being with other people', order: 'Safety, care, things that last' } },
+  { q: 'Who does its customer want to be?',
+    o: { freedom: 'Free and curious', ego: 'The best at it',
+         social: 'One of the group', order: 'In control, and looking after things' } },
+  { q: 'How does it speak?',
+    o: { freedom: 'Calm: it explains', ego: 'Direct: it challenges',
+         social: 'Warm: it jokes', order: 'Precise: it reassures' } },
+  { q: 'What does its advertising promise?',
+    o: { freedom: 'Discover, understand', ego: 'Perform, improve',
+         social: 'Share, enjoy', order: 'Trust us, it lasts' } },
+  { q: 'When do people buy it?',
+    o: { freedom: 'When they want to learn, or escape', ego: 'When they want to win',
+         social: 'When they are with other people', order: 'When it has to work, every time' } },
 ];
+const QN = QUIZ.length;
 
 const VALUES = ['authenticity', 'excellence', 'simplicity', 'sustainability', 'craftsmanship', 'transparency',
   'courage', 'curiosity', 'community', 'inclusion', 'freedom', 'innovation', 'tradition', 'performance',
@@ -449,10 +453,10 @@ function renderProfile() {
   const t = tally(), answered = Object.keys(ST.ans).length;
   $('#profile').innerHTML = Object.keys(FAM).map((f) =>
     `<div class="bar"><div class="t">${FAM[f].t}</div>
-      <div class="g"><i style="width:${answered ? (t[f] / 6 * 100).toFixed(0) : 0}%;background:var(${FAM[f].c})"></i></div>
+      <div class="g"><i style="width:${answered ? (t[f] / QN * 100).toFixed(0) : 0}%;background:var(${FAM[f].c})"></i></div>
       <div>${t[f]}</div></div>`).join('');
   const out = $('#diagOut');
-  if (answered < 6) { out.className = 'hint'; out.textContent = answered + ' of 6 answered.'; return; }
+  if (answered < QN) { out.className = 'hint'; out.textContent = answered + ' of ' + QN + ' answered.'; return; }
   const L = leaders();
   out.className = 'score';
   out.innerHTML = L.length === 1
@@ -466,7 +470,7 @@ function renderCards() {
   $('#archHint').textContent = L.length
     ? (ST.showAll ? 'All twelve. The ones outside the leading motivation are allowed, but you then have to say why the diagnostic is wrong.'
                   : 'The archetypes of the leading motivation. Pick the primary one, or show all twelve.')
-    : 'Answer the six questions and the three archetypes of the leading motivation appear here, with what each one promises and what it fears. Pick the primary one.';
+    : 'Answer the five questions and the three archetypes of the leading motivation appear here, with what each one promises and what it fears. Pick the primary one.';
   $('#cards').innerHTML = list.map((a) => `<div class="card${ST.arch === a.k ? ' on' : ''}" data-a="${a.k}">
     <span class="fam" style="color:var(${FAM[a.f].c})">${FAM[a.f].t}</span>
     <b>${esc(a.n)} <span class="hint" style="font-size:15px">(${esc(a.es)})</span></b>
@@ -485,7 +489,7 @@ function renderCards() {
     w.className = 'note';
     w.innerHTML = `<b>Your choice is not where the diagnostic points</b>You picked <b>${esc(byKey(ST.arch).n)}</b>
       (${FAM[byKey(ST.arch).f].t}) while the answers lead to ${L.map((f) => FAM[f].t).join(' / ')}. That is allowed - the
-      diagnostic is six questions, not an oracle - but write below why it is wrong for this brand.`;
+      diagnostic is five questions, not an oracle - but write below why it is wrong for this brand.`;
   } else { w.className = ''; w.innerHTML = ''; }
   $('#pickState').textContent = ST.arch ? 'primary: ' + byKey(ST.arch).n : 'no archetype picked yet';
 }
@@ -546,14 +550,13 @@ function renderValues() {
 // ---------------------------------------------------------------- progress and checks
 const REQUIRED = [['brand', 'the brand'], ['cat', 'the category'], ['who', 'who it is for'],
   ['evidence', 'the evidence for the archetype'], ['voice', 'how it speaks'], ['never', 'what it would never say'],
-  ['benefit', 'the benefit'], ['subst', 'the substantiator'], ['diff', 'the differentiation'],
-  ['essence', 'the essence line'], ['team', 'the group names']];
+  ['essence', 'the essence line'], ['benefit', 'what the customer gets'], ['team', 'the group names']];
 
 function filled(id) { const el = $('#' + id); return el && String(el.value || '').trim() !== ''; }
 
 function verdict() {
   const missing = REQUIRED.filter(([id]) => !filled(id)).map(([, l]) => l);
-  if (Object.keys(ST.ans).length < 6) missing.unshift('the six diagnostic answers');
+  if (Object.keys(ST.ans).length < QN) missing.unshift('the ' + QN + ' diagnostic answers');
   if (!ST.arch) missing.unshift('the primary archetype');
   if (ST.traits.length < 5) missing.push('five traits');
   if (ST.values.length < 3) missing.push('at least three values');
@@ -576,11 +579,12 @@ function verdict() {
 
 const CHECKS = [
   'The archetype was chosen from how the brand behaves, not from how we would like it to be.',
+  'One primary archetype, and at most one secondary that it borrows from.',
   'Two concrete things the brand does are written as evidence.',
   'There are five traits, not nine.',
   'Every value has a behaviour that proves it, and a competitor could honestly refuse to sign it.',
   'Any value in tension with the archetype is resolved in writing.',
-  'The essence line would still make sense with the logo removed.',
+  'The essence line survives the logo test: it could not be any brand in the category.',
 ];
 function renderChecks() {
   $('#checks').innerHTML = CHECKS.map((c, i) => `<label class="check"><input type="checkbox" data-k id="ck${i}">
@@ -605,7 +609,7 @@ function buildPrint() {
     <h2>1. The brand</h2>
     ${blk('Category', val('cat'))}${blk('Who it is for', val('who'))}
     <h2>2. The diagnostic</h2>
-    ${blk('Motivation profile', Object.keys(FAM).map((f) => FAM[f].t + ' ' + t[f]).join(' / ') + ' (out of 6)')}
+    ${blk('Motivation profile', Object.keys(FAM).map((f) => FAM[f].t + ' ' + t[f]).join(' / ') + ' (out of ' + QN + ')')}
     <h2>3. The archetype</h2>
     ${a ? blk('Primary', a.n + ' (' + a.es + ') - ' + FAM[a.f].t) : ''}
     ${a ? blk('It promises', a.promise) : ''}${a ? blk('It fears', a.fear) : ''}
@@ -616,8 +620,7 @@ function buildPrint() {
     <h2>5. Values</h2>
     ${vals ? `<table><tr><th>Value</th><th>How it shows up</th></tr>${vals}</table>` : ''}
     <h2>6. The essence</h2>
-    ${blk('Benefit', val('benefit'))}${blk('Substantiator', val('subst'))}${blk('Differentiation', val('diff'))}
-    ${blk('Essence line', val('essence'))}
+    ${blk('Essence line', val('essence'))}${blk('What the customer gets', val('benefit'))}
     <p class="foot">The twelve archetypes after Jung as presented in the Brand management chapter,
     in the four motivations of the slide, with Mark and Pearson's reading of each character; the essence
     line after the composite brand-essence model. Printed from the lab, no data left the device.</p>`;
