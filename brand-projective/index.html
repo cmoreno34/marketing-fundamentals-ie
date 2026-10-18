@@ -524,10 +524,26 @@ code=String(code||'').toUpperCase().trim();if(!code){$('#room').focus();return;}
   const t=topicOf(code);
   closeAll();
   mqConnect(code,raw=>{ absorb(raw); });
-  pollAll(t).then(txt=>{let last=null;txt.trim().split('\n').forEach(l=>{try{const d=JSON.parse(l);if(d.event==='message'){const m=JSON.parse(d.message);if(m.ctrl&&(!last||m.r>=last.r))last=m;}}catch(e){}});if(last){curK=last.k;curQ=last.q;curR=last.r;renderStudentPrompt();}}).catch(()=>{});
+  pullLast(t);
+  clearInterval(S.wd);
+  S.wd=setInterval(()=>{                                  // no prompt yet? try everything again
+    if(curR){clearInterval(S.wd);S.wd=null;return;}
+    const el=$('#stuStatus'); if(el&&!el.textContent) el.textContent='still connecting, trying again...';
+    try{ mqConnect(code,raw=>{ absorb(raw); }); }catch(e){}
+    pullLast(t);
+  },7000);
   es=new EventSource(NTFY+t+'/sse');NTFY_SERVERS.filter(x=>x!==NTFY).forEach(sv=>{try{const e2=new EventSource(sv+t+'/sse');e2.onmessage=ev=>{try{es.onmessage(ev);}catch(x){}};esList.push(e2);}catch(x){}});
   es.onmessage=ev=>{try{const d=JSON.parse(ev.data);if(d.event==='message')absorb(d.message);}catch(e){}};
 }
+function pullLast(t){        // the last prompt the room sent, through absorb so nothing is lost
+  pollAll(t).then(txt=>{
+    let last=null;
+    txt.trim().split('\n').forEach(l=>{try{const d=JSON.parse(l);
+      if(d.event==='message'){const m=JSON.parse(d.message);if(m.ctrl&&(!last||m.r>=last.r))last=m;}}catch(e){}});
+    if(last) absorb(JSON.stringify(last));
+  }).catch(()=>{});
+}
+
 function renderStudentPrompt(){
   const t=TECHS[curK]||TECHS.assoc; $('#stuPrompt').innerHTML=t.prompt(curQ);
   $('#stuForm').classList.remove('hide');
