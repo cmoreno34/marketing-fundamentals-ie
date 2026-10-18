@@ -372,11 +372,11 @@ function startTeacher(code){
   closeAll(); const t=topicOf(code);
   setTimeout(askAgain,2000);
   clearInterval(S.ask); S.ask=setInterval(()=>{ if(S.role==='teacher'&&S.room) askAgain(); },15000);
-  clearInterval(S.twd); S.twd=setInterval(()=>{ if(!mqReady&&S.room){ try{ mqConnect(code,raw=>{ if(absorb(raw)){renderBoard();updateCount();} }); }catch(e){} } },9000);
-  mqConnect(code,raw=>{ if(absorb(raw)){renderBoard();updateCount();} });
-  pollAll(t).then(txt=>{txt.trim().split('\n').forEach(l=>{try{const d=JSON.parse(l);if(d.event==='message')absorb(d.message);}catch(e){}});renderBoard();updateCount();}).catch(()=>{});
+  clearInterval(S.twd); S.twd=setInterval(()=>{ if(!mqReady&&S.room){ try{ mqConnect(code,raw=>{ if(absorb(raw)) markDirty(); }); }catch(e){} } },9000);
+  mqConnect(code,raw=>{ if(absorb(raw)) markDirty(); });
+  pollAll(t).then(txt=>{txt.trim().split('\n').forEach(l=>{try{const d=JSON.parse(l);if(d.event==='message')absorb(d.message);}catch(e){}});markDirty();}).catch(()=>{});
   es=new EventSource(NTFY+t+'/sse');NTFY_SERVERS.filter(x=>x!==NTFY).forEach(sv=>{try{const e2=new EventSource(sv+t+'/sse');e2.onmessage=ev=>{try{es.onmessage(ev);}catch(x){}};esList.push(e2);}catch(x){}});
-  es.onmessage=ev=>{try{const d=JSON.parse(ev.data);if(d.event==='message'&&absorb(d.message)){renderBoard();updateCount();}}catch(e){}};
+  es.onmessage=ev=>{try{const d=JSON.parse(ev.data);if(d.event==='message'&&absorb(d.message))markDirty();}catch(e){}};
 }
 function updateCount(){const n=LIVE.size;const w=curStage==='propose'?'phone':'vote';
   $('#countOut').textContent=n?`${n} ${w}${n>1?'s':''} in`:'nobody yet';}
@@ -402,6 +402,12 @@ function absorb(raw){let m;try{m=JSON.parse(raw);}catch(e){return false;}
   if(m.u&&m.r===curR&&('v'in m)){LIVE.set(m.u,m.v);return true;}
   return false;
 }
+
+/* ---------- the board redraws on a clock, not on every message ---------- */
+let boardDirty=false, liveVer=0;
+function markDirty(){ boardDirty=true; liveVer++; }
+setInterval(()=>{ if(!boardDirty) return; boardDirty=false;
+  if(S.role==='teacher'){ renderBoard(); updateCount(); } },450);
 
 /* ---------- teacher board ---------- */
 const STAGE_TXT={propose:'stage 1 of 3 · the room proposes',vote:'stage 2 of 3 · the room votes for several',final:'stage 3 of 3 · the runoff'};
@@ -459,7 +465,9 @@ function sameName(a,b){                  // "Dogym" / "DoGym" / "Dog Gym" / "Dog
   return lev(x,y)<=tol;
 }
 
+let CLU={ver:-1,val:[]};
 function clusters(){                     // one entry per idea, with how many phones sent it
+  if(CLU.ver===liveVer) return CLU.val;   // fifty phones means hundreds of messages: cluster once
   const out=[];
   LIVE.forEach((v)=>{
     const names=[...new Set((Array.isArray(v)?v:[v]).map(CLEAN).filter(Boolean))];
@@ -469,6 +477,7 @@ function clusters(){                     // one entry per idea, with how many ph
       else out.push({n,c:1,all:new Set([n])});
     });
   });
+  CLU={ver:liveVer,val:out};
   return out;
 }
 
