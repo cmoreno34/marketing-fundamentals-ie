@@ -78,17 +78,6 @@ label.fl{display:block;font:700 11px Archivo;letter-spacing:.06em;text-transform
 .warn{font-size:12.5px;color:var(--clay);margin:8px 0 0}
 .big{font-size:16px}
 .answers{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.votes{display:flex;flex-direction:column;gap:10px;margin-top:8px}
-.vrow{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:12px;align-items:center}
-.vname{font-family:Fraunces,serif;font-weight:900;font-size:clamp(17px,2.4vw,24px)}
-.lead{font:700 10.5px Archivo;letter-spacing:.06em;text-transform:uppercase;color:var(--leaf);vertical-align:middle}
-.vbar{background:var(--chip);border-radius:999px;height:22px;overflow:hidden}
-.vbar i{display:block;height:100%;border-radius:999px;transition:width .4s}
-.vnum{font:700 16px Archivo;color:var(--soft);min-width:2ch;text-align:right}
-.votepick{display:flex;flex-direction:column;gap:10px}
-.vopt{border:1px solid var(--line);background:var(--ground);color:var(--ink);border-radius:12px;padding:16px 18px;
-  font:700 18px Fraunces,Georgia,serif;cursor:pointer;text-align:left}
-.vopt:hover{border-color:var(--leaf)} .vopt.on{background:var(--leaf);border-color:var(--leaf);color:#fff}
 .answers input{width:100%}
 .status{font-size:13px;color:var(--leaf);margin-top:8px;min-height:18px}
 </style></head>
@@ -122,7 +111,7 @@ label.fl{display:block;font:700 11px Archivo;letter-spacing:.06em;text-transform
       <ol style="margin:6px 0 0;padding-left:20px">
         <li>Press <b>Open a room</b> once, and project the QR below.</li>
         <li>Pick a technique + type the stimulus, then press <b>▶ Push to the room</b>. The prompt appears on every phone; answers build the cloud/wall live.</li>
-        <li>For the next question, just <b>change the technique or stimulus and press ▶ Push again</b> — same room, same QR, no reload. <b>Clear answers</b> wipes the board for a fresh round.</li><li><b>To name something:</b> pick <b>Name the brand</b>, type what you are naming and push. The room sends names; when they are done press <b>Shortlist the best three</b> - the lab scores the room's own names (how many proposed each one, plus the name tests of the session) and opens the vote on the three. <b>Reopen proposals</b> goes back a stage.</li><li><b>The debrief is the lesson:</b> read the cloud out loud and ask which words are <i>attributes</i>, which are <i>benefits</i> and which are <i>beliefs and values</i>. That is brand positioning, in the room's own words - and whatever is missing is what the brand has not managed to own.</li>
+        <li>For the next question, just <b>change the technique or stimulus and press ▶ Push again</b> — same room, same QR, no reload. <b>Clear answers</b> wipes the board for a fresh round.</li><li><b>The debrief is the lesson:</b> read the cloud out loud and ask which words are <i>attributes</i>, which are <i>benefits</i> and which are <i>beliefs and values</i>. That is brand positioning, in the room's own words - and whatever is missing is what the brand has not managed to own.</li>
       </ol>
     </div>
     <div class="techpick" id="techpick"></div>
@@ -133,14 +122,10 @@ label.fl{display:block;font:700 11px Archivo;letter-spacing:.06em;text-transform
     <div class="row">
       <button class="btn" id="btnOpen">Open a room</button>
       <button class="btn solid hide" id="btnSend">▶ Push to the room</button>
-      <button class="btn solid hide" id="btnShort">Shortlist the best three</button>
-      <button class="btn hide" id="btnReopen">Reopen proposals</button>
       <button class="btn ghost hide" id="btnClear">Clear answers</button>
       <button class="btn ghost" id="btnBack">← Back</button>
     </div>
   </div>
-
-  <div class="hint hide" id="shortWhy" style="background:var(--sage);border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin:10px 0"></div>
 
   <div class="card hide" id="roomCard">
     <div class="row" style="justify-content:space-between">
@@ -235,11 +220,6 @@ const TECHS={
     stimLabel:'Brand that walks in',
     prompt:q=>`<span class="stem">${q||'…'}</span> walks into a party: who does it talk to, what is it wearing, and when does it leave?`,
     ph:'e.g. Nike'},
-  naming:{name:'Name the brand',n:2,cloud:false,mode:'name',
-    hint:'Three stages on the same QR: the room proposes names, the lab shortlists the best three with the six name tests, and then the room votes.',
-    stimLabel:'What are we naming? (the product or the case)',
-    prompt:q=>`Propose a name for <span class="stem">${q||'…'}</span> - up to two, one or two words each`,
-    ph:'e.g. the gym you can bring your dog to'},
   obit:{name:'Brand obituary',n:0,cloud:false,
     hint:'The brand closes tomorrow. What does the headline say, and who actually misses it? This is where loyalty shows up or does not.',
     stimLabel:'Brand that closes',
@@ -249,8 +229,6 @@ const TECHS={
 let S={uid:Math.random().toString(36).slice(2,10),role:null,room:'',k:'assoc',q:'',r:0};
 const LIVE=new Map();      // uid -> {v}
 let es=null, esList=[], curK='assoc', curQ='', curR=0;
-let curStage='propose', curOpts=[];      // the naming technique has two stages
-const PROPOSED=new Map();                // uid -> the names that phone proposed
 function closeAll(){esList.forEach(e=>{try{e.close();}catch(x){}});esList=[];if(es){try{es.close();}catch(x){}es=null;}}
 function tfetch(url,opts,ms){const c=new AbortController();const id=setTimeout(()=>c.abort(),ms||4000);
   return fetch(url,Object.assign({},opts||{},{signal:c.signal})).then(r=>{clearTimeout(id);return r;},e=>{clearTimeout(id);throw e;});}
@@ -273,8 +251,7 @@ const SUGGEST={
   animal:['Ryanair','Nike','Mercadona','Tesla','Zara','Netflix'],
   sentence:['A person who buys ___ is someone who…','People who pay extra for ___ are ___','Somebody who would never buy ___ is ___','The kind of person who wears ___ is ___'],
   party:['Nike','Zara','Netflix','Ryanair','Starbucks','Lululemon'],
-  obit:['Mercadona','Netflix','Zara','Ryanair','Starbucks','Spotify'],
-  naming:['the gym you can bring your dog to','a sparkling birch-sap drink','a campus bike subscription','a voice assistant built for calm']
+  obit:['Mercadona','Netflix','Zara','Ryanair','Starbucks','Spotify']
 };
 function syncTech(){ sendState('idle');const t=TECHS[S.k];$('#stimLabel').textContent=t.stimLabel;$('#stim').placeholder=t.ph;$('#techHint').textContent=t.hint;
   const box=$('#suggest');box.innerHTML='<span class="lbl">Suggestions</span>';
@@ -361,18 +338,17 @@ function startTeacher(code){
   es=new EventSource(NTFY+t+'/sse');NTFY_SERVERS.filter(x=>x!==NTFY).forEach(sv=>{try{const e2=new EventSource(sv+t+'/sse');e2.onmessage=ev=>{try{es.onmessage(ev);}catch(x){}};esList.push(e2);}catch(x){}});
   es.onmessage=ev=>{try{const d=JSON.parse(ev.data);if(d.event==='message'&&absorb(d.message)){renderBoard();updateCount();}}catch(e){}};
 }
-function updateCount(){const n=LIVE.size;const voting=(TECHS[curK]||{}).mode==='name'&&curStage==='vote';
-  $('#countOut').textContent=n?`${n} ${voting?'vote':'answer'}${n>1?'s':''} in`:'nobody yet';}
+function updateCount(){const n=LIVE.size;$('#countOut').textContent=n?`${n} answer${n>1?'s':''} in`:'nobody yet';}
 
 /* ---------- shared: absorb a message ---------- */
 function absorb(raw){let m;try{m=JSON.parse(raw);}catch(e){return false;}
   if(m.ctrl){ // a prompt broadcast
     if(m.r>=curR){
-      const fresh=(m.r!==curR);
-      curK=m.k;curQ=m.q;curR=m.r;curStage=m.stage||'propose';curOpts=m.opts||[];
-      if(fresh) LIVE.clear();
+      const same=(m.r===curR && m.k===curK && (m.q||'')===curQ);   // the second copy of the same push
+      curK=m.k;curQ=m.q;curR=m.r;
+      if(same) return false;
       if(S.role==='student'){renderStudentPrompt();}
-      if(S.role==='teacher'){renderBoardHeader();renderBoard();}
+      if(S.role==='teacher'){renderBoardHeader();}
     }
     return false;
   }
@@ -381,17 +357,10 @@ function absorb(raw){let m;try{m=JSON.parse(raw);}catch(e){return false;}
 }
 
 /* ---------- teacher board ---------- */
-function renderBoardHeader(){const t=TECHS[curK]||TECHS.assoc;
-  $('#boardTech').textContent=t.name+(t.mode==='name'?(curStage==='vote'?' \u00b7 stage 2 of 2: the room votes':' \u00b7 stage 1 of 2: the room proposes'):'');
-  $('#boardPrompt').innerHTML=(t.mode==='name'&&curStage==='vote')?('Which name wins for <span class="stem">'+esc(curQ||'…')+'</span>?'):t.prompt(curQ);
-  const naming=t.mode==='name';
-  $('#btnShort').classList.toggle('hide',!naming||curStage==='vote'||!S.room);
-  $('#btnReopen').classList.toggle('hide',!naming||curStage!=='vote');
-}
+function renderBoardHeader(){const t=TECHS[curK]||TECHS.assoc;$('#boardTech').textContent=t.name;$('#boardPrompt').innerHTML=t.prompt(curQ);}
 function renderBoard(){
   renderBoardHeader(); updateCount();
   const t=TECHS[curK]||TECHS.assoc; const board=$('#board');
-  if(t.mode==='name'){ renderNameBoard(); return; }
   if(t.cloud){
     const freq={}; LIVE.forEach(v=>{(Array.isArray(v)?v:[v]).forEach(w=>{w=String(w||'').trim().toLowerCase();if(w)freq[w]=(freq[w]||0)+1;});});
     const arr=Object.entries(freq).sort((a,b)=>b[1]-a[1]);
@@ -410,110 +379,6 @@ function renderBoard(){
 }
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-
-
-/* ---------- NAMING:BEGIN  propose -> shortlist -> vote ---------- */
-const NAME_TESTS=[
-  {k:'short',   t:'3 to 12 letters',      ok:n=>n.replace(/\s/g,'').length>=3 && n.replace(/\s/g,'').length<=12},
-  {k:'oneword', t:'one or two words',     ok:n=>n.trim().split(/\s+/).length<=2},
-  {k:'clean',   t:'no digits or symbols', ok:n=>!/[0-9_\-\/@.]/.test(n)},
-  {k:'sayable', t:'easy to say',          ok:n=>/[aeiouyAEIOUY]/.test(n) && !/[^aeiouy\s]{4,}/i.test(n)},
-  {k:'name',    t:'a name, not a sentence', ok:n=>n.trim().split(/\s+/).length<=3 && !/\b(the|a|of|for|and|with|is|are)\b/i.test(n.split(/\s+/).length>1?n:'')}
-];
-const normName=s=>String(s||'').trim().replace(/\s+/g,' ');
-const keyName=s=>normName(s).toLowerCase();
-
-function proposals(){                       // every name the room sent, with who sent it
-  const m=new Map();
-  LIVE.forEach((v)=>{(Array.isArray(v)?v:[v]).forEach(x=>{
-    const n=normName(x); if(!n) return;
-    const k=keyName(n); const e=m.get(k)||{n,c:0}; e.c++; if(n.length<e.n.length)e.n=n; m.set(k,e);
-  });});
-  return [...m.values()];
-}
-
-function scoreName(p){                      // the room's agreement, then the tests it passes
-  const passed=NAME_TESTS.filter(t=>t.ok(p.n));
-  return {n:p.n, c:p.c, passed:passed.map(t=>t.t), score:p.c*3+passed.length};
-}
-
-function shortlist(k){                      // the best three, best first
-  return proposals().map(scoreName).sort((a,b)=>b.score-a.score||a.n.length-b.n.length).slice(0,k||3);
-}
-
-function renderNameBoard(){
-  const board=$('#board');
-  if(curStage==='vote'){
-    const tally=new Map(curOpts.map(o=>[keyName(o),0]));
-    LIVE.forEach(v=>{const k=keyName(Array.isArray(v)?v[0]:v); if(tally.has(k))tally.set(k,tally.get(k)+1);});
-    const total=[...tally.values()].reduce((a,b)=>a+b,0);
-    const max=Math.max(1,...tally.values());
-    const lead=Math.max(...tally.values());
-    const leaders=curOpts.filter(o=>(tally.get(keyName(o))||0)===lead&&lead>0);
-    board.innerHTML='<div class="votes">'+curOpts.map((o,i)=>{
-      const c=tally.get(keyName(o))||0; const top=(c===lead&&c>0);
-      const tag=top?(leaders.length>1?' <span class="lead">tied</span>':' <span class="lead">leading</span>'):'';
-      return `<div class="vrow"><div class="vname">${esc(o)}${tag}</div>
-        <div class="vbar"><i style="width:${(c/max*100).toFixed(0)}%;background:var(${PAL[i%PAL.length]})"></i></div>
-        <div class="vnum">${c}</div></div>`;
-    }).join('')+'</div>'
-      +(total?`<p class="hint">${total} vote${total===1?'':'s'} in \u00b7 one per phone, and they can change it \u00b7 `
-        +(leaders.length>1?('a tie between <b>'+leaders.map(esc).join('</b> and <b>')+'</b> at '+lead+' each - ask the room to argue it out and vote again')
-          :('<b>'+esc(leaders[0])+'</b> wins with '+lead+' of '+total))+'.</p>'
-        :'<p class="hint">waiting for the first vote\u2026</p>');
-    return;
-  }
-  const list=proposals().sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n));
-  if(!list.length){board.innerHTML='<div class="cloud"><span style="font-size:18px;color:var(--soft);font-family:Archivo">waiting for names…</span></div>';return;}
-  board.innerHTML='<div class="wall">'+list.map(p=>`<div class="quote"><b>${esc(p.n)}</b>${p.c>1?` <span class="hint">\u00d7${p.c}</span>`:''}</div>`).join('')+'</div>'
-    +`<p class="hint">${list.length} different name${list.length===1?'':'s'} from ${LIVE.size} phone${LIVE.size===1?'':'s'}. When the room has finished, press <b>Shortlist the best three</b>.</p>`;
-}
-
-$('#btnShort').onclick=(e)=>{
-  const top=shortlist(3);
-  if(!top.length){flash(e.currentTarget,'No names yet');return;}
-  PROPOSED.clear(); LIVE.forEach((v,u)=>PROPOSED.set(u,v));   // keep the proposals for the debrief
-  const why=top.map(t=>`<b>${esc(t.n)}</b> \u00b7 proposed by ${t.c} \u00b7 passes ${t.passed.length} of 5 tests: ${esc(t.passed.join(', '))||'none'}`).join('<br>');
-  $('#shortWhy').innerHTML='<b>Why these three</b>'+why;
-  $('#shortWhy').classList.remove('hide');
-  curR=Date.now(); curStage='vote'; curOpts=top.map(t=>t.n); LIVE.clear();
-  const btn=e.currentTarget; flash(btn,'Opening the vote...');
-  post({ctrl:1,k:curK,q:curQ,r:curR,stage:'vote',opts:curOpts},()=>flash(btn,'Vote open \u2713'));
-  renderBoardHeader(); renderBoard();
-};
-
-$('#btnReopen').onclick=(e)=>{
-  curR=Date.now(); curStage='propose'; curOpts=[]; LIVE.clear();
-  $('#shortWhy').classList.add('hide');
-  const btn=e.currentTarget; flash(btn,'Reopening...');
-  post({ctrl:1,k:curK,q:curQ,r:curR,stage:'propose',opts:[]},()=>flash(btn,'Proposals open \u2713'));
-  renderBoardHeader(); renderBoard();
-};
-
-function renderStudentNaming(){
-  const box=$('#answers'), sent=$('#sentence'), sl=$('#sentenceLabel');
-  sent.classList.add('hide'); sl.classList.add('hide'); box.innerHTML='';
-  if(curStage==='vote'){
-    $('#btnSubmit').classList.add('hide');
-    $('#stuPrompt').innerHTML='Vote for the name of <span class="stem">'+esc(curQ||'…')+'</span>';
-    const wrap=document.createElement('div'); wrap.className='votepick';
-    curOpts.forEach((o,i)=>{
-      const b=document.createElement('button'); b.type='button'; b.className='vopt'; b.textContent=o;
-      b.onclick=()=>{
-        [...wrap.children].forEach(c=>c.classList.remove('on')); b.classList.add('on');
-        post({u:S.uid,r:curR,v:o},()=>{$('#stuStatus').textContent='Voted for '+o+' \u2713  (you can change it)';});
-      };
-      wrap.appendChild(b);
-    });
-    box.appendChild(wrap);
-    $('#stuStatus').textContent='';
-    return;
-  }
-  $('#btnSubmit').classList.remove('hide');
-  for(let i=0;i<2;i++){const inp=document.createElement('input');inp.placeholder='name '+(i+1);inp.maxLength=28;box.appendChild(inp);}
-  $('#stuStatus').textContent='';
-}
-/* ---------- NAMING:END ---------- */
 
 /* ---------- student ---------- */
 $('#btnJoin').onclick=()=>joinRoom($('#room').value);
@@ -547,8 +412,6 @@ function pullLast(t){        // the last prompt the room sent, through absorb so
 function renderStudentPrompt(){
   const t=TECHS[curK]||TECHS.assoc; $('#stuPrompt').innerHTML=t.prompt(curQ);
   $('#stuForm').classList.remove('hide');
-  if(t.mode==='name'){ renderStudentNaming(); return; }
-  $('#btnSubmit').classList.remove('hide');
   const box=$('#answers'), sent=$('#sentence'), sl=$('#sentenceLabel');
   if(t.cloud){ sent.classList.add('hide'); sl.classList.add('hide'); box.innerHTML='';
     for(let i=0;i<t.n;i++){const inp=document.createElement('input');inp.placeholder='word '+(i+1);inp.maxLength=24;box.appendChild(inp);}
@@ -557,12 +420,6 @@ function renderStudentPrompt(){
 }
 $('#btnSubmit').onclick=()=>{
   const t=TECHS[curK]||TECHS.assoc; let v;
-  if(t.mode==='name'){
-    v=[...$('#answers').querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean);
-    if(!v.length){$('#stuStatus').textContent='Type at least one name.';return;}
-    post({u:S.uid,r:curR,v},()=>{$('#stuStatus').textContent='Sent \u2713  (you can change it and send again)';});
-    return;
-  }
   if(t.cloud){v=[...$('#answers').querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean);if(!v.length){$('#stuStatus').textContent='Type at least one word.';return;}}
   else{v=$('#sentence').value.trim();if(!v){$('#stuStatus').textContent='Finish the sentence first.';return;}}
   post({u:S.uid,r:curR,v},()=>{$('#stuStatus').textContent='Sent ✓  (you can change it and send again)';});
