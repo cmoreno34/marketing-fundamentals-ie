@@ -316,6 +316,21 @@ function flushOut(){
 }
 setInterval(flushOut,2000);
 
+
+/* ---------- DELIVERY: keep saying it until it is heard ---------- */
+let MINE=null;                     // the last answer this phone sent, and how often it repeated it
+function remember(o){ if(o&&o.u) MINE={o,ticks:0}; }
+setInterval(()=>{                  // a broker hiccup, a reconnect or a rate limit must not lose an answer
+  if(!MINE||MINE.ticks>=6) return; // the teacher keys answers by phone, so repeats are harmless
+  MINE.ticks++;
+  mqPublish(MINE.o);
+},5000);
+
+function askAgain(){               // the teacher asks everybody to say it again
+  post({ctrl:1,poll:1,k:curK,q:curQ,r:curR,stage:(typeof curStage!=='undefined'?curStage:undefined),
+        opts:(typeof curOpts!=='undefined'?curOpts:undefined),max:(typeof curMax!=='undefined'?curMax:undefined)});
+}
+
 /* ---------- QR ---------- */
 function drawQR(url){const box=$('#qr');try{const qr=qrcode(0,'M');qr.addData(url);qr.make();box.innerHTML=qr.createSvgTag({cellSize:6,margin:0,scalable:true});}catch(e){box.innerHTML='<div class="hint" style="padding:8px">Read the code aloud.</div>';}}
 
@@ -350,6 +365,9 @@ $('#btnClear').onclick=(e)=>{LIVE.clear();curR=Date.now();const btn=e.currentTar
 
 function startTeacher(code){
   closeAll(); const t=topicOf(code);
+  setTimeout(askAgain,2000);
+  clearInterval(S.ask); S.ask=setInterval(()=>{ if(S.role==='teacher'&&S.room) askAgain(); },15000);
+  clearInterval(S.twd); S.twd=setInterval(()=>{ if(!mqReady&&S.room){ try{ mqConnect(code,raw=>{ if(absorb(raw)){renderBoard();updateCount();} }); }catch(e){} } },9000);
   mqConnect(code,raw=>{ if(absorb(raw)){renderBoard();updateCount();} });
   pollAll(t).then(txt=>{txt.trim().split('\n').forEach(l=>{try{const d=JSON.parse(l);if(d.event==='message')absorb(d.message);}catch(e){}});renderBoard();updateCount();}).catch(()=>{});
   es=new EventSource(NTFY+t+'/sse');NTFY_SERVERS.filter(x=>x!==NTFY).forEach(sv=>{try{const e2=new EventSource(sv+t+'/sse');e2.onmessage=ev=>{try{es.onmessage(ev);}catch(x){}};esList.push(e2);}catch(x){}});
@@ -359,6 +377,7 @@ function updateCount(){const n=LIVE.size;$('#countOut').textContent=n?`${n} answ
 
 /* ---------- shared: absorb a message ---------- */
 function absorb(raw){let m;try{m=JSON.parse(raw);}catch(e){return false;}
+  if(m.ctrl&&m.poll){ if(S.role==='student'&&MINE) mqPublish(MINE.o); return false; }
   if(m.ctrl){ // a prompt broadcast
     if(m.r>=curR){
       const same=(m.r===curR && m.k===curK && (m.q||'')===curQ);   // the second copy of the same push
@@ -444,6 +463,7 @@ $('#btnSubmit').onclick=()=>{
 
 /* ---------- publish: MQTT if it is up, ntfy as the backup ---------- */
 function post(obj,ok){
+  remember(obj);
   const body=JSON.stringify(obj); const t=topicOf(S.room);
   if(!mqReady){                    // queue it and keep trying: public ntfy rate-limits a shared IP
     enqueue(obj,ok);
