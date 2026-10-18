@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand personality: the twelve archetypes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%AD%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<!--
+  Brand personality, Marketing Fundamentals - the branding session.
+
+  Carl Jung's twelve archetypes as the Brand management chapter presents them: four
+  motivations - Freedom, Ego, Social, Order - with three archetypes each, and the two
+  examples of the slide (Mercedes as the Ruler, Dove as the Innocent).
+
+  The page does not hand the answer over. Six forced choices build the motivation profile,
+  the three archetypes of the leading motivation are then explained so the student picks the
+  primary one, and a choice that contradicts the diagnostic has to be justified in writing.
+  Then the traits, the values with the behaviour that proves each one, and the brand essence
+  line of the composite model: benefit, substantiator, differentiation, values, personality.
+
+  Everything runs in the browser: nothing is uploaded, the draft is kept on the device and
+  the sheet is printed to PDF.
+-->
+<style>
+:root{
+  --ground:#F4F4F6; --surface:#FFFFFF; --sunk:#EAEAEF;
+  --ink:#16161D; --muted:#4A4A58; --line:#D9D9E3;
+  --ind:#3F3D8C; --ind-soft:#E7E6F5;
+  --a:#1F6F6B; --a-soft:#DDEFED; --b:#A4501E; --b-soft:#F7E7DA;
+  --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
+  --f1:#3B6FB5; --f2:#B0466B; --f3:#C9702F; --f4:#2F8F8F;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#101014; --surface:#1A1A21; --sunk:#15151B; --ink:#E9E9F0; --muted:#AFAFC0; --line:#2C2C38;
+  --ind:#A9A6F0; --ind-soft:#25233F; --a:#6FC7C1; --a-soft:#14302E; --b:#E0A377; --b-soft:#33231A;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+  --f1:#6EA8E6; --f2:#DD7EA0; --f3:#E0A44F; --f4:#63C6C6;
+}}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.6;margin:0;padding:0 clamp(16px,3vw,44px) 90px}
+.wrap{width:100%;max-width:1400px;margin:0 auto}
+h1,h2,h3{font-family:"Archivo Narrow","Arial Narrow",Arial,sans-serif}
+header{padding:30px 0 18px;border-bottom:2px solid var(--ink);margin-bottom:18px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ind);margin:0 0 8px;font-weight:600}
+h1{font-size:clamp(32px,5vw,50px);line-height:1.05;margin:0 0 10px;font-weight:700}
+.sub{font-size:19px;margin:0;max-width:92ch}
+.plan{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.plan span{font-family:"IBM Plex Mono",monospace;font-size:13px;padding:5px 11px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:var(--surface)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;padding:20px 24px}
+h2{font-size:25px;margin:0 0 4px}
+h2 .n{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ind);margin-right:10px}
+h3{font-size:19px;margin:20px 0 2px}
+.hint{color:var(--muted);font-size:16px}
+label.f{display:block;font-size:15.5px;color:var(--muted);margin:14px 0 4px}
+input[type=text],textarea,select{width:100%;font-family:inherit;font-size:17px;color:var(--ink);background:var(--surface);
+  border:1.5px solid #A6A6B5;border-radius:6px;padding:11px 14px;min-height:48px}
+textarea{min-height:70px;resize:vertical}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 22px,calc(100% - 14px) 22px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:44px}
+input:focus,textarea:focus,select:focus{outline:3px solid rgba(63,61,140,.3);border-color:var(--ind)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0 22px}
+.btn{font-family:inherit;font-size:17px;font-weight:600;padding:12px 22px;border:1.5px solid var(--ind);background:var(--surface);color:var(--ind);border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--ind-soft)} .btn.solid{background:var(--ind);color:#fff}.btn.solid:hover{opacity:.9}
+.btn.ghost{border-color:var(--line);color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.brands{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.bchip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:15.5px;cursor:pointer;color:var(--ink)}
+.bchip:hover{border-color:var(--ind)} .bchip.on{background:var(--ind);border-color:var(--ind);color:#fff}
+.q{border-top:1px solid var(--line);padding:14px 0 4px}
+.q p.qt{font-weight:600;margin:0 0 8px;font-size:17.5px}
+.opts4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.opt{border:1.5px solid var(--line);border-radius:6px;padding:10px 13px;cursor:pointer;font-size:16px;background:var(--surface);text-align:left;
+  font-family:inherit;color:var(--ink)}
+.opt:hover{border-color:var(--ind)} .opt.on{border-color:var(--ind);background:var(--ind-soft)}
+.bars{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.bar{display:grid;grid-template-columns:130px 1fr auto;gap:10px;align-items:center;font-size:16px}
+.bar .t{font-family:"IBM Plex Mono",monospace;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.bar .g{background:var(--sunk);border-radius:999px;height:18px;overflow:hidden}
+.bar .g i{display:block;height:100%;border-radius:999px;transition:width .35s}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:12px;margin-top:12px}
+.card{border:1.5px solid var(--line);border-radius:8px;padding:14px 16px;cursor:pointer;background:var(--surface)}
+.card:hover{border-color:var(--ind)} .card.on{border-color:var(--ind);background:var(--ind-soft)}
+.card b{display:block;font-family:"Archivo Narrow",sans-serif;font-size:21px}
+.card .fam{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase}
+.card p{margin:6px 0 0;font-size:15px;color:var(--muted);line-height:1.45}
+.card .ex{font-size:14px;margin-top:6px;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.tag{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:15.5px;cursor:pointer;color:var(--ink);font-family:inherit}
+.tag:hover{border-color:var(--a)} .tag.on{background:var(--a);border-color:var(--a);color:#fff}
+.tag.fit{border-color:var(--a)} .tag.clash{border-style:dashed}
+.rules{background:var(--a-soft);border-left:5px solid var(--a);border-radius:6px;padding:12px 16px;margin-top:12px;font-size:16px}
+.rules b{display:block;font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--a);margin-bottom:4px}
+.note{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:12px 15px;margin-top:14px;font-size:16px}
+.note b{font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--warn);display:block;margin-bottom:3px}
+.score{background:var(--ok-soft);border:1px solid var(--ok);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:16px}
+.bad{background:var(--b-soft);border-color:var(--b)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:16px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:16.5px}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--ok)}
+footer{margin-top:26px;color:var(--muted);font-size:14.5px}
+.themebtn{position:fixed;right:14px;top:14px;z-index:5;font-family:inherit;font-size:14px;padding:7px 12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--muted);border-radius:6px;cursor:pointer}
+#printout{display:none}
+@media print{
+  @page{size:A4;margin:14mm 13mm}
+  body{background:#fff;color:#000;padding:0;font-size:10pt}
+  .wrap > :not(#printout){display:none!important}
+  .themebtn{display:none!important}
+  #printout{display:block!important}
+  #printout h1{font-size:17pt;margin:0 0 2mm;border-bottom:1.5pt solid #000;padding-bottom:2mm}
+  #printout h2{font-size:11.5pt;margin:5mm 0 1.5mm;border-bottom:.5pt solid #999;padding-bottom:1mm}
+  #printout .id{font-size:10pt;margin:0 0 3mm}
+  #printout .blk{margin:2mm 0;page-break-inside:avoid}
+  #printout .blk b{display:block;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;color:#444}
+  #printout table{font-size:9pt}
+  #printout .foot{margin-top:6mm;font-size:8pt;color:#444;border-top:.5pt solid #999;padding-top:2mm}
+}
+</style>
+</head>
+<body>
+<button class="themebtn" id="theme">&#9689; Theme</button>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Branding &middot; brand personality</p>
+  <h1>The twelve archetypes</h1>
+  <p class="sub">Jung found twelve characters that recur in every culture. Brands that are easy to
+  recognise have picked one and stayed with it. Here you choose a brand, place it with the model of
+  the session, and write the values and the essence line that go with the character you chose.</p>
+  <div class="plan">
+    <span>1 &middot; the brand</span><span>2 &middot; the diagnostic</span><span>3 &middot; the archetype</span>
+    <span>4 &middot; traits and voice</span><span>5 &middot; values</span><span>6 &middot; the essence line</span>
+    <span id="prog">nothing filled yet</span>
+  </div>
+</header>
+
+<!-- ============================================================== 1 -->
+<section>
+  <h2><span class="n">1</span>The brand</h2>
+  <p class="hint">A brand everybody in the room knows works best for learning; your own case brand
+  works best for your project. Pick one or type it.</p>
+  <div class="brands" id="brands"></div>
+  <div class="grid2">
+    <div>
+      <label class="f" for="brand">Brand</label>
+      <input type="text" id="brand" data-k placeholder="e.g. Mercedes-Benz">
+      <label class="f" for="cat">Category, and what it sells</label>
+      <input type="text" id="cat" data-k placeholder="e.g. premium cars, and the status of arriving in one">
+    </div>
+    <div>
+      <label class="f" for="who">Who it is for, in their own words</label>
+      <textarea id="who" data-k placeholder="e.g. people who have made it and want it to be visible without being shouted"></textarea>
+    </div>
+  </div>
+  <div class="rules"><b>Two examples from the slide</b>Mercedes &mdash; leadership, success, importance
+  &mdash; sits in the <b>Ruler</b>. Dove &mdash; innocence and optimism &mdash; sits in the
+  <b>Innocent</b>. Neither of them chose twelve characters: they chose one.</div>
+</section>
+
+<!-- ============================================================== 2 -->
+<section>
+  <h2><span class="n">2</span>The diagnostic: what moves this brand?</h2>
+  <p class="hint">Six forced choices. Answer for the brand as it <b>behaves</b>, not as its
+  advertising says it is. The four motivations are the four families of the model:
+  <b>Freedom</b>, <b>Ego</b>, <b>Social</b> and <b>Order</b>.</p>
+  <div id="quiz"></div>
+  <div class="bars" id="profile"></div>
+  <div id="diagOut"></div>
+</section>
+
+<!-- ============================================================== 3 -->
+<section>
+  <h2><span class="n">3</span>The archetype</h2>
+  <p class="hint" id="archHint">Answer the six questions and the three archetypes of the leading
+  motivation appear here, with what each one promises and what it fears. Pick the primary one.</p>
+  <div class="row" style="margin-top:8px">
+    <button class="btn ghost" id="btnAll">Show all twelve</button>
+    <span class="hint" id="pickState"></span>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div id="archWarn"></div>
+  <div class="grid2">
+    <div>
+      <label class="f" for="evidence">The evidence: two things the brand does that prove this archetype</label>
+      <textarea id="evidence" data-k placeholder="e.g. the grille is the same shape it was in 1933; the ads never mention the price"></textarea>
+    </div>
+    <div>
+      <label class="f" for="second">Secondary archetype, if it has one (optional)</label>
+      <select id="second" data-k><option value="">none</option></select>
+      <label class="f" for="override">If you disagreed with the diagnostic, why is it wrong here?</label>
+      <input type="text" id="override" data-k placeholder="only if your choice is not the leading motivation">
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== 4 -->
+<section>
+  <h2><span class="n">4</span>Traits and voice</h2>
+  <p class="hint">Pick <b>five</b> adjectives, no more. The ones that fit your archetype are outlined;
+  the rest are still allowed, but a trait that contradicts the character is a decision, not an accident.</p>
+  <div class="tags" id="traits"></div>
+  <div id="traitOut"></div>
+  <div class="grid2">
+    <div>
+      <label class="f" for="voice">How it speaks, in one line</label>
+      <input type="text" id="voice" data-k placeholder="e.g. short sentences, no slang, never explains itself twice">
+    </div>
+    <div>
+      <label class="f" for="never">One thing it would never say</label>
+      <input type="text" id="never" data-k placeholder="e.g. “bargain”, or anything with an exclamation mark">
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== 5 -->
+<section>
+  <h2><span class="n">5</span>Brand values</h2>
+  <p class="hint">Pick <b>three to five</b> from the list, then write the behaviour that proves each
+  one. A value with no behaviour behind it is a poster, and the room can tell.</p>
+  <div class="tags" id="values"></div>
+  <div id="valueOut"></div>
+  <table id="valTable"></table>
+  <div class="note"><b>The test of a value</b>If the opposite is unthinkable for any brand in the
+  category &mdash; nobody claims to be dishonest &mdash; the value says nothing. Keep the ones a
+  competitor could honestly refuse to sign.</div>
+</section>
+
+<!-- ============================================================== 6 -->
+<section>
+  <h2><span class="n">6</span>The essence line</h2>
+  <p class="hint">The composite model of the session, in five lines: the benefit, what makes it
+  credible, what separates it, the values and the personality &mdash; and then the one line that holds
+  them together, like <i>Coca-Cola: sharing and happiness</i> or <i>Apple: empowering people through
+  technology</i>.</p>
+  <div class="grid2">
+    <div>
+      <label class="f" for="benefit">Benefit delivered to the customer</label>
+      <input type="text" id="benefit" data-k placeholder="what they get, in their words">
+      <label class="f" for="subst">Substantiator: the fact that makes it believable</label>
+      <input type="text" id="subst" data-k placeholder="the proof, not the promise">
+      <label class="f" for="diff">Differentiation: what the others cannot say</label>
+      <input type="text" id="diff" data-k placeholder="and that is true">
+    </div>
+    <div>
+      <label class="f" for="essence">The essence, in three to six words</label>
+      <input type="text" id="essence" data-k placeholder="e.g. engineered authority">
+      <label class="f" for="team">Group and members</label>
+      <input type="text" id="team" data-k placeholder="e.g. Group 4 - Ana, Marco, Lucia, Tom">
+      <label class="f" for="sect">Section and date</label>
+      <input type="text" id="sect" data-k placeholder="e.g. BBA1 section B, 20 Oct 2026">
+    </div>
+  </div>
+  <div id="verdict"></div>
+  <h3>Before you hand it in</h3>
+  <div id="checks"></div>
+  <div class="row">
+    <button class="btn solid" id="btnPdf">Download the PDF</button>
+    <button class="btn" id="btnSave">Save the draft</button>
+    <button class="btn" id="btnLoad">Load the draft</button>
+    <button class="btn ghost" id="btnReset">Clear everything</button>
+    <span class="hint" id="saveState"></span>
+  </div>
+</section>
+
+<footer>
+  Brand personality &middot; Marketing Fundamentals 26-27 &middot; IE University. The twelve archetypes
+  follow Jung as the Brand management chapter presents them, grouped in the four motivations of the
+  slide &mdash; Freedom, Ego, Social, Order &mdash; with Mark and Pearson's reading of each character;
+  the essence line follows the composite brand-essence model of the same chapter. Nothing you type
+  leaves this device.
+</footer>
+
+<div id="printout"></div>
+</div>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const KEY = 'mf26_brand_personality_v1';
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---------------------------------------------------------------- the model
+const FAM = {
+  freedom: { t: 'Freedom', c: '--f1', want: 'to understand, to discover, to be left alone to live well' },
+  ego: { t: 'Ego', c: '--f2', want: 'to leave a mark: to win, to change things, to be powerful' },
+  social: { t: 'Social', c: '--f3', want: 'to belong, to be loved, to enjoy the company of others' },
+  order: { t: 'Order', c: '--f4', want: 'to keep things safe, cared for and lasting' },
+};
+
+const ARCH = [
+  { k: 'innocent', n: 'Innocent', es: 'Inocente', f: 'freedom',
+    promise: 'that life can be simple and good, and that you do not have to be cynical to be an adult',
+    fear: 'doing something wrong, being punished, complexity',
+    traits: ['honest', 'optimistic', 'simple', 'gentle', 'pure', 'warm'],
+    ex: 'Dove, Innocent drinks, Mercadona in its own way' },
+  { k: 'sage', n: 'Sage', es: 'Sabio', f: 'freedom',
+    promise: 'the truth, and the tools to think for yourself',
+    fear: 'being wrong, being fooled, ignorance',
+    traits: ['rigorous', 'clear', 'curious', 'calm', 'expert', 'objective'],
+    ex: 'Google, The Economist, Coursera' },
+  { k: 'explorer', n: 'Explorer', es: 'Explorador', f: 'freedom',
+    promise: 'the horizon: a better life somewhere you have not been yet',
+    fear: 'being trapped, conforming, emptiness inside',
+    traits: ['independent', 'restless', 'authentic', 'rugged', 'honest', 'adventurous'],
+    ex: 'The North Face, Jeep, Patagonia' },
+  { k: 'hero', n: 'Hero', es: 'Héroe', f: 'ego',
+    promise: 'that effort wins, and that you can be the one who delivers',
+    fear: 'weakness, losing, being irrelevant',
+    traits: ['determined', 'brave', 'disciplined', 'competitive', 'direct', 'strong'],
+    ex: 'Nike, Adidas, Duracell' },
+  { k: 'outlaw', n: 'Outlaw', es: 'Fuera de la ley', f: 'ego',
+    promise: 'that the rules deserve breaking, and that you are not one of them',
+    fear: 'being powerless, being ordinary, being absorbed',
+    traits: ['rebellious', 'raw', 'provocative', 'free', 'tough', 'unapologetic'],
+    ex: 'Harley-Davidson, Diesel, early Virgin' },
+  { k: 'magician', n: 'Magician', es: 'Mago', f: 'ego',
+    promise: 'transformation: something that was impossible a moment ago',
+    fear: 'unintended consequences, being exposed as a trick',
+    traits: ['visionary', 'inventive', 'charismatic', 'surprising', 'intuitive', 'bold'],
+    ex: 'Apple, Tesla, Disney' },
+  { k: 'lover', n: 'Lover', es: 'Amante', f: 'social',
+    promise: 'beauty, intimacy and being wanted',
+    fear: 'being unwanted, unloved, plain',
+    traits: ['sensual', 'elegant', 'intimate', 'passionate', 'refined', 'warm'],
+    ex: 'Chanel, Häagen-Dazs, Victoria’s Secret' },
+  { k: 'jester', n: 'Jester', es: 'Bufón', f: 'social',
+    promise: 'that life is to be enjoyed now, and that nobody has to take it so seriously',
+    fear: 'being bored, or boring',
+    traits: ['playful', 'irreverent', 'quick', 'light', 'funny', 'spontaneous'],
+    ex: 'Old Spice, Ben & Jerry’s, Ryanair on social media' },
+  { k: 'everyman', n: 'Everyman', es: 'Hombre corriente', f: 'social',
+    promise: 'that you belong exactly as you are, with no entry test',
+    fear: 'standing out for the wrong reason, being excluded',
+    traits: ['down-to-earth', 'friendly', 'fair', 'unpretentious', 'reliable', 'inclusive'],
+    ex: 'IKEA, Decathlon, Lidl' },
+  { k: 'caregiver', n: 'Caregiver', es: 'Cuidador', f: 'order',
+    promise: 'that somebody is looking after you, and after the people you look after',
+    fear: 'selfishness, letting somebody down',
+    traits: ['protective', 'generous', 'patient', 'attentive', 'reassuring', 'responsible'],
+    ex: 'Johnson’s, Volvo, Nivea' },
+  { k: 'creator', n: 'Creator', es: 'Creador', f: 'order',
+    promise: 'that you can make something of lasting value, and that the craft matters',
+    fear: 'mediocrity, an unrealised idea',
+    traits: ['imaginative', 'meticulous', 'expressive', 'original', 'demanding', 'crafted'],
+    ex: 'Lego, Adobe, Moleskine' },
+  { k: 'ruler', n: 'Ruler', es: 'Dominador / Gobernante', f: 'order',
+    promise: 'control, order and a standard everybody else is measured against',
+    fear: 'chaos, losing status, being overthrown',
+    traits: ['authoritative', 'prestigious', 'exacting', 'composed', 'commanding', 'enduring'],
+    ex: 'Mercedes-Benz, Rolex, Microsoft in the enterprise' },
+];
+const byKey = (k) => ARCH.find((a) => a.k === k);
+
+const QUIZ = [
+  { q: 'What does the brand promise above everything else?',
+    o: { freedom: 'Understanding, discovery, a simpler life', ego: 'Performance, transformation, winning',
+         social: 'Belonging, pleasure, laughter', order: 'Care, control, something that lasts' } },
+  { q: 'What does its customer most want to avoid?',
+    o: { freedom: 'Being trapped, or being fooled', ego: 'Being powerless, or being ordinary',
+         social: 'Being alone, or being left out', order: 'Chaos, risk, losing what they have' } },
+  { q: 'How does it actually talk?',
+    o: { freedom: 'Calm, curious, it explains', ego: 'Direct, challenging, confident',
+         social: 'Warm, playful, personal', order: 'Precise, reassuring, with authority' } },
+  { q: 'What would it never do?',
+    o: { freedom: 'Patronise you, or lock you in', ego: 'Play it safe',
+         social: 'Exclude anybody, or be cold', order: 'Improvise, or cut a corner' } },
+  { q: 'What is the moment it is bought for?',
+    o: { freedom: 'When you need to understand something, or get away', ego: 'When you need to win, or to change something',
+         social: 'When you want to be with people, or enjoy yourself', order: 'When it simply has to work, and keep working' } },
+  { q: 'If it disappeared tomorrow, what would be missed?',
+    o: { freedom: 'The horizon, and the explanation', ego: 'The edge, and the push',
+         social: 'The company, and the fun', order: 'The certainty, and the standard' } },
+];
+
+const VALUES = ['authenticity', 'excellence', 'simplicity', 'sustainability', 'craftsmanship', 'transparency',
+  'courage', 'curiosity', 'community', 'inclusion', 'freedom', 'innovation', 'tradition', 'performance',
+  'care', 'empathy', 'rigour', 'elegance', 'accessibility', 'safety', 'speed', 'independence', 'humility',
+  'ambition', 'generosity', 'discipline', 'creativity', 'wellbeing', 'fun', 'loyalty', 'prestige',
+  'responsibility', 'boldness', 'proximity', 'durability', 'fairness'];
+
+// which values sit naturally with which archetype, and which pull against it
+const VFIT = {
+  innocent: ['simplicity', 'transparency', 'care', 'wellbeing', 'honesty', 'accessibility', 'fairness'],
+  sage: ['rigour', 'curiosity', 'transparency', 'excellence', 'independence', 'responsibility'],
+  explorer: ['freedom', 'authenticity', 'independence', 'sustainability', 'durability', 'courage'],
+  hero: ['performance', 'discipline', 'ambition', 'courage', 'excellence', 'speed'],
+  outlaw: ['freedom', 'boldness', 'authenticity', 'courage', 'independence'],
+  magician: ['innovation', 'creativity', 'ambition', 'boldness', 'excellence'],
+  lover: ['elegance', 'craftsmanship', 'wellbeing', 'prestige', 'creativity'],
+  jester: ['fun', 'community', 'inclusion', 'proximity', 'boldness'],
+  everyman: ['accessibility', 'fairness', 'community', 'proximity', 'inclusion', 'humility'],
+  caregiver: ['care', 'empathy', 'safety', 'responsibility', 'generosity', 'wellbeing'],
+  creator: ['craftsmanship', 'creativity', 'excellence', 'durability', 'tradition', 'discipline'],
+  ruler: ['excellence', 'prestige', 'durability', 'discipline', 'tradition', 'responsibility'],
+};
+const VCLASH = {
+  ruler: ['accessibility', 'humility', 'fun'], everyman: ['prestige', 'elegance'],
+  outlaw: ['tradition', 'safety', 'discipline'], innocent: ['ambition', 'prestige', 'boldness'],
+  caregiver: ['ambition', 'speed'], sage: ['fun', 'boldness'], jester: ['rigour', 'prestige'],
+  hero: ['humility', 'proximity'], lover: ['accessibility', 'discipline'],
+  explorer: ['tradition', 'prestige'], magician: ['tradition', 'humility'], creator: ['speed', 'accessibility'],
+};
+
+const EXAMPLES = ['Mercedes-Benz', 'Dove', 'Nike', 'Zara', 'IKEA', 'Apple', 'Ryanair', 'Netflix',
+  'Harley-Davidson', 'Lego', 'Mercadona', 'Lululemon', 'Red Bull', 'The North Face'];
+
+// ---------------------------------------------------------------- state
+const ST = { ans: {}, arch: '', traits: [], values: [], showAll: false };
+
+function renderBrands() {
+  $('#brands').innerHTML = EXAMPLES.map((b) => `<button type="button" class="bchip" data-b="${esc(b)}">${esc(b)}</button>`).join('');
+  $$('.bchip').forEach((el) => el.addEventListener('click', () => {
+    $$('.bchip').forEach((x) => x.classList.toggle('on', x === el));
+    $('#brand').value = el.dataset.b;
+    sync();
+  }));
+}
+
+function renderQuiz() {
+  $('#quiz').innerHTML = QUIZ.map((q, i) => `<div class="q"><p class="qt">${i + 1}. ${esc(q.q)}</p>
+    <div class="opts4">${Object.keys(FAM).map((f) =>
+      `<button type="button" class="opt" data-q="${i}" data-f="${f}">${esc(q.o[f])}</button>`).join('')}</div></div>`).join('');
+  $$('.opt').forEach((el) => el.addEventListener('click', () => {
+    ST.ans[el.dataset.q] = el.dataset.f;
+    $$(`.opt[data-q="${el.dataset.q}"]`).forEach((x) => x.classList.toggle('on', x === el));
+    renderProfile(); renderCards(); sync();
+  }));
+}
+
+function tally() {
+  const t = { freedom: 0, ego: 0, social: 0, order: 0 };
+  Object.values(ST.ans).forEach((f) => { t[f]++; });
+  return t;
+}
+function leaders() {
+  const t = tally();
+  const max = Math.max(...Object.values(t));
+  return max === 0 ? [] : Object.keys(t).filter((f) => t[f] === max);
+}
+
+function renderProfile() {
+  const t = tally(), answered = Object.keys(ST.ans).length;
+  $('#profile').innerHTML = Object.keys(FAM).map((f) =>
+    `<div class="bar"><div class="t">${FAM[f].t}</div>
+      <div class="g"><i style="width:${answered ? (t[f] / 6 * 100).toFixed(0) : 0}%;background:var(${FAM[f].c})"></i></div>
+      <div>${t[f]}</div></div>`).join('');
+  const out = $('#diagOut');
+  if (answered < 6) { out.className = 'hint'; out.textContent = answered + ' of 6 answered.'; return; }
+  const L = leaders();
+  out.className = 'score';
+  out.innerHTML = L.length === 1
+    ? `<b>${FAM[L[0]].t} leads.</b> This brand is bought by somebody who wants ${FAM[L[0]].want}. Its three archetypes are below.`
+    : `<b>A tie between ${L.map((f) => FAM[f].t).join(' and ')}.</b> That is common and it is informative: the brand is either positioned across two motivations on purpose, or it has not decided. Both sets of archetypes are below.`;
+}
+
+function renderCards() {
+  const L = leaders();
+  const list = (ST.showAll || !L.length) ? ARCH : ARCH.filter((a) => L.includes(a.f));
+  $('#archHint').textContent = L.length
+    ? (ST.showAll ? 'All twelve. The ones outside the leading motivation are allowed, but you then have to say why the diagnostic is wrong.'
+                  : 'The archetypes of the leading motivation. Pick the primary one, or show all twelve.')
+    : 'Answer the six questions and the three archetypes of the leading motivation appear here, with what each one promises and what it fears. Pick the primary one.';
+  $('#cards').innerHTML = list.map((a) => `<div class="card${ST.arch === a.k ? ' on' : ''}" data-a="${a.k}">
+    <span class="fam" style="color:var(${FAM[a.f].c})">${FAM[a.f].t}</span>
+    <b>${esc(a.n)} <span class="hint" style="font-size:15px">(${esc(a.es)})</span></b>
+    <p><b>Promises:</b> ${esc(a.promise)}</p>
+    <p><b>Fears:</b> ${esc(a.fear)}</p>
+    <p class="ex"><b>Like:</b> ${esc(a.ex)}</p></div>`).join('');
+  $$('.card').forEach((el) => el.addEventListener('click', () => {
+    ST.arch = el.dataset.a; renderCards(); renderTraits(); renderValues(); sync();
+  }));
+  const sel = $('#second');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">none</option>' + ARCH.filter((a) => a.k !== ST.arch)
+    .map((a) => `<option value="${a.k}"${cur === a.k ? ' selected' : ''}>${esc(a.n)} (${FAM[a.f].t})</option>`).join('');
+  const w = $('#archWarn');
+  if (ST.arch && L.length && !L.includes(byKey(ST.arch).f)) {
+    w.className = 'note';
+    w.innerHTML = `<b>Your choice is not where the diagnostic points</b>You picked <b>${esc(byKey(ST.arch).n)}</b>
+      (${FAM[byKey(ST.arch).f].t}) while the answers lead to ${L.map((f) => FAM[f].t).join(' / ')}. That is allowed - the
+      diagnostic is six questions, not an oracle - but write below why it is wrong for this brand.`;
+  } else { w.className = ''; w.innerHTML = ''; }
+  $('#pickState').textContent = ST.arch ? 'primary: ' + byKey(ST.arch).n : 'no archetype picked yet';
+}
+
+function renderTraits() {
+  const a = ST.arch ? byKey(ST.arch) : null;
+  const pool = [...new Set([...(a ? a.traits : []), 'honest', 'bold', 'quiet', 'premium', 'friendly',
+    'serious', 'playful', 'technical', 'warm', 'cool', 'generous', 'exacting', 'modest', 'loud',
+    'reassuring', 'provocative', 'elegant', 'practical'])];
+  $('#traits').innerHTML = pool.map((t) => {
+    const fit = a && a.traits.includes(t);
+    return `<button type="button" class="tag${ST.traits.includes(t) ? ' on' : ''}${fit ? ' fit' : ''}" data-t="${esc(t)}">${esc(t)}</button>`;
+  }).join('');
+  $$('#traits .tag').forEach((el) => el.addEventListener('click', () => {
+    const t = el.dataset.t;
+    if (ST.traits.includes(t)) ST.traits = ST.traits.filter((x) => x !== t);
+    else if (ST.traits.length < 5) ST.traits.push(t);
+    renderTraits(); sync();
+  }));
+  const o = $('#traitOut');
+  const off = a ? ST.traits.filter((t) => !a.traits.includes(t)) : [];
+  o.className = ST.traits.length === 5 ? 'score' : 'hint';
+  o.innerHTML = ST.traits.length
+    ? `<b>${ST.traits.length} of 5:</b> ${ST.traits.map(esc).join(' &middot; ')}`
+      + (off.length && a ? `<br><span class="hint">Outside the ${esc(a.n)}'s usual register: ${off.map(esc).join(', ')}. Keep them if they are deliberate.</span>` : '')
+    : 'None picked yet. Five, no more - a brand with nine adjectives has none.';
+}
+
+function renderValues() {
+  const a = ST.arch ? byKey(ST.arch) : null;
+  const fit = a ? (VFIT[a.k] || []) : [];
+  const clash = a ? (VCLASH[a.k] || []) : [];
+  $('#values').innerHTML = VALUES.map((v) => {
+    const cls = ST.values.includes(v) ? ' on' : (fit.includes(v) ? ' fit' : (clash.includes(v) ? ' clash' : ''));
+    return `<button type="button" class="tag${cls}" data-v="${esc(v)}">${esc(v)}</button>`;
+  }).join('');
+  $$('#values .tag').forEach((el) => el.addEventListener('click', () => {
+    const v = el.dataset.v;
+    if (ST.values.includes(v)) ST.values = ST.values.filter((x) => x !== v);
+    else if (ST.values.length < 5) ST.values.push(v);
+    renderValues(); sync();
+  }));
+  const tension = ST.values.filter((v) => clash.includes(v));
+  const o = $('#valueOut');
+  o.className = ST.values.length >= 3 ? 'score' : 'hint';
+  o.innerHTML = ST.values.length
+    ? `<b>${ST.values.length} picked:</b> ${ST.values.map(esc).join(' &middot; ')}`
+      + (tension.length ? `<br><span class="hint">In tension with the ${esc(a.n)}: ${tension.map(esc).join(', ')}. Not forbidden - say in the behaviour line how you resolve it.</span>` : '')
+    : 'None picked yet. Three to five.';
+  const rows = ST.values.map((v) => `<tr><td><b>${esc(v)}</b></td>
+    <td><input type="text" data-k id="vb_${v}" placeholder="the behaviour that proves it: something the brand does, or refuses to do"></td></tr>`).join('');
+  const old = {};
+  $$('#valTable input').forEach((i) => { old[i.id] = i.value; });
+  $('#valTable').innerHTML = rows ? `<tr><th>Value</th><th>How it shows up</th></tr>${rows}` : '';
+  $$('#valTable input').forEach((i) => { if (old[i.id]) i.value = old[i.id]; });
+}
+
+// ---------------------------------------------------------------- progress and checks
+const REQUIRED = [['brand', 'the brand'], ['cat', 'the category'], ['who', 'who it is for'],
+  ['evidence', 'the evidence for the archetype'], ['voice', 'how it speaks'], ['never', 'what it would never say'],
+  ['benefit', 'the benefit'], ['subst', 'the substantiator'], ['diff', 'the differentiation'],
+  ['essence', 'the essence line'], ['team', 'the group names']];
+
+function filled(id) { const el = $('#' + id); return el && String(el.value || '').trim() !== ''; }
+
+function verdict() {
+  const missing = REQUIRED.filter(([id]) => !filled(id)).map(([, l]) => l);
+  if (Object.keys(ST.ans).length < 6) missing.unshift('the six diagnostic answers');
+  if (!ST.arch) missing.unshift('the primary archetype');
+  if (ST.traits.length < 5) missing.push('five traits');
+  if (ST.values.length < 3) missing.push('at least three values');
+  const noBehaviour = ST.values.filter((v) => { const el = $('#vb_' + v); return !el || !el.value.trim(); });
+  if (noBehaviour.length) missing.push('a behaviour for ' + noBehaviour.join(', '));
+  const total = REQUIRED.length + 4;
+  $('#prog').textContent = missing.length ? (missing.length + ' still open') : 'complete';
+  const v = $('#verdict');
+  if (!missing.length) {
+    v.className = 'score';
+    v.innerHTML = '<b>Complete.</b> Read the sheet aloud: if the archetype, the five traits and the essence '
+      + 'line do not sound like the same brand, one of the three is wrong.';
+  } else {
+    v.className = 'score bad';
+    v.innerHTML = '<b>' + missing.length + ' still open:</b> ' + missing.slice(0, 7).map(esc).join(' &middot; ')
+      + (missing.length > 7 ? ' &middot; and ' + (missing.length - 7) + ' more' : '');
+  }
+  return total;
+}
+
+const CHECKS = [
+  'The archetype was chosen from how the brand behaves, not from how we would like it to be.',
+  'Two concrete things the brand does are written as evidence.',
+  'There are five traits, not nine.',
+  'Every value has a behaviour that proves it, and a competitor could honestly refuse to sign it.',
+  'Any value in tension with the archetype is resolved in writing.',
+  'The essence line would still make sense with the logo removed.',
+];
+function renderChecks() {
+  $('#checks').innerHTML = CHECKS.map((c, i) => `<label class="check"><input type="checkbox" data-k id="ck${i}">
+    <span>${esc(c)}</span></label>`).join('');
+}
+
+// ---------------------------------------------------------------- the printed sheet
+function blk(label, value) {
+  const v = String(value || '').trim();
+  return v ? `<div class="blk"><b>${esc(label)}</b>${esc(v)}</div>` : '';
+}
+function buildPrint() {
+  const val = (id) => ($('#' + id) ? $('#' + id).value : '');
+  const a = ST.arch ? byKey(ST.arch) : null;
+  const t = tally();
+  const sec = $('#second').value ? byKey($('#second').value) : null;
+  const vals = ST.values.map((v) => `<tr><td>${esc(v)}</td><td>${esc(($('#vb_' + v) || {}).value || '')}</td></tr>`).join('');
+  $('#printout').innerHTML = `
+    <h1>Brand personality &mdash; ${esc(val('brand') || 'untitled brand')}</h1>
+    <p class="id">${esc(val('team'))}${val('sect') ? ' &middot; ' + esc(val('sect')) : ''}
+      &middot; the twelve archetypes, Marketing Fundamentals 26-27</p>
+    <h2>1. The brand</h2>
+    ${blk('Category', val('cat'))}${blk('Who it is for', val('who'))}
+    <h2>2. The diagnostic</h2>
+    ${blk('Motivation profile', Object.keys(FAM).map((f) => FAM[f].t + ' ' + t[f]).join(' / ') + ' (out of 6)')}
+    <h2>3. The archetype</h2>
+    ${a ? blk('Primary', a.n + ' (' + a.es + ') - ' + FAM[a.f].t) : ''}
+    ${a ? blk('It promises', a.promise) : ''}${a ? blk('It fears', a.fear) : ''}
+    ${sec ? blk('Secondary', sec.n + ' (' + FAM[sec.f].t + ')') : ''}
+    ${blk('Evidence', val('evidence'))}${blk('Why the diagnostic was overridden', val('override'))}
+    <h2>4. Traits and voice</h2>
+    ${blk('Five traits', ST.traits.join(' / '))}${blk('How it speaks', val('voice'))}${blk('It would never say', val('never'))}
+    <h2>5. Values</h2>
+    ${vals ? `<table><tr><th>Value</th><th>How it shows up</th></tr>${vals}</table>` : ''}
+    <h2>6. The essence</h2>
+    ${blk('Benefit', val('benefit'))}${blk('Substantiator', val('subst'))}${blk('Differentiation', val('diff'))}
+    ${blk('Essence line', val('essence'))}
+    <p class="foot">The twelve archetypes after Jung as presented in the Brand management chapter,
+    in the four motivations of the slide, with Mark and Pearson's reading of each character; the essence
+    line after the composite brand-essence model. Printed from the lab, no data left the device.</p>`;
+}
+
+// ---------------------------------------------------------------- state in and out
+function state() {
+  const o = { _st: { ans: ST.ans, arch: ST.arch, traits: ST.traits, values: ST.values } };
+  $$('[data-k]').forEach((el) => { o[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
+  return o;
+}
+function restore(o) {
+  if (!o) return;
+  if (o._st) { ST.ans = o._st.ans || {}; ST.arch = o._st.arch || ''; ST.traits = o._st.traits || []; ST.values = o._st.values || []; }
+  renderProfile(); renderCards(); renderTraits(); renderValues();
+  Object.keys(o).forEach((id) => {
+    if (id === '_st') return;
+    const el = $('#' + id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!o[id]; else el.value = o[id];
+  });
+  Object.entries(ST.ans).forEach(([q, f]) => {
+    const el = document.querySelector(`.opt[data-q="${q}"][data-f="${f}"]`);
+    if (el) { $$(`.opt[data-q="${q}"]`).forEach((x) => x.classList.remove('on')); el.classList.add('on'); }
+  });
+  sync();
+}
+function sync() {
+  verdict();
+  try { localStorage.setItem(KEY + '_auto', JSON.stringify(state())); } catch (e) {}
+}
+
+// ---------------------------------------------------------------- wiring
+renderBrands(); renderQuiz(); renderProfile(); renderCards(); renderTraits(); renderValues(); renderChecks();
+document.addEventListener('input', sync);
+document.addEventListener('change', sync);
+$('#btnAll').addEventListener('click', () => {
+  ST.showAll = !ST.showAll;
+  $('#btnAll').textContent = ST.showAll ? 'Show only the leading motivation' : 'Show all twelve';
+  renderCards();
+});
+$('#btnPdf').addEventListener('click', () => { buildPrint(); window.print(); });
+window.addEventListener('beforeprint', buildPrint);
+$('#btnSave').addEventListener('click', () => {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state()));
+    $('#saveState').textContent = 'draft saved on this device, ' + new Date().toLocaleTimeString();
+  } catch (e) { $('#saveState').textContent = 'the browser would not save it (private window?)'; }
+});
+$('#btnLoad').addEventListener('click', () => {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) { $('#saveState').textContent = 'no saved draft on this device'; return; }
+    restore(JSON.parse(raw));
+    $('#saveState').textContent = 'draft loaded';
+  } catch (e) { $('#saveState').textContent = 'the saved draft could not be read'; }
+});
+$('#btnReset').addEventListener('click', () => {
+  if (!confirm('Clear every field on this page? The saved draft stays.')) return;
+  ST.ans = {}; ST.arch = ''; ST.traits = []; ST.values = [];
+  $$('[data-k]').forEach((el) => { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+  $$('.bchip').forEach((x) => x.classList.remove('on'));
+  $$('.opt').forEach((x) => x.classList.remove('on'));
+  renderProfile(); renderCards(); renderTraits(); renderValues();
+  $('#saveState').textContent = 'cleared';
+  sync();
+});
+$('#theme').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+});
+try {
+  const auto = localStorage.getItem(KEY + '_auto');
+  if (auto) restore(JSON.parse(auto));
+} catch (e) {}
+sync();
+</script>
+</body>
+</html>
