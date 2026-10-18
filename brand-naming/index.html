@@ -264,35 +264,43 @@ function show(which){['landing','teacher','student'].forEach(id=>$('#'+id).class
 
 /* ---------- MQTT: the transport a class can use (public brokers, no account) ---------- */
 const MQTT_URLS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://test.mosquitto.org:8081/mqtt'];
-let mq=null, mqReady=false, mqUrl='';
+let MQS=[], mqReady=false, mqUrl='';
 const mqTopic=c=>'mf26naming/'+String(c||'').trim().toUpperCase();
 
-function mqState(){return mqReady?('live on '+mqUrl.split('//')[1].split(':')[0]):'connecting...';}
+function mqState(){const n=MQS.filter(s=>s.ok).length;return n?('live on '+n+' broker'+(n>1?'s':'')):'connecting...';}
 
 function mqConnect(code,onMsg){
-  if(mq){try{mq.end(true);}catch(e){} mq=null; mqReady=false;}
-  if(typeof mqtt==='undefined') return;                 // library blocked: ntfy carries it
-  let i=0;
-  const tryNext=()=>{
-    if(i>=MQTT_URLS.length) return;
-    const url=MQTT_URLS[i++];
-    let c;
-    try{ c=mqtt.connect(url,{clientId:'mf26n-'+Math.random().toString(16).slice(2),keepalive:30,
-        reconnectPeriod:0,connectTimeout:6000,clean:true}); }catch(e){ return tryNext(); }
-    const giveUp=setTimeout(()=>{ if(!mqReady){ try{c.end(true);}catch(e){} tryNext(); } },7000);
-    c.on('connect',()=>{ clearTimeout(giveUp); mq=c; mqReady=true; mqUrl=url; setTimeout(flushOut,200);
-      try{ c.subscribe(mqTopic(code),{qos:0}); }catch(e){} });
-    c.on('message',(t,payload)=>{ try{ onMsg(payload.toString()); }catch(e){} });
-    c.on('error',()=>{ clearTimeout(giveUp); if(!mqReady){ try{c.end(true);}catch(e){} tryNext(); } });
-    c.on('close',()=>{ if(mq===c){ mqReady=false; mq=null; setTimeout(()=>mqConnect(code,onMsg),1500); } });
-  };
-  tryNext();
+  MQS.forEach(s=>{try{s.c&&s.c.end(true);}catch(e){}});
+  MQS=[]; mqReady=false;
+  if(typeof mqtt==='undefined') return;                 // the library is blocked: ntfy carries it
+  MQTT_URLS.forEach((url,idx)=>{
+    const slot={url,ok:false,c:null,tries:0};
+    MQS.push(slot);
+    const open=()=>{
+      if(slot.tries>8) return;
+      slot.tries++;
+      let c;
+      try{ c=mqtt.connect(url,{clientId:'mf26n-'+Math.random().toString(16).slice(2),keepalive:30,
+          reconnectPeriod:0,connectTimeout:8000,clean:true}); }catch(e){ return setTimeout(open,4000); }
+      slot.c=c;
+      const giveUp=setTimeout(()=>{ if(!slot.ok){ try{c.end(true);}catch(e){} setTimeout(open,4000); } },9000);
+      c.on('connect',()=>{ clearTimeout(giveUp); slot.ok=true; slot.tries=0; mqReady=true; mqUrl=url;
+        try{ c.subscribe(mqTopic(code),{qos:0}); }catch(e){}
+        if(typeof flushOut==='function') setTimeout(flushOut,200); });
+      c.on('message',(t,payload)=>{ try{ onMsg(payload.toString()); }catch(e){} });
+      c.on('error',()=>{ clearTimeout(giveUp); if(!slot.ok){ try{c.end(true);}catch(e){} setTimeout(open,4000); } });
+      c.on('close',()=>{ slot.ok=false; mqReady=MQS.some(s2=>s2.ok); setTimeout(open,2000); });
+    };
+    setTimeout(open,idx*150);                           // stagger, so three handshakes do not collide
+  });
 }
 
 function mqPublish(obj){
-  if(!mq||!mqReady) return false;
-  try{ mq.publish(mqTopic(S.room),JSON.stringify(obj),{qos:0,retain:!!obj.ctrl}); return true; }
-  catch(e){ return false; }
+  if(!MQS.length) return false;
+  const body=JSON.stringify(obj); const topic=mqTopic(S.room);
+  let sent=false;
+  MQS.forEach(s=>{ if(s.ok&&s.c){ try{ s.c.publish(topic,body,{qos:0,retain:!!obj.ctrl}); sent=true; }catch(e){} } });
+  return sent;
 }
 
 
