@@ -764,6 +764,10 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   why not &middot; the mix decisions point at the research &middot; the questionnaire and the discussion guide
   are in the appendix.</div>
   <div class="note" id="keepWork"><b>Keeping your work - read this once</b>
+    <p style="margin:4px 0 0">Closing the page, reloading it, or coming back the next day loses
+      nothing: this page writes itself into your browser after every change and reads it back when
+      it opens - it even survives a new version of the page being published. What it cannot survive
+      is a different computer, so:</p>
     <ol style="margin:6px 0 0;padding-left:20px">
       <li><b>8.3 Download the draft file</b> at the end of every session. That file is your project:
         it carries the boxes, the themes, the verdicts, the mix, <b>and the survey answers</b>, and it
@@ -2242,11 +2246,13 @@ function exportDraft() {
   draftState();
 }
 
-function draftState() {
+function draftState(how) {
   const el = $('#saveState');
   if (!el) return;
   const t = (d) => d.toLocaleTimeString().slice(0, 5);
-  el.innerHTML = 'in this browser: saved ' + (lastSaved ? t(lastSaved) : '-')
+  el.innerHTML = 'in this browser: '
+    + (how === 'recovered' ? 'recovered your work, last change ' : 'saved ')
+    + (lastSaved ? t(lastSaved) : '-')
     + ' &nbsp;|&nbsp; file: ' + (exportedAt ? 'downloaded ' + t(exportedAt)
       : '<b style="color:var(--warn)">not downloaded yet</b>');
 }
@@ -2479,7 +2485,12 @@ drawFlows();
 renderHyps(); renderMedia(); renderPrices(); renderDesc(); sources(); completeness(); p1Steps(); provenance();
 try {
   const auto = localStorage.getItem(KEY + '_auto');
-  if (auto) restore(JSON.parse(auto));
+  if (auto) {
+    const o = JSON.parse(auto);
+    restore(o);
+    lastSaved = o._when ? new Date(o._when) : new Date();
+    draftState('recovered');
+  }
 } catch (e) {}
 </script>
 </body>
