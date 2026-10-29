@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <!--
   Pitch 2 copilot, Marketing Fundamentals 26-27.
 
@@ -115,6 +117,15 @@ pre.out{background:var(--sunk);border:1px solid var(--line);border-radius:8px;pa
 .bar .g{background:var(--sunk);border-radius:999px;height:15px;overflow:hidden}
 .bar .g i{display:block;height:100%;background:var(--ind);border-radius:999px}
 footer{margin-top:22px;color:var(--muted);font-size:14px}
+.tabs{display:flex;gap:8px;margin:0 0 14px}
+.tab{font-family:inherit;font-size:16px;font-weight:600;padding:9px 18px;border:1.5px solid var(--line);
+  background:var(--surface);color:var(--muted);border-radius:999px;cursor:pointer}
+.tab:hover{border-color:var(--ind);color:var(--ind)}
+.tab.on{background:var(--ind);border-color:var(--ind);color:#fff}
+.hide{display:none!important}
+.demo-step{border-left:4px solid var(--ind);padding-left:14px;margin:18px 0}
+.demo-step h3{margin:0 0 4px}
+.demo-step .who{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ai)}
 .themebtn{position:fixed;right:12px;top:12px;z-index:20;font-family:inherit;font-size:13.5px;padding:6px 11px;border:1px solid var(--line);
   background:var(--surface);color:var(--muted);border-radius:6px;cursor:pointer}
 .save{position:fixed;right:12px;bottom:12px;z-index:20;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);
@@ -147,137 +158,217 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <a href="#s8">8 &middot; check and export</a>
 </nav>
 
+<div class="tabs" id="tabs">
+  <button class="tab on" data-view="work">The copilot</button>
+  <button class="tab" data-view="demo">A worked example</button>
+</div>
+
+<div id="view-work">
+<section id="how">
+  <h2>How this works</h2>
+  <p class="hint">You do not type your project in again. You hand the page what you already have, it
+  writes the prompt that reads it, and from there each step feeds the next: the objectives come from
+  Pitch 1, the discussion guide from the objectives, the questionnaire from what the interviews
+  found, the analysis from your answers, and every mix decision from the analysis. Anything you
+  prefer to write by hand, you write by hand, and the page starts from that instead.</p>
+  <div style="overflow-x:auto">
+  <svg viewBox="0 0 1180 300" style="width:100%;min-width:780px;height:auto;margin-top:10px" role="img"
+       aria-label="Upload Pitch 1, the assistant reads it, the page writes the instruments, you run the research, the page analyses it, the assistant refines the mix, and you download the Word document.">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+      </marker>
+      <style>
+        .bx{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+        .you{stroke:var(--ind);stroke-width:2}
+        .ai{stroke:var(--ai);stroke-width:2;stroke-dasharray:6 4}
+        .ttl{font:600 15px "IBM Plex Sans",sans-serif;fill:var(--ink)}
+        .sm{font:400 12.5px "IBM Plex Sans",sans-serif;fill:var(--muted)}
+        .tag{font:600 10.5px "IBM Plex Mono",monospace;letter-spacing:.08em}
+        .ln{stroke:var(--muted);stroke-width:1.6;fill:none;color:var(--muted)}
+      </style>
+    </defs>
+    <rect class="bx you" x="8" y="60" width="170" height="94" rx="10"/>
+    <text class="tag" x="22" y="84" fill="var(--ind)">YOU</text>
+    <text class="ttl" x="22" y="107">1. Upload Pitch 1</text>
+    <text class="sm" x="22" y="127">your document as it is:</text>
+    <text class="sm" x="22" y="144">Word, PDF or text</text>
+
+    <rect class="bx ai" x="206" y="60" width="170" height="94" rx="10"/>
+    <text class="tag" x="220" y="84" fill="var(--ai)">ASSISTANT</text>
+    <text class="ttl" x="220" y="107">2. It reads it</text>
+    <text class="sm" x="220" y="127">copy the prompt, paste</text>
+    <text class="sm" x="220" y="144">the answer back here</text>
+
+    <rect class="bx" x="404" y="60" width="170" height="94" rx="10"/>
+    <text class="tag" x="418" y="84" fill="var(--a)">THIS PAGE</text>
+    <text class="ttl" x="418" y="107">3. It writes</text>
+    <text class="sm" x="418" y="127">objectives, guide,</text>
+    <text class="sm" x="418" y="144">questionnaire, Google Form</text>
+
+    <rect class="bx you" x="602" y="60" width="170" height="94" rx="10"/>
+    <text class="tag" x="616" y="84" fill="var(--ind)">YOU</text>
+    <text class="ttl" x="616" y="107">4. You go out</text>
+    <text class="sm" x="616" y="127">2-3 interviews or one</text>
+    <text class="sm" x="616" y="144">focus group, then the survey</text>
+
+    <rect class="bx" x="800" y="60" width="170" height="94" rx="10"/>
+    <text class="tag" x="814" y="84" fill="var(--a)">THIS PAGE</text>
+    <text class="ttl" x="814" y="107">5. It analyses</text>
+    <text class="sm" x="814" y="127">describe, cross, segment,</text>
+    <text class="sm" x="814" y="144">the map and the price</text>
+
+    <rect class="bx ai" x="998" y="60" width="174" height="94" rx="10"/>
+    <text class="tag" x="1012" y="84" fill="var(--ai)">ASSISTANT</text>
+    <text class="ttl" x="1012" y="107">6. It refines</text>
+    <text class="sm" x="1012" y="127">one prompt per section,</text>
+    <text class="sm" x="1012" y="144">carrying your numbers</text>
+
+    <path class="ln" d="M178 107 H202" marker-end="url(#ar)"/>
+    <path class="ln" d="M376 107 H400" marker-end="url(#ar)"/>
+    <path class="ln" d="M574 107 H598" marker-end="url(#ar)"/>
+    <path class="ln" d="M772 107 H796" marker-end="url(#ar)"/>
+    <path class="ln" d="M970 107 H994" marker-end="url(#ar)"/>
+
+    <rect class="bx" x="404" y="212" width="372" height="64" rx="10" style="fill:var(--ok-soft);stroke:var(--ok)"/>
+    <text class="ttl" x="424" y="240">7. Download the Pitch 2 document</text>
+    <text class="sm" x="424" y="261">Word, with the tables, the appendices and your words</text>
+    <path class="ln" d="M1085 154 V192 H604 V208" marker-end="url(#ar)"/>
+  </svg>
+  </div>
+  <div class="rules"><b>The two rules</b>Nothing you paste leaves this browser, and nothing the
+  assistant says is taken on trust: every number in the document comes from your own data, and every
+  prompt on this page carries that data with it, so there is nothing for it to invent.</div>
+  <div class="row"><button class="btn" id="goDemo">See it done on a real case first</button></div>
+</section>
 <!-- ============================================================ 0 -->
 <section id="s0">
-  <h2><span class="n">0</span>What you already have</h2>
-  <p class="hint">Copy this from your Pitch 1 document. Everything below is built on it, and it all
-  goes into the final Word file.</p>
+  <h2><span class="n">0</span>Bring Pitch 1 in</h2>
+  <p class="hint">Upload what you handed in and the page does the rest: it pulls the text out,
+  writes the prompt that turns it into the pieces Pitch 2 needs, and reads the answer back. If you
+  would rather type a part, type it on the right - what is written there is what the page uses.</p>
   <div class="grid2">
+    <div>
+      <label class="f" for="p1file">1. Your Pitch 1 document</label>
+      <input type="file" id="p1file" accept=".docx,.pdf,.txt,.md">
+      <div class="hint" id="p1state" style="margin-top:6px">Word, PDF or plain text. It stays in this browser.</div>
+      <div class="row">
+        <button class="btn ai" id="p1Prompt" data-prompt="readPitch1">2. Copy the prompt that reads it</button>
+      </div>
+      <label class="f" for="p1paste">3. Paste the assistant's answer here</label>
+      <textarea id="p1paste" data-k rows="5" placeholder="paste the whole answer - the page takes the JSON block out of it"></textarea>
+      <div class="row"><button class="btn solid" id="p1Read">4. Read it into the page</button>
+        <span class="hint" id="p1Read2"></span></div>
+      <div id="p1Card"></div>
+    </div>
     <div>
       <label class="f" for="team">Group and members</label>
       <input type="text" id="team" data-k placeholder="e.g. Group 4 - Ana, Marco, Lucia, Tom">
-      <label class="f" for="brandwork">Working name of the product, service or brand</label>
+      <label class="f" for="brandwork">Working name</label>
       <input type="text" id="brandwork" data-k placeholder="the name you used in Pitch 1">
       <label class="f" for="offer">What it is, in one line</label>
       <input type="text" id="offer" data-k placeholder="what it offers and how it is used">
-    </div>
-    <div>
-      <label class="f" for="targets">Targets selected in Pitch 1</label>
-      <textarea id="targets" data-k placeholder="one per line: who they are and what they need"></textarea>
+      <label class="f" for="targets">Targets, one per line</label>
+      <textarea id="targets" data-k rows="2" placeholder="who they are and what they need"></textarea>
       <label class="f" for="posstat">Positioning statement from Pitch 1</label>
-      <textarea id="posstat" data-k placeholder="For [target] who [need], [brand] provides [benefit] unlike [competitor], because [reason to believe]"></textarea>
+      <textarea id="posstat" data-k rows="2" placeholder="For [target] who [need], [brand] provides [benefit] unlike [competitor], because [reason to believe]"></textarea>
+      <div class="grid2">
+        <div><label class="f" for="competitors">Competing brands</label>
+          <textarea id="competitors" data-k rows="2" placeholder="one per line"></textarea></div>
+        <div><label class="f" for="attrs">Attributes of your hypothesised map</label>
+          <textarea id="attrs" data-k rows="2" placeholder="one per line"></textarea></div>
+      </div>
     </div>
-  </div>
-  <h3>The hypotheses you wrote in Pitch 1</h3>
-  <p class="hint">One per row. These drive the research objectives, the discussion guide, the
-  questionnaire and the verdicts, so write them as they are in your document.</p>
-  <div id="hyps"></div>
-  <div class="row">
-    <button class="btn sm" id="addHyp">+ Add a hypothesis</button>
-    <span class="hint" id="hypCount"></span>
   </div>
 </section>
 
 <!-- ============================================================ 1 -->
 <section id="s1">
-  <h2><span class="n">1</span>Research objectives<span class="pct">part 1 &middot; 5%</span></h2>
-  <p class="hint">One objective per hypothesis, covering segmentation and product validation. The
-  page drafts them from your hypotheses; rewrite them in your own words.</p>
-  <div class="row"><button class="btn sm" id="draftObj">Draft them from the hypotheses</button></div>
+  <h2><span class="n">1</span>What Pitch 2 has to settle<span class="pct">part 1 &middot; 5%</span></h2>
+  <p class="hint">Not a list of hypotheses: the decisions still open, in the four blocks the pitch is
+  graded on - <b>segmentation</b>, <b>positioning</b>, <b>the offer</b>, and <b>price, place and
+  promotion</b>. Everything after this exists to close them.</p>
+  <div class="row"><button class="btn" id="draftObj">Draft them from Pitch 1</button>
+    <span class="hint">then cut anything you cannot research in two weeks</span></div>
   <label class="f" for="objectives">Research objectives</label>
-  <textarea id="objectives" data-k rows="6" placeholder="one per line"></textarea>
-  <div class="aibox"><b>Prompt to check them</b>
-    <p class="hint" style="margin:0 0 6px">Paste this into your assistant with the text above.</p>
+  <textarea id="objectives" data-k rows="8" placeholder="one per line"></textarea>
+  <div class="aibox"><b>Prompt to sharpen them</b>
     <button class="btn ai sm" data-prompt="objectives">Copy the prompt</button></div>
 </section>
 
 <!-- ============================================================ 2 -->
 <section id="s2">
   <h2><span class="n">2</span>Qualitative research<span class="pct">part 1 &middot; 10%</span></h2>
-  <p class="hint">At least one technique: in-depth interviews, a focus group or observation. The
-  guide asks for who you spoke to, how you recruited them, the discussion guide in the appendix, and
-  findings with evidence.</p>
+  <p class="hint">Small and well done: <b>two or three interviews</b>, or <b>one focus group</b>.
+  Enough to hear the words your customers use, which is what the questionnaire is then built from.</p>
   <div class="grid2">
     <div>
-      <label class="f">Technique</label>
+      <label class="f">What you will run</label>
       <div class="opts">
-        <label class="chk"><input type="checkbox" data-k id="q_int"><span>In-depth interviews<small>6 to 10, one at a time</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="q_fg"><span>Focus group<small>6 to 8 people, one session</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="q_obs"><span>Observation<small>watch the behaviour where it happens</small></span></label>
+        <label class="chk on"><input type="checkbox" data-k id="q_int" checked><span>Two or three interviews<small>20-30 minutes each</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="q_fg"><span>One focus group<small>6 to 8 people, 45 minutes</small></span></label>
+        <label class="chk"><input type="checkbox" data-k id="q_obs"><span>Some observation<small>watch, do not ask</small></span></label>
       </div>
-      <label class="f" for="qwho">Who you spoke to, how many, and how you recruited them</label>
-      <textarea id="qwho" data-k placeholder="e.g. 8 students aged 18-24 who cook at home, recruited in the campus canteen over two days"></textarea>
-    </div>
-    <div>
+      <label class="f" for="qwho">Who you spoke to and how you found them</label>
+      <textarea id="qwho" data-k rows="2" placeholder="e.g. 3 students who cook at home, recruited in the canteen"></textarea>
+      <div class="row">
+        <button class="btn solid" id="genGuide">Write the discussion guide</button>
+        <button class="btn sm" id="copyGuide">Copy it</button>
+        <button class="btn sm" id="wordGuide">As Word</button>
+      </div>
       <label class="f" for="qname">The brand name</label>
       <select id="qname" data-k>
         <option value="">how will you decide it?</option>
         <option>We already have it - it is written below</option>
-        <option>With a projective technique in the session - the guide is below</option>
+        <option>With a projective technique in the session - it is in the guide</option>
       </select>
-      <label class="f" for="brandname">Name, if you already have it</label>
-      <input type="text" id="brandname" data-k placeholder="leave empty if the technique decides it">
-      <div class="rules"><b>Projective, for the name</b>If the brand were a person, what would it be
-      called? Say the first three words that come to mind. Finish: "a person who buys ___ is someone
-      who...". Then the room proposes names and votes:
-      cmoreno34.github.io/marketing-fundamentals-ie/brand-naming/</div>
+      <input type="text" id="brandname" data-k placeholder="the name, if you have it">
     </div>
-  </div>
-  <div class="row">
-    <button class="btn solid" id="genGuide">Write the discussion guide</button>
-    <button class="btn ai" data-prompt="qual">Copy the analysis prompt</button>
-    <span class="hint">Analyse the transcripts in
-      <a href="https://cmoreno34.github.io/interview-studio/" target="_blank" rel="noopener">interview-studio</a> or
-      <a href="https://cmoreno34.github.io/focus-group-studio/" target="_blank" rel="noopener">focus-group-studio</a>.</span>
+    <div>
+      <label class="f" for="qpaste">Bring the analysis back here</label>
+      <p class="hint" style="margin:0 0 6px">Copy the prompt, give it your transcripts, and paste the
+      answer here. The themes it finds are what the questionnaire is written from, so this is not a
+      detour: it is the step that makes step 3 yours and not generic.</p>
+      <textarea id="qpaste" data-k rows="7" placeholder="paste the whole answer - the page takes the JSON block out of it"></textarea>
+      <div class="row">
+        <button class="btn ai" data-prompt="qual">Copy the analysis prompt</button>
+        <button class="btn solid" id="qRead">Read it into the page</button>
+        <span class="hint" id="qRead2"></span>
+      </div>
+      <p class="hint">Longer transcripts, coding and quotes:
+        <a href="https://cmoreno34.github.io/interview-studio/" target="_blank" rel="noopener">interview-studio</a> &middot;
+        <a href="https://cmoreno34.github.io/focus-group-studio/" target="_blank" rel="noopener">focus-group-studio</a>.
+        Their output pastes in here the same way.</p>
+      <div id="qCard"></div>
+    </div>
   </div>
   <pre class="out" id="guideOut" style="display:none"></pre>
-  <div class="row" id="guideBtns" style="display:none">
-    <button class="btn sm" id="copyGuide">Copy it</button>
-    <button class="btn sm" id="wordGuide">Download it as Word</button>
-  </div>
-  <h3>What you found</h3>
-  <div class="grid2">
-    <div>
-      <label class="f" for="qfind">Findings, with the evidence</label>
-      <textarea id="qfind" data-k rows="5" placeholder="one finding per line, each with a quote or an observed behaviour"></textarea>
-    </div>
-    <div>
-      <label class="f" for="qquotes">The three quotes you will put in the document</label>
-      <textarea id="qquotes" data-k rows="5" placeholder="&quot;...&quot; - who said it (anonymised)"></textarea>
-    </div>
-  </div>
 </section>
 
 <!-- ============================================================ 3 -->
 <section id="s3">
   <h2><span class="n">3</span>The questionnaire<span class="pct">part 1 &middot; 15%</span></h2>
-  <p class="hint">Built from your hypotheses, with the rules of Session 12: a labelled 1 to 5 scale
-  wherever there is an opinion, demographics at the end, and the price question the guide requires.
-  You get the Google Forms script, the Word version for the appendix, and the data template.</p>
+  <p class="hint">Built for you: about twenty questions, almost all on a 1 to 5 scale so the analysis
+  in step 4 runs on them, aimed at the objectives of step 1 and worded with what the interviews gave
+  you. The price question and the competitor ratings that rebuild the perceptual map are in it
+  because the guide requires them.</p>
   <div class="grid2">
     <div>
-      <label class="f" for="prodDesc">The product description the respondent reads</label>
-      <textarea id="prodDesc" data-k placeholder="two or three lines: what it is, what it does, what it includes. This is what they price."></textarea>
-      <label class="f" for="sampleDef">Sample: who answers, how many, and how you reach them</label>
-      <textarea id="sampleDef" data-k placeholder="e.g. 120 students of the campus, reached through four course groups and two residences"></textarea>
+      <label class="f" for="prodDesc">The description the respondent reads before pricing it</label>
+      <textarea id="prodDesc" data-k rows="3" placeholder="two or three lines: what it is, what it does, what it includes"></textarea>
+      <label class="f" for="sampleDef">Sample: who answers, how many, how you reach them</label>
+      <textarea id="sampleDef" data-k rows="2" placeholder="e.g. 120 students, four course groups and two residences"></textarea>
     </div>
     <div>
-      <label class="f">What you need to measure, beyond the hypotheses</label>
-      <div class="opts">
-        <label class="chk"><input type="checkbox" data-k id="m_use" checked><span>Category use and frequency</span></label>
-        <label class="chk"><input type="checkbox" data-k id="m_att" checked><span>Attribute importance<small>feeds Product</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="m_int" checked><span>Intention to buy</span></label>
-        <label class="chk"><input type="checkbox" data-k id="m_chan" checked><span>Where they would buy it<small>feeds Place</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="m_media" checked><span>Where they find out about it<small>feeds Promotion</small></span></label>
-        <label class="chk"><input type="checkbox" data-k id="m_brand"><span>Brand associations<small>feeds the brand</small></span></label>
-      </div>
-      <label class="f" for="attrs">The attributes to rate, one per line</label>
-      <textarea id="attrs" data-k rows="3" placeholder="e.g. price&#10;taste&#10;convenience&#10;sustainability"></textarea>
+      <label class="f" for="attrsLive">The attributes everybody is rated on <span class="hint">- yours and the competitors'</span></label>
+      <textarea id="attrsLive" data-k rows="3" placeholder="four or five, from your hypothesised map"></textarea>
+      <label class="f" for="compsLive">The competing brands to rate</label>
+      <textarea id="compsLive" data-k rows="2" placeholder="two or three, the ones the customer really compares"></textarea>
+      <p class="hint">These two boxes are what rebuilds the real perceptual map in step 4, next to the
+      one you hypothesised in Pitch 1.</p>
     </div>
   </div>
   <h3>The price question <span class="hint">- required by the guide</span></h3>
-  <p class="hint">"What is the maximum price you would pay for&hellip;?" with <b>levels at equal
-  intervals</b>: that is what makes the willingness-to-pay distribution readable in step 4.</p>
   <div class="grid3">
     <div><label class="f" for="pMin">Lowest level</label><input type="number" id="pMin" data-k value="2" step="0.5"></div>
     <div><label class="f" for="pStep">Interval</label><input type="number" id="pStep" data-k value="2" step="0.5"></div>
@@ -287,15 +378,15 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <div class="row">
     <button class="btn solid" id="genQ">Build the questionnaire</button>
     <button class="btn" id="dlScript">Google Forms script</button>
-    <button class="btn" id="dlQWord">Questionnaire as Word</button>
+    <button class="btn" id="dlQWord">As Word</button>
     <button class="btn" id="dlTemplate">Data template (CSV)</button>
-    <button class="btn ai" data-prompt="questionnaire">Copy the checking prompt</button>
+    <button class="btn ai" data-prompt="questionnaire">Prompt to check it</button>
   </div>
   <div class="note" id="scriptHow" style="display:none"><b>How to turn the script into a form</b>
     Open <b>script.google.com</b> &rarr; New project &rarr; delete what is there &rarr; paste the file you
-    just downloaded &rarr; Run. Google asks for permission once; then the form appears in your Drive
-    with every question, scale and option already in it. Send the link, and when the answers are in,
-    download them as CSV from the Responses tab and bring the file back to step 4.</div>
+    just downloaded &rarr; Run. Google asks for permission once; the form then appears in your Drive with
+    every question in it. Send the link, and when the answers are in, download them as CSV from the
+    Responses tab and bring that file to step 4.</div>
   <pre class="out" id="qOut" style="display:none"></pre>
 </section>
 
@@ -336,6 +427,19 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <div class="aibox" id="clustAi" style="display:none"><b>Prompt with the centroids</b>
     <button class="btn ai sm" data-prompt="cluster">Copy the prompt</button></div>
 
+  <h3>The real perceptual map</h3>
+  <p class="hint">The same attributes you scored by hand in Pitch 1, now scored by the people who
+  answered - for you and for each competitor. This table is what goes into the positioning tool, and
+  next to the hypothesised map it is Part 2 of the pitch.</p>
+  <div class="row"><button class="btn" id="btnMap">Build the map table</button>
+    <button class="btn sm" id="dlMap">Download it as CSV</button>
+    <span class="hint">then open
+      <a href="https://cmoreno34.github.io/marketing-fundamentals-ie/positioning-maps/" target="_blank" rel="noopener">positioning-maps</a>
+      and upload it</span></div>
+  <div id="mapOut"></div>
+  <div class="aibox" id="mapAi" style="display:none"><b>Prompt that reads the map</b>
+    <button class="btn ai sm" data-prompt="map">Copy the prompt</button></div>
+
   <h3>Willingness to pay, demand and the price that makes most money</h3>
   <p class="hint">The model of the pricing session, after Phillips: the maximum price each person
   would pay gives a distribution; demand at a price is the maximum demand times the frequencies at
@@ -358,8 +462,10 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 5 -->
 <section id="s5">
   <h2><span class="n">5</span>Verdict on every hypothesis<span class="pct">part 1 &middot; 10%</span></h2>
-  <p class="hint">For each one: the evidence, whether it is confirmed, rejected or partly confirmed,
-  and what changes in the strategy. A hypothesis that turns out to be wrong costs you nothing.</p>
+  <p class="hint">These come out of your Pitch 1, read in step 0. For each one: the evidence, whether
+  it is confirmed, rejected or partly confirmed, and what changes in the strategy. A hypothesis that
+  turns out to be wrong costs you nothing; one you never tested does.</p>
+  <div class="row"><button class="btn sm" id="addHyp">+ Add one by hand</button></div>
   <div id="verdicts"></div>
   <div class="aibox"><b>Prompt to argue the verdicts</b>
     <button class="btn ai sm" data-prompt="verdicts">Copy the prompt</button></div>
@@ -422,6 +528,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       </select>
       <label class="f" for="pPack">Packaging and labelling, if relevant</label>
       <textarea id="pPack" data-k placeholder="what it has to do, and what the law makes you print"></textarea>
+      <div class="row"><button class="btn ai sm" data-prompt="mixProduct">Refine Product with the research</button></div>
     </div>
   </div>
 
@@ -440,10 +547,13 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <div class="src" id="src_price"></div>
     </div>
     <div>
+      <label class="f" for="prCostBased">If you price cost-based, the arithmetic</label>
+      <div id="costBased" class="flag"></div>
       <label class="f" for="prAdj">Adjustments: launch price, discounts, dynamic pricing</label>
       <textarea id="prAdj" data-k placeholder="only the ones you would really use"></textarea>
       <label class="f" for="prWtp">What the research says about willingness to pay</label>
       <textarea id="prWtp" data-k placeholder="filled from step 4 when you compute the curve"></textarea>
+      <div class="row"><button class="btn ai sm" data-prompt="mixPrice">Refine Price with the research</button></div>
     </div>
   </div>
 
@@ -481,7 +591,8 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <textarea id="plWhy" data-k placeholder="the route, step by step"></textarea>
       <div class="src" id="src_place"></div></div>
     <div><label class="f" for="plPartners">Who you need: intermediaries, platforms, logistics</label>
-      <textarea id="plPartners" data-k placeholder="and what each one takes"></textarea></div>
+      <textarea id="plPartners" data-k placeholder="and what each one takes"></textarea>
+      <div class="row"><button class="btn ai sm" data-prompt="mixPlace">Refine Place with the research</button></div></div>
   </div>
 
   <h3>Promotion <span class="hint">10%</span></h3>
@@ -497,7 +608,10 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     <div><label class="f" for="prIMC">How the pieces hold together</label>
       <textarea id="prIMC" data-k rows="3" placeholder="what makes it one campaign and not five posts"></textarea></div>
   </div>
-  <div class="row"><button class="btn ai" data-prompt="mix">Copy the prompt that checks the whole mix</button></div>
+  <div class="row">
+    <button class="btn ai" data-prompt="mixPromotion">Refine Promotion with the research</button>
+    <button class="btn ai" data-prompt="mix">And one that checks the whole mix for contradictions</button>
+  </div>
 </section>
 
 <!-- ============================================================ 8 -->
@@ -515,10 +629,17 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     <button class="btn" id="btnLoad">Load the draft</button>
     <button class="btn ghost" id="btnReset">Clear everything</button>
   </div>
-  <p class="hint" style="margin-top:10px">The Word file follows the structure of the guide, with
-  your tables and numbers in it. It is a base to edit, not a document to hand in as it comes: the
-  guide asks for your words.</p>
+  <div class="note"><b>What you hand in is not this file</b>The Word you download is the
+  <b>base structure</b>: every number and every table is already yours, in the order the guide grades,
+  with a cover and the two appendices. What it is not is written: rewrite it in your own words, cut
+  what does not earn its place, keep it inside the page limit, and format it. The slides are a
+  separate deliverable - this document is what goes with them. The one thing you should not change
+  is the numbers.</div>
 </section>
+
+</div>
+
+<div id="view-demo" class="hide"></div>
 
 <footer>
   Pitch 2 copilot &middot; Marketing Fundamentals 26-27 &middot; IE University. The pricing model follows
@@ -542,113 +663,174 @@ const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
 
 const ST = { hyps: [], media: [], verdicts: {}, analysis: {} };
 
-/* ===================================================================== 0 the hypotheses */
-function hypRow(h, i) {
-  return `<div class="hyp" data-i="${i}">
-    <div class="top"><span class="tag">H${i + 1}</span><button class="del" data-del="${i}" title="remove">&times;</button></div>
-    <label class="f">The hypothesis</label>
-    <input type="text" data-h="${i}" data-f="text" value="${esc(h.text)}" placeholder="e.g. students aged 18-24 who cook at home would pay 6 to 8 euros for a weekly meal kit">
-    <div class="grid2">
-      <div><label class="f">Where it comes from</label>
-        <input type="text" data-h="${i}" data-f="from" value="${esc(h.from)}" placeholder="e.g. Segmentation, Part 3"></div>
-      <div><label class="f">How you will test it</label>
-        <input type="text" data-h="${i}" data-f="how" value="${esc(h.how)}" placeholder="e.g. interviews on cooking habits; survey question on willingness to pay"></div>
-    </div>
-    <label class="f">What would prove it wrong</label>
-    <input type="text" data-h="${i}" data-f="kill" value="${esc(h.kill)}" placeholder="e.g. fewer than 30% of the target choose 6 euros or more">
-  </div>`;
+/* ===================================================================== 0 Pitch 1 comes in */
+let P1 = {}, QUAL = {}, P1TEXT = '';
+// the hypotheses are shown where their verdict is written, so this is only a hook the old
+// callers still reach for
+function renderHyps() { renderVerdicts(); }
+
+async function readAnyFile(f) {
+  const name = (f.name || '').toLowerCase();
+  if (name.endsWith('.txt') || name.endsWith('.md')) return f.text();
+  if (name.endsWith('.docx')) {
+    const zip = await JSZip.loadAsync(await f.arrayBuffer());
+    const xml = await zip.file('word/document.xml').async('string');
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    const paras = [...doc.getElementsByTagName('w:p')].map((pnode) =>
+      [...pnode.getElementsByTagName('w:t')].map((t) => t.textContent).join(''));
+    return paras.filter((t) => t.trim()).join('\n');
+  }
+  if (name.endsWith('.pdf')) {
+    const lib = window.pdfjsLib || window['pdfjs-dist/build/pdf'];
+    lib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf = await lib.getDocument({ data: await f.arrayBuffer() }).promise;
+    const out = [];
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const page = await pdf.getPage(n);
+      const c = await page.getTextContent();
+      out.push(c.items.map((it) => it.str).join(' '));
+    }
+    return out.join('\n');
+  }
+  return f.text();
 }
-function renderHyps() {
-  $('#hyps').innerHTML = ST.hyps.map(hypRow).join('') || '<p class="hint">No hypotheses yet. Add the ones from Pitch 1.</p>';
-  $('#hypCount').textContent = ST.hyps.length ? ST.hyps.length + ' hypotheses' : '';
-  $$('#hyps input').forEach((el) => el.addEventListener('input', () => {
-    ST.hyps[+el.dataset.h][el.dataset.f] = el.value;
-    renderVerdicts(); save();
-  }));
-  $$('#hyps .del').forEach((el) => el.addEventListener('click', () => {
-    ST.hyps.splice(+el.dataset.del, 1); renderHyps(); renderVerdicts(); save();
-  }));
-  renderVerdicts();
+
+$('#p1file').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  $('#p1state').textContent = 'reading ' + f.name + '...';
+  try {
+    P1TEXT = (await readAnyFile(f)).replace(/\s+\n/g, '\n').trim();
+    $('#p1state').innerHTML = `<b>${esc(f.name)}</b> read: ${P1TEXT.length.toLocaleString()} characters. `
+      + 'Now copy the prompt, give it to your assistant, and paste the answer back.';
+  } catch (err) {
+    $('#p1state').textContent = 'That file could not be read here. Save it as .docx or .txt, or fill the boxes on the right.';
+  }
+  save();
+});
+
+function jsonFrom(text) {
+  const t = String(text || '');
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const raw = fence ? fence[1] : t.slice(t.indexOf('{'), t.lastIndexOf('}') + 1);
+  try { return JSON.parse(raw); } catch (e) { return null; }
 }
-$('#addHyp').addEventListener('click', () => { ST.hyps.push({ text: '', from: '', how: '', kill: '' }); renderHyps(); save(); });
+
+$('#p1Read').addEventListener('click', () => {
+  const o = jsonFrom(val('p1paste'));
+  if (!o) { $('#p1Read2').textContent = 'No JSON block found in what you pasted.'; return; }
+  P1 = o;
+  const put = (id, v) => { if (v && $('#' + id) && !val(id)) $('#' + id).value = Array.isArray(v) ? v.join('\n') : v; };
+  put('brandwork', o.brand || o.workingName);
+  put('offer', o.offer || o.idea);
+  put('targets', o.targets);
+  put('posstat', o.positioning || o.positioningStatement);
+  put('competitors', o.competitors);
+  put('attrs', o.attributes);
+  put('prodDesc', o.description || o.offer);
+  if (!val('attrsLive')) $('#attrsLive').value = (o.attributes || []).join('\n');
+  if (!val('compsLive')) $('#compsLive').value = (o.competitors || []).join('\n');
+  if (!val('objectives') && o.objectives) $('#objectives').value = (o.objectives || []).join('\n');
+  $('#p1Read2').textContent = 'read ✓';
+  $('#p1Card').innerHTML = `<div class="score"><b>Pitch 1 is in.</b>
+    ${(o.targets || []).length} target${(o.targets || []).length === 1 ? '' : 's'} &middot;
+    ${(o.competitors || []).length} competitors &middot; ${(o.attributes || []).length} attributes &middot;
+    ${(o.segments || []).length} segments &middot; ${(o.hypotheses || []).length} hypotheses, which are waiting
+    for their verdict in step 5. Anything it got wrong, correct it on the right: what is in the boxes
+    is what the page uses.</div>`;
+  save();
+});
 
 $('#draftObj').addEventListener('click', () => {
-  if (!ST.hyps.length) { alert('Add the hypotheses first.'); return; }
-  const o = ST.hyps.map((h, i) => `${i + 1}. To test whether ${h.text || '(hypothesis ' + (i + 1) + ')'}` +
-    (h.how ? ` - ${h.how.toLowerCase()}` : '') + '.');
+  const b = val('brandwork') || 'the idea';
+  const t = lines(val('targets'));
+  const at = lines(val('attrsLive')).length ? lines(val('attrsLive')) : lines(val('attrs'));
+  const co = lines(val('compsLive')).length ? lines(val('compsLive')) : lines(val('competitors'));
+  const o = [
+    `SEGMENTATION. Whether ${t[0] ? t[0].toLowerCase() : 'the target we chose'} is really one group, or whether the people who want ${b} split into different ones - and which of them is worth going for.`,
+    `POSITIONING. How ${b} is seen against ${co.length ? co.join(' and ') : 'the alternatives'} on ${at.length ? at.slice(0, 4).join(', ') : 'the attributes that matter'}, and whether the place we claimed in Pitch 1 is free.`,
+    `THE OFFER. Which benefit people actually buy it for, which attributes they would pay for, and which parts of the idea they do not care about.`,
+    `PRICE. What they would pay at most, how many of them at each level, and what that leaves once our costs are in.`,
+    `PLACE. Where they would expect to buy it, and whether that is one channel or several.`,
+    `PROMOTION. Where they would first hear about it, who they trust about it, and what would make them try it.`,
+  ];
   $('#objectives').value = o.join('\n');
   save();
 });
 
-/* ===================================================================== 2 discussion guide */
+/* ===================================================================== 2 qualitative back in */
+$('#qRead').addEventListener('click', () => {
+  const o = jsonFrom(val('qpaste'));
+  if (!o) { $('#qRead2').textContent = 'No JSON block found in what you pasted.'; return; }
+  QUAL = o;
+  const th = o.themes || [];
+  $('#qRead2').textContent = 'read ✓';
+  $('#qCard').innerHTML = th.length ? `<div class="score"><b>${th.length} themes are in.</b>
+    ${th.slice(0, 4).map((t) => esc(t.theme || t.name || '')).join(' &middot; ')}.
+    The questionnaire in step 3 is written from these.</div>` : '';
+  if (o.attributesToTest && !val('attrsLive')) $('#attrsLive').value = o.attributesToTest.join('\n');
+  if (o.productDescription && !val('prodDesc')) $('#prodDesc').value = o.productDescription;
+  if (o.nameIdeas && o.nameIdeas.length && !val('brandname')) $('#brandname').value = o.nameIdeas[0];
+  save();
+});
+
 function discussionGuide() {
   const b = val('brandwork') || 'the idea';
-  const tech = [$('#q_int').checked ? 'in-depth interview' : '', $('#q_fg').checked ? 'focus group' : '',
-    $('#q_obs').checked ? 'observation' : ''].filter(Boolean).join(' / ') || 'in-depth interview';
-  const probes = ST.hyps.map((h, i) => `   ${i + 1}. ${h.text || '(hypothesis ' + (i + 1) + ')'}\n` +
-    `      - tell me about the last time this happened to you\n` +
-    `      - what did you do instead? what did it cost you?\n` +
-    `      - and why is that important to you? (keep asking "why" three times)`);
+  const fg = $('#q_fg').checked;
+  const objs = lines(val('objectives'));
+  const probes = objs.slice(0, 4).map((o, i) => {
+    const head = o.split('.')[0];
+    return `   ${i + 1}. ${head}\n      - tell me about the last time this came up for you\n` +
+      `      - what did you do, and what did it cost you?\n      - and why does that matter to you? (ask "why" three times)`;
+  });
   const nameBlock = val('qname').startsWith('With a projective')
-    ? `\n7. THE NAME (projective, 6 min)\n   - if ${b} were a person, what would they be called?\n` +
-      `   - say the first three words that come to mind about ${b}\n` +
-      `   - finish the sentence: "a person who buys ${b} is someone who..."\n` +
-      `   - we then take the names to the room and vote: brand-naming tool\n`
-    : `\n7. THE NAME (2 min)\n   - we already have the name: ${val('brandname') || '(write it in step 2)'}\n` +
-      `   - what does it make you think of? would you say it out loud to a friend?\n`;
+    ? `\n6. THE NAME (projective, 5 min)\n   - if ${b} were a person, what would they be called?\n` +
+      `   - say the first three words that come to mind about it\n` +
+      `   - finish: "a person who buys ${b} is someone who..."\n` +
+      `   - the room then proposes names and votes: brand-naming tool\n`
+    : `\n6. THE NAME (2 min)\n   - the name we are using is ${val('brandname') || '(write it in step 2)'}\n` +
+      `   - what does it make you think of? would you say it to a friend?\n`;
   return `DISCUSSION GUIDE - ${b}
-${tech} - ${val('team') || 'group'} - Marketing Fundamentals 26-27
+${fg ? 'Focus group, 45 minutes, 6 to 8 people' : 'In-depth interview, 20 to 30 minutes, two or three people'}
+${val('team') || ''} - Marketing Fundamentals 26-27
 
 0. BEFORE YOU START
-   - say who you are, how long it takes (${$('#q_fg').checked ? '45-60' : '20-30'} min), that it is anonymous
-   - ask permission to record. Nothing with a name on it leaves the group
-   - there are no right answers: we are not testing them, they are testing the idea
+   - who you are, how long it takes, that it is anonymous, and permission to record
+   - there are no right answers: they are testing the idea, not the other way round
 
 1. WARM-UP (3 min)
-   - tell me a bit about yourself and your week
-   - when did you last ${val('offer') ? 'need something like ' + val('offer').toLowerCase() : 'buy in this category'}?
+   - tell me about your week, and when this last came up
 
-2. THE CATEGORY, WITHOUT NAMING THE IDEA (6 min)
-   - how do you solve this today? walk me through the last time
-   - what works about it, and what annoys you
-   - who else is involved in the decision?
+2. HOW THEY SOLVE IT TODAY (6 min)
+   - walk me through the last time, step by step
+   - what works, what annoys you, who else is involved
 
-3. THE PROBLEM BEHIND IT (6 min)
-   - what makes it hard? what have you tried?
-   - if it disappeared tomorrow, what would you do?
+3. THE OBJECTIVES, ONE BY ONE (12 min)
+${probes.join('\n') || '   (draft the objectives in step 1 and write the guide again)'}
 
-4. THE HYPOTHESES, ONE BY ONE (12 min)
-${probes.join('\n') || '   (add your hypotheses in step 0 and regenerate)'}
-
-5. THE IDEA, SHOWN LAST (8 min)
+4. THE IDEA, SHOWN LAST (8 min)
    - here is what we are thinking: ${val('prodDesc') || '(write the description in step 3)'}
-   - first reaction, in one word
-   - what would you use it for, and when?
-   - what would stop you?
+   - first reaction in one word, then: what would you use it for? what would stop you?
 
-6. PRICE, WITHOUT A NUMBER FROM US (4 min)
-   - what would you expect to pay for this?
-   - what would be too expensive, and what would make you suspicious?
-   - what do you pay today for the thing it replaces?
+5. PRICE, WITHOUT A NUMBER FROM US (4 min)
+   - what would you expect to pay? what would be too much, and what would feel suspicious?
+   - what do you pay today for whatever it replaces?
 ${nameBlock}
-8. CLOSE (2 min)
-   - what have we not asked that we should have?
-   - who else should we talk to?
-   - thank them, and say what happens with what they told you
+7. CLOSE (2 min)
+   - what should we have asked? who else should we talk to?
 
-NOTES FOR THE MODERATOR
-   - ask, then shut up. The silence after the answer is where the useful part is
+FOR THE MODERATOR
+   - ask, then be quiet. The useful part comes after the silence
    - never ask "would you buy it?" - ask what they did last time
-   - write the exact words down: the quotes are the evidence in the document`;
+   - write their exact words: those quotes are the evidence in the document`;
 }
 $('#genGuide').addEventListener('click', () => {
   $('#guideOut').textContent = discussionGuide();
   $('#guideOut').style.display = 'block';
-  $('#guideBtns').style.display = 'flex';
 });
-$('#copyGuide').addEventListener('click', () => copy($('#guideOut').textContent, '#copyGuide'));
+$('#copyGuide').addEventListener('click', () => copy(discussionGuide(), '#copyGuide'));
 
-/* ===================================================================== 3 questionnaire */
+/* ===================================================================== 3 the questionnaire */
 function priceLevels() {
   const min = Number(val('pMin') || 2), step = Number(val('pStep') || 2), n = Math.max(3, Number(val('pCount') || 7));
   return Array.from({ length: n }, (_, i) => +(min + i * step).toFixed(2));
@@ -657,66 +839,72 @@ function renderPrices() {
   const L = priceLevels();
   $('#pList').textContent = L.map((p) => p + ' €').join('  ·  ') + '  ·  more than ' + L[L.length - 1] + ' €';
 }
+['pMin', 'pStep', 'pCount'].forEach((id) => { const el = $('#' + id); if (el) el.addEventListener('input', renderPrices); });
+
+function attrsList() { return (lines(val('attrsLive')).length ? lines(val('attrsLive')) : lines(val('attrs'))).slice(0, 5); }
+function compsList() { return (lines(val('compsLive')).length ? lines(val('compsLive')) : lines(val('competitors'))).slice(0, 3); }
 
 function questionnaire() {
   const L = priceLevels();
-  const atts = lines(val('attrs'));
+  const b = val('brandwork') || 'the idea';
+  const themes = (QUAL.themes || []).map((t) => t.statement || t.theme || t.name).filter(Boolean);
   const Q = [];
   const add = (id, text, type, opts) => Q.push({ id, text, type, opts: opts || [] });
-  add('consent', 'This survey is anonymous and takes about 5 minutes. The answers are used for a university project. Do you want to continue?', 'yn');
-  if ($('#m_use').checked) {
-    add('uses_category', 'How often do you ' + (val('offer') ? 'use or buy something like ' + val('offer').toLowerCase() : 'buy in this category') + '?', 'choice',
-      ['Never', 'Less than once a month', 'Once or twice a month', 'Once a week', 'Several times a week']);
-  }
-  ST.hyps.forEach((h, i) => {
-    if (!h.text) return;
-    add('h' + (i + 1), 'How much do you agree? "' + h.text.replace(/"/g, "'") + '"', 'scale5');
+  add('consent', 'This survey is anonymous and takes about five minutes, for a university project. Shall we start?', 'yn');
+  add('uses_category', 'How often do you ' + (val('offer') ? val('offer').toLowerCase().replace(/^an? /, '') : 'buy in this category') + '?', 'choice',
+    ['Never', 'Less than once a month', 'Once or twice a month', 'Once a week', 'Several times a week']);
+  // what the interviews said, turned into agreement statements
+  (themes.length ? themes : ['It is hard to find something that fits what I need',
+    'I usually end up spending more than I wanted',
+    'I would try something new if somebody I trust used it']).slice(0, 4).forEach((t, i) => {
+    add('theme_' + (i + 1), 'How much do you agree? "' + String(t).replace(/"/g, "'") + '"', 'scale5');
   });
-  if ($('#m_att').checked) {
-    (atts.length ? atts : ['price', 'quality', 'convenience']).forEach((a, i) => {
-      add('att_' + (i + 1), 'How important is ' + a + ' when you choose in this category?', 'scale5');
-    });
-  }
-  if ($('#m_brand').checked) {
-    add('brand_trust', 'How much would you trust a new brand in this category?', 'scale5');
-    add('brand_assoc', 'Say in one or two words what a brand like this makes you think of', 'open');
-  }
-  add('desc_read', 'Please read this and then answer the next questions: ' + (val('prodDesc') || '(product description)'), 'info');
-  if ($('#m_int').checked) {
-    add('intention', 'How likely would you be to buy it?', 'scale5');
-    add('relevance', 'How well does it fit something you actually need?', 'scale5');
-  }
+  // the attributes, as importance
+  attrsList().forEach((a, i) => add('imp_' + (i + 1), 'When you choose in this category, how important is ' + a + '?', 'scale5'));
+  add('desc_read', 'Read this before the next questions: ' + (val('prodDesc') || '(product description)'), 'info');
+  add('intention', 'How likely would you be to buy it?', 'scale5');
+  add('relevance', 'How well does it fit something you actually need?', 'scale5');
+  add('novelty', 'How different is it from what you use today?', 'scale5');
+  // the perceptual map: the same attributes, for us and for the competitors
+  const comps = compsList();
+  const atts = attrsList().slice(0, 4);
+  // one grid per brand: one question in the form, four rows, and the answers still come back
+  // as one column per cell, which is what the perceptual map needs
+  [b].concat(comps).forEach((brandName, k) => {
+    add(k === 0 ? 'us' : 'c' + k,
+      'How well does ' + brandName + ' deliver each of these? (1 = not at all, 5 = very well)',
+      'grid', atts.map((a, i) => ({ row: a, id: (k === 0 ? 'us_' : 'c' + k + '_') + (i + 1) })));
+  });
   add('wtp', 'What is the maximum price you would pay for it?', 'choice',
     L.map((p) => p + ' €').concat(['More than ' + L[L.length - 1] + ' €', 'I would not pay for it']));
-  if ($('#m_chan').checked) {
-    add('channel', 'Where would you prefer to buy it?', 'choice',
-      ['In a supermarket', 'In a specialist shop', 'Online, from the brand', 'Online, from a marketplace', 'In a vending machine or kiosk', 'Somewhere else']);
-  }
-  if ($('#m_media').checked) {
-    add('media', 'Where would you expect to hear about something like this?', 'choice',
-      ['Instagram or TikTok', 'From a friend', 'In the shop itself', 'Search or a website', 'An event on campus', 'Email or newsletter', 'Somewhere else']);
-  }
+  add('channel', 'Where would you prefer to buy it?', 'choice',
+    ['In a supermarket', 'In a specialist shop', 'Online, from the brand', 'Online, from a marketplace', 'On campus', 'Somewhere else']);
+  add('media', 'Where would you expect to hear about something like this?', 'choice',
+    ['Instagram or TikTok', 'From a friend', 'In the shop itself', 'Search or a website', 'An event on campus', 'Email', 'Somewhere else']);
   add('age_group', 'How old are you?', 'choice', ['Under 18', '18-24', '25-34', '35-49', '50 or more']);
   add('gender', 'Gender', 'choice', ['Male', 'Female', 'Other', 'Prefer not to say']);
   add('occupation', 'What do you do?', 'choice', ['Student', 'Working student', 'Employed', 'Self-employed', 'Not working right now']);
-  add('spend', 'Roughly, how much do you spend on this category in a normal month?', 'choice',
+  add('spend', 'In a normal month, how much do you spend on this category?', 'choice',
     ['Nothing', 'Under 10 €', '10 to 25 €', '25 to 50 €', 'More than 50 €']);
-  add('open_end', 'Anything we did not ask and we should have?', 'open');
+  add('open_end', 'Anything we should have asked and did not?', 'open');
   return Q;
 }
 
 function questionnaireText() {
   const Q = questionnaire();
   const head = `QUESTIONNAIRE - ${val('brandwork') || 'the idea'}\n${val('team') || ''}\nSample: ${val('sampleDef') || '(define it in step 3)'}\n`;
-  const body = Q.map((q, i) => {
+  let n = 0;
+  const body = Q.map((q) => {
     if (q.type === 'info') return `\n--- ${q.text}\n`;
-    const n = `Q${i + 1}. ${q.text}`;
-    if (q.type === 'scale5') return `${n}\n   1 strongly disagree  2  3 neither  4  5 strongly agree`;
-    if (q.type === 'yn') return `${n}\n   Yes / No`;
-    if (q.type === 'open') return `${n}\n   ______________________________`;
-    return `${n}\n` + q.opts.map((o) => '   [ ] ' + o).join('\n');
+    n++;
+    const t = `Q${n}. ${q.text}`;
+    if (q.type === 'scale5') return `${t}\n   1 strongly disagree  2  3 neither  4  5 strongly agree`;
+    if (q.type === 'yn') return `${t}\n   Yes / No`;
+    if (q.type === 'open') return `${t}\n   ______________________________`;
+    if (q.type === 'grid') return `${t}\n` + q.opts.map((o) => '   ' + o.row.padEnd(24) + '1   2   3   4   5').join('\n');
+    return `${t}\n` + q.opts.map((o) => '   [ ] ' + o).join('\n');
   }).join('\n\n');
-  return head + '\n' + body;
+  return head + '\n' + body + `\n\n(${n} questions as the respondent sees them, ${Q.filter((q) => q.type === 'scale5').length} on the 1 to 5 scale plus ${Q.filter((q) => q.type === 'grid').length} rating grids)`;
 }
 
 function appsScript() {
@@ -728,17 +916,18 @@ function appsScript() {
     if (q.type === 'scale5') return `  form.addScaleItem().setTitle(${t}).setBounds(1,5).setLabels('strongly disagree','strongly agree').setRequired(true);`;
     if (q.type === 'yn') return `  form.addMultipleChoiceItem().setTitle(${t}).setChoiceValues(['Yes','No']).setRequired(true);`;
     if (q.type === 'open') return `  form.addParagraphTextItem().setTitle(${t});`;
+    if (q.type === 'grid') return `  form.addGridItem().setTitle(${t})`
+      + `.setRows(${JSON.stringify(q.opts.map((o) => o.row))})`
+      + `.setColumns(['1','2','3','4','5']).setRequired(true);`;
     return `  form.addMultipleChoiceItem().setTitle(${t}).setChoiceValues(${JSON.stringify(q.opts)}).setRequired(true);`;
   }).join('\n');
   return `/**
  * Builds the questionnaire of ${val('brandwork') || 'the project'} as a Google Form.
- *
  * script.google.com -> New project -> paste this -> Run -> allow it once.
- * The link to the form is printed in the log and the form appears in your Drive.
  */
 function buildForm() {
   var form = FormApp.create(${JSON.stringify(title)});
-  form.setDescription(${JSON.stringify('Anonymous, about 5 minutes. ' + (val('sampleDef') || ''))});
+  form.setDescription(${JSON.stringify('Anonymous, about five minutes. ' + (val('sampleDef') || ''))});
   form.setCollectEmail(false);
   form.setProgressBar(true);
 
@@ -748,12 +937,15 @@ ${body}
   Logger.log('Edit here: ' + form.getEditUrl());
 }`;
 }
-
 function templateCsv() {
-  const Q = questionnaire().filter((q) => q.type !== 'info');
-  return Q.map((q) => q.id).join(',') + '\n';
+  const cols = [];
+  questionnaire().forEach((q) => {
+    if (q.type === 'info') return;
+    if (q.type === 'grid') q.opts.forEach((o) => cols.push(o.id));
+    else cols.push(q.id);
+  });
+  return cols.join(',') + '\n';
 }
-
 $('#genQ').addEventListener('click', () => {
   $('#qOut').textContent = questionnaireText();
   $('#qOut').style.display = 'block';
@@ -762,7 +954,6 @@ $('#genQ').addEventListener('click', () => {
 });
 $('#dlScript').addEventListener('click', () => download('build-form.gs', appsScript(), 'text/plain'));
 $('#dlTemplate').addEventListener('click', () => download('survey_template.csv', templateCsv(), 'text/csv'));
-['pMin', 'pStep', 'pCount'].forEach((id) => $('#' + id).addEventListener('input', renderPrices));
 
 /* ENGINE:BEGIN - lifted from the VAJA lab by build_pitch2_copilot.py, do not edit here */
 function parseCSV(text) {
@@ -1227,13 +1418,51 @@ $('#btnWtp').addEventListener('click', () => {
   sources(); save();
 });
 
+/* ---- the perceptual map out of the competitor ratings ---- */
+function mapTable() {
+  if (!DATA) return null;
+  const atts = attrsList().slice(0, 4);
+  const comps = compsList();
+  const brands = [val('brandwork') || 'Us'].concat(comps);
+  const rows = atts.map((a, i) => {
+    const cells = brands.map((b, k) => {
+      const col = k === 0 ? 'us_' + (i + 1) : 'c' + k + '_' + (i + 1);
+      const v = DATA.vars.find((x) => x.name === col);
+      if (!v) return null;
+      const s = stats(col);
+      return s && s.n ? s.mean : null;
+    });
+    return { a, cells };
+  }).filter((r) => r.cells.some((c) => c !== null));
+  return rows.length ? { brands, rows } : null;
+}
+$('#btnMap').addEventListener('click', () => {
+  const m = mapTable();
+  if (!m) {
+    $('#mapOut').innerHTML = '<div class="note"><b>No competitor ratings in the file</b>The map needs the questions the page writes as us_1, c1_1 and so on. If your form used other names, rename the columns in the file and load it again.</div>';
+    return;
+  }
+  $('#mapOut').innerHTML = `<table><tr><th>Attribute</th>${m.brands.map((b) => `<th class="num">${esc(b)}</th>`).join('')}</tr>`
+    + m.rows.map((r) => `<tr><td>${esc(r.a)}</td>${r.cells.map((c) => `<td class="num">${c === null ? '-' : fmt(c)}</td>`).join('')}</tr>`).join('')
+    + '</table><p class="hint">Scores are the average answer, 1 to 5, from the people who answered. Put this map next to the one you drew in Pitch 1 and say what moved.</p>';
+  ST.analysis.map = m;
+  $('#mapAi').style.display = 'block';
+  sources(); save();
+});
+$('#dlMap').addEventListener('click', () => {
+  const m = ST.analysis.map || mapTable();
+  if (!m) { alert('Build the map first.'); return; }
+  download('perceptual_map.csv', ['attribute,' + m.brands.join(',')]
+    .concat(m.rows.map((r) => [r.a].concat(r.cells.map((c) => (c === null ? '' : c.toFixed(2)))).join(','))).join('\n'), 'text/csv');
+});
+
 /* ===================================================================== 5 verdicts */
 function renderVerdicts() {
   if (!ST.hyps.length) { $('#verdicts').innerHTML = '<p class="hint">Add the hypotheses in step 0 and they appear here.</p>'; return; }
   $('#verdicts').innerHTML = ST.hyps.map((h, i) => {
     const v = ST.verdicts[i] || {};
     return `<div class="hyp"><div class="top"><span class="tag">H${i + 1}</span></div>
-      <p style="margin:2px 0 6px"><b>${esc(h.text || '(write the hypothesis in step 0)')}</b></p>
+      <input type="text" data-v="${i}" data-f="text" value="${esc(h.text)}" placeholder="the hypothesis, as it was in Pitch 1" style="font-weight:600">
       <div class="grid2">
         <div><label class="f">The evidence</label>
           <textarea data-v="${i}" data-f="ev" rows="2" placeholder="the number or the quote, with its base">${esc(v.ev || '')}</textarea></div>
@@ -1248,11 +1477,14 @@ function renderVerdicts() {
   }).join('');
   $$('#verdicts [data-v]').forEach((el) => el.addEventListener('input', () => {
     const i = +el.dataset.v;
+    if (el.dataset.f === 'text') { ST.hyps[i].text = el.value; save(); return; }
     ST.verdicts[i] = ST.verdicts[i] || {};
     ST.verdicts[i][el.dataset.f] = el.value;
     save();
   }));
 }
+
+$('#addHyp').addEventListener('click', () => { ST.hyps.push({ text: '', from: '', how: '', kill: '' }); renderVerdicts(); save(); });
 
 /* ===================================================================== 6 positioning */
 $('#posHelp').addEventListener('click', () => {
@@ -1290,12 +1522,29 @@ function renderMedia() {
 $('#addMedia').addEventListener('click', () => { ST.media.push({ m: '', p: PURPOSES[0], who: '', msg: '' }); renderMedia(); save(); });
 
 /* ---- what the research says under each mix decision ---- */
+function costBased() {
+  const el = $('#costBased');
+  if (!el) return;
+  const vc = Number(val('vCost') || 0), fc = Number(val('fCost') || 0);
+  const a = ST.analysis.wtp;
+  const q = a ? a.q : Number(val('dMax') || 0) * 0.5;
+  if (!vc && !fc) { el.innerHTML = '<b>Cost-based</b>Put the variable and fixed cost in step 4 and this fills in.'; return; }
+  const unit = vc + (q ? fc / q : 0);
+  const mk = (m) => (unit * (1 + m)).toFixed(2);
+  el.innerHTML = `<b>Cost-based</b>At ${Math.round(q)} units the cost of one unit is
+    ${fmt(vc, 2)} variable + ${fmt(q ? fc / q : 0, 2)} of fixed cost spread over them = <b>${fmt(unit, 2)}</b>.
+    With a mark-up of 30% that is ${mk(0.3)}, with 50% ${mk(0.5)}, with 100% ${mk(1)}.
+    ${a ? `The demand curve says ${fmt(a.best, 2)}: if your cost-based number is far from it, the market is telling you something your spreadsheet is not.` : ''}
+    <br><span class="hint">Cost-based pricing is a floor, not a strategy: it ignores what the customer would have paid.</span>`;
+}
+
 function sources() {
   const a = ST.analysis;
   const put = (id, txt) => { const el = $('#' + id); if (el) el.innerHTML = txt ? '&#8627; ' + txt : ''; };
   put('src_core', (a.desc || []).slice(0, 2).join(' &middot; ') || 'Load the answers in step 4 and the numbers that support this appear here.');
   put('src_attr', (a.desc || []).filter((d) => /att_|import/i.test(d)).slice(0, 3).join(' &middot; ')
     || (a.cluster ? 'Segments differ most on: ' + a.cluster.top.slice(0, 3).map((t) => t.split(':')[0]).join(', ') : ''));
+  costBased();
   put('src_price', a.wtp ? `The model says ${fmt(a.wtp.best, 2)} (${fmt(a.wtp.share * 100, 0)}% would pay it or more, profit ${Math.round(a.wtp.profit)}).` : 'Compute the demand curve in step 4.');
   put('src_place', (a.desc || []).length && DATA && DATA.vars.some((v) => /channel|buy/i.test(v.name))
     ? 'The channel question is in your data: open it in the crosstab scan against the targets.' : '');
@@ -1307,8 +1556,44 @@ function promptFor(kind) {
   const base = `You are helping a first-year marketing team write Pitch 2 of their group project. Be strict and concrete, never invent data, and say plainly when something does not follow from the evidence.\n\nProject: ${brand}. ${val('offer')}\nTargets: ${val('targets') || '(not written yet)'}\n`;
   const H = ST.hyps.map((h, i) => `H${i + 1}: ${h.text} (would be wrong if: ${h.kill || 'not stated'})`).join('\n');
   const A = ST.analysis;
+  if (kind === 'readPitch1') return `You are reading the Pitch 1 document of a first-year marketing group project and turning it into structured data. Read it as it is: do not improve it, do not invent anything that is not written, and leave a field empty if the document does not say.
+
+Return a short list of what you found, and then a JSON block exactly in this shape:
+
+` + '```json' + `
+{
+  "brand": "the working name",
+  "offer": "what it is, in one line",
+  "description": "two or three lines a survey respondent could read before pricing it",
+  "targets": ["each target, as the document describes it"],
+  "segments": ["the segments it defined"],
+  "positioning": "the positioning statement, verbatim if there is one",
+  "competitors": ["the brands it compares itself with"],
+  "attributes": ["the attributes of its hypothesised perceptual map"],
+  "hypotheses": [{"text": "the hypothesis", "wrongIf": "what would prove it wrong"}],
+  "objectives": ["what Pitch 2 still has to settle, one line each, covering segmentation, positioning, the offer, price, place and promotion"]
+}
+` + '```' + `
+
+THE DOCUMENT:
+"""
+${P1TEXT ? P1TEXT.slice(0, 14000) : '(upload the file first, or paste the text of your Pitch 1 here)'}
+"""`;
+  if (kind === 'qual') return base + `\nWe ran ${$('#q_fg').checked ? 'one focus group' : 'two or three in-depth interviews'} with: ${val('qwho')}\n\nWhat Pitch 2 has to settle:\n${val('objectives')}\n\nI will paste the transcripts after this message.
+
+Rules: a theme needs at least two people saying it; every theme comes with a verbatim quote from the transcript; never write a quote that is not there; anonymise names; and mark anything that contradicts what we assumed, because that is the valuable part.
+
+Answer with the themes in plain words, and then a JSON block exactly in this shape, because a tool reads it:
+
+` + '```json' + `
+{
+  "themes": [{"theme": "short name", "statement": "the belief as a sentence a survey could ask agreement with", "quote": "the verbatim quote", "implication": "what it means for the offer"}],
+  "attributesToTest": ["the attributes people actually compared on"],
+  "nameIdeas": ["any name the group or the respondents suggested"],
+  "productDescription": "the description of the idea in the words they used"
+}
+` + '```';
   if (kind === 'objectives') return base + `\nOur hypotheses:\n${H}\n\nOur research objectives:\n${val('objectives')}\n\nCheck each objective: is it testable, does it name the hypothesis it serves, and could it be answered with the research we can actually run (one qualitative technique and one survey of students)? Rewrite the weak ones in one line each.`;
-  if (kind === 'qual') return base + `\nWe ran ${[$('#q_int').checked ? 'in-depth interviews' : '', $('#q_fg').checked ? 'a focus group' : '', $('#q_obs').checked ? 'observation' : ''].filter(Boolean).join(' and ') || 'qualitative research'} with: ${val('qwho')}\n\nHypotheses under test:\n${H}\n\nI will paste the transcripts after this message. Rules: a theme needs at least two people saying it, and every theme must come with a verbatim quote from the transcript. Never write a quote that is not there. Anonymise names. Mark anything that contradicts the hypotheses - that is the valuable part. Output: themes, the quote behind each one, and what each theme implies for the marketing mix.`;
   if (kind === 'questionnaire') return base + `\nHere is our questionnaire:\n\n${questionnaireText()}\n\nCheck it against these rules: a 1 to 5 labelled scale wherever there is an opinion; no leading, double-barrelled, ambiguous or hypothetical questions; no jargon; demographics at the end; every question must serve a hypothesis or a mix decision - if one serves nothing, say so and cut it. List the problems with the question number and give the rewrite.`;
   if (kind === 'describe') return base + `\nDescriptive results from our survey (n = ${DATA ? DATA.rows.length : 0}):\n${(A.desc || []).join('\n')}\n\nWrite the quantitative findings paragraph of the document: the three strongest results and the two weakest, each with its number and its base, no adjectives we cannot defend, and one sentence on what it means for the offer. Then name the one result that argues against our idea.`;
   if (kind === 'cross') return base + `\nWe tested ${A.crossMeta ? A.crossMeta.tested : 0} pairs of questions; ${A.crossMeta ? A.crossMeta.sig : 0} came out significant and readable and ${A.crossMeta ? A.crossMeta.notValid : 0} could not be tested with this sample.\nThe significant ones:\n${(A.cross || []).join('\n')}\n\nFor each pair: say what it could mean for our targeting or our mix, and remind us why it is a lead and not a finding (we looked at many pairs, and association is not causation). Flag any that is significant but too weak to act on.`;
@@ -1321,6 +1606,25 @@ function promptFor(kind) {
     + ST.hyps.map((h, i) => `H${i + 1}: ${h.text}\n  would be wrong if: ${h.kill}\n  evidence: ${(ST.verdicts[i] || {}).ev || '(none written)'}\n  our verdict: ${(ST.verdicts[i] || {}).res || '(none)'}`).join('\n')
     + `\n\nFor each one: does the evidence actually support the verdict? Challenge any verdict that is softer than the evidence allows - "partly confirmed" is often a way of not admitting a rejection. Then write, in one line per hypothesis, what changes in the strategy.`;
   if (kind === 'strategy') return base + `\nBefore the research our positioning was:\n${val('posstat')}\n\nAfter it:\n${val('posRev')}\n\nSegments and targets now: ${val('segRev')}\nWhat moved on the perceptual map: ${val('mapMoved')}\n\nCheck the new statement: is the benefit one the research supports, is the competitor the real alternative our respondents mentioned, and is the reason to believe something we can actually show? Rewrite it in the required form if it does not hold.`;
+  const EV = () => `\nWHAT OUR OWN RESEARCH SAYS\n`
+    + (A.desc ? A.desc.slice(0, 10).join('\n') + '\n' : '')
+    + (A.cross ? 'Differences between groups: ' + A.cross.slice(0, 5).join('; ') + '\n' : '')
+    + (A.cluster ? `Segments: ${A.cluster.sizes.join(' / ')}, silhouette ${fmt(A.cluster.sil)}, separated by ${A.cluster.top.slice(0, 3).map((t) => t.split(':')[0]).join(', ')}\n` : '')
+    + (A.wtp ? `Price: ${fmt(A.wtp.best, 2)} maximises profit; ${fmt(A.wtp.share * 100, 0)}% would pay it or more; variable cost ${A.wtp.vc}, fixed ${A.wtp.fc}\n` : '')
+    + (A.map ? 'Perceptual map (1-5): ' + A.map.rows.map((r) => r.a + ' ' + A.map.brands.map((b, i) => b + ' ' + fmt(r.cells[i])).join(' / ')).join('; ') + '\n' : '')
+    + (QUAL.themes ? 'From the interviews: ' + (QUAL.themes || []).map((t) => t.theme).filter(Boolean).join('; ') + '\n' : '');
+
+  if (kind === 'map') return base + `\nOur hypothesised map in Pitch 1 scored: ${val('attrs') || '(attributes)'}\n`
+    + (A.map ? `The real map, from ${DATA ? DATA.rows.length : 0} respondents:\n`
+      + A.map.rows.map((r) => r.a + ': ' + A.map.brands.map((b, i) => b + ' ' + fmt(r.cells[i])).join(', ')).join('\n')
+      : '(build the map first)')
+    + `\n\nTell us: where we actually sit, which attribute we own and which we only think we own, which competitor is closest and on what, and whether the position we claimed in Pitch 1 is free. Then write the two sentences for Part 2 of the pitch: what moved, and what it means.`;
+
+  if (kind === 'mixProduct') return base + EV() + `\nOUR PRODUCT DECISIONS AS WE WROTE THEM\ncore benefit: ${val('pCore')}\nactual: ${val('pActual')}\naugmented: ${val('pAug')}\nbrand: ${val('pBrandName')} - ${val('pIdentity')} - ${val('pBrandStrat')}\npackaging: ${val('pPack')}\n\nRefine this section: keep what the evidence supports, cut what nothing supports, and name anything that contradicts our own numbers. The core benefit must be a benefit and not a feature. Then give us the paragraph as it would read in the document, in our voice, under 150 words.`;
+  if (kind === 'mixPrice') return base + EV() + `\nOUR PRICE DECISIONS AS WE WROTE THEM\nstrategy: ${val('prStrat')}\nlevel: ${val('prLevel')}\nwhat the research says: ${val('prWtp')}\nadjustments: ${val('prAdj')}\n\nRefine this section: is the level consistent with the demand curve and with the cost? What do we give up at the level above and the level below? If we are pricing cost-based, say what the customer evidence says we are leaving on the table. End with the paragraph for the document, under 150 words, and three bullets of risk.`;
+  if (kind === 'mixPlace') return base + EV() + `\nOUR PLACE DECISIONS AS WE WROTE THEM\n${val('plType')} / ${val('plLength')} / ${val('plMulti')}\nwhy: ${val('plWhy')}\npartners: ${val('plPartners')}\n\nRefine this section against where people said they would buy it. If the channel we chose is not the one they named, say so plainly. Check the margin: an intermediary takes a cut, and our price was set on the demand curve. End with the paragraph for the document, under 150 words.`;
+  if (kind === 'mixPromotion') return base + EV() + `\nOUR PROMOTION PLAN AS WE WROTE IT\n${ST.media.map((r) => `${r.m} -> ${r.p} -> ${r.who} -> ${r.msg}`).join('\n')}\nkey message: ${val('prMsg')}\nhow it holds together: ${val('prIMC')}\n\nRefine it against where people said they would hear about it and who they trust. Check that every step of the adoption process has something behind it - aware, like, try, repeat, recommend - and that the message is in the customers' words from the interviews, not ours. End with the paragraph for the document, under 150 words.`;
+
   if (kind === 'mix') return base + `\nOur marketing mix:\n\nPRODUCT\ncore benefit: ${val('pCore')}\nactual: ${val('pActual')}\naugmented: ${val('pAug')}\nbrand: ${val('pBrandName')} - ${val('pIdentity')} - ${val('pBrandStrat')}\npackaging: ${val('pPack')}\n\nPRICE\nstrategy: ${val('prStrat')}\nlevel: ${val('prLevel')}\nwhat the research says: ${val('prWtp')}\nadjustments: ${val('prAdj')}\n\nPLACE\n${val('plType')} / ${val('plLength')} / ${val('plMulti')}\nwhy: ${val('plWhy')}\npartners: ${val('plPartners')}\n\nPROMOTION\n${ST.media.map((r) => `${r.m} -> ${r.p} -> ${r.who} -> ${r.msg}`).join('\n')}\nkey message: ${val('prMsg')}\nhow it holds together: ${val('prIMC')}\n\nAnd what our research found:\n${(A.desc || []).slice(0, 6).join('\n')}\n${A.wtp ? `optimal price ${fmt(A.wtp.best, 2)}` : ''}\n${A.cluster ? `segments: ${A.cluster.sizes.join(' / ')}` : ''}\n\nCheck the mix for three things: every decision that contradicts our own data; every decision that has no evidence behind it at all; and every pair of decisions that contradict each other (a premium price with a discount channel, a target we never measured, a medium that cannot reach the people we named). Be blunt and list them.`;
   return base;
 }
@@ -1333,8 +1637,7 @@ $$('[data-prompt]').forEach((b) => b.addEventListener('click', () => {
 /* ===================================================================== 8 completeness and Word */
 const NEEDED = [
   ['team', 'the group members'], ['brandwork', 'the working name'], ['offer', 'what it is'],
-  ['targets', 'the targets'], ['objectives', 'the research objectives'], ['qwho', 'who you spoke to'],
-  ['qfind', 'the qualitative findings'], ['prodDesc', 'the product description'],
+  ['targets', 'the targets'], ['objectives', 'the research objectives'], ['qwho', 'who you spoke to'], ['prodDesc', 'the product description'],
   ['sampleDef', 'the sample definition'], ['pCore', 'the core benefit'], ['pActual', 'the actual product'],
   ['pBrandName', 'the brand name'], ['prStrat', 'the pricing strategy'], ['prLevel', 'the price level'],
   ['plType', 'direct or indirect'], ['plLength', 'the channel length'], ['plMulti', 'the channel mix'],
@@ -1361,67 +1664,135 @@ function completeness() {
 
 function wordDoc() {
   const d = window.docx;
-  const P = (text, opts) => new d.Paragraph(Object.assign({ children: [new d.TextRun({ text: String(text || ''), size: 22 })] }, opts || {}));
-  const H = (text, level) => new d.Paragraph({ text: String(text), heading: level });
-  const bullets = (arr) => arr.filter(Boolean).map((t) => new d.Paragraph({ text: String(t), bullet: { level: 0 } }));
-  const tbl = (head, rows) => new d.Table({
-    width: { size: 100, type: d.WidthType.PERCENTAGE },
-    rows: [new d.TableRow({ children: head.map((h) => new d.TableCell({ children: [P(h)] })) })]
-      .concat(rows.map((r) => new d.TableRow({ children: r.map((c) => new d.TableCell({ children: [P(c)] })) }))),
+  const BLUE = '1F3864', GREY = '5A5A68';
+  const run = (t, o) => new d.TextRun(Object.assign({ text: String(t == null ? '' : t), font: 'Arial', size: 22 }, o || {}));
+  const P = (t, o) => new d.Paragraph(Object.assign({ children: [run(t, (o || {}).run)], spacing: { after: 120 } }, (o || {}).para || {}));
+  const H1 = (t) => new d.Paragraph({ children: [run(t, { bold: true, size: 30, color: BLUE })],
+    spacing: { before: 320, after: 160 }, border: { bottom: { color: 'D9D9E3', size: 8, style: d.BorderStyle.SINGLE, space: 6 } } });
+  const H2 = (t) => new d.Paragraph({ children: [run(t, { bold: true, size: 25, color: BLUE })], spacing: { before: 240, after: 100 } });
+  const H3 = (t) => new d.Paragraph({ children: [run(t, { bold: true, size: 22 })], spacing: { before: 180, after: 80 } });
+  const bullets = (arr) => arr.filter(Boolean).map((t) => new d.Paragraph({ children: [run(t)], bullet: { level: 0 }, spacing: { after: 60 } }));
+  const cell = (t, o) => new d.TableCell({
+    children: [new d.Paragraph({ children: [run(t, (o || {}).run)], spacing: { after: 0 } })],
+    shading: (o || {}).fill ? { type: d.ShadingType.CLEAR, fill: (o || {}).fill } : undefined,
+    margins: { top: 60, bottom: 60, left: 90, right: 90 },
   });
+  const table = (head, rows) => new d.Table({
+    width: { size: 100, type: d.WidthType.PERCENTAGE },
+    borders: { insideHorizontal: { style: d.BorderStyle.SINGLE, size: 4, color: 'D9D9E3' },
+               insideVertical: { style: d.BorderStyle.SINGLE, size: 4, color: 'D9D9E3' },
+               top: { style: d.BorderStyle.SINGLE, size: 6, color: 'B9B9C6' },
+               bottom: { style: d.BorderStyle.SINGLE, size: 6, color: 'B9B9C6' },
+               left: { style: d.BorderStyle.NONE }, right: { style: d.BorderStyle.NONE } },
+    rows: [new d.TableRow({ tableHeader: true, children: head.map((t) => cell(t, { run: { bold: true, size: 19, color: 'FFFFFF' }, fill: BLUE })) })]
+      .concat(rows.map((r) => new d.TableRow({ children: r.map((c) => cell(c, { run: { size: 20 } })) }))),
+  });
+  const note = (title, text) => new d.Table({
+    width: { size: 100, type: d.WidthType.PERCENTAGE },
+    borders: { top: { style: d.BorderStyle.SINGLE, size: 6, color: '9A6B12' }, bottom: { style: d.BorderStyle.SINGLE, size: 6, color: '9A6B12' },
+               left: { style: d.BorderStyle.SINGLE, size: 6, color: '9A6B12' }, right: { style: d.BorderStyle.SINGLE, size: 6, color: '9A6B12' },
+               insideHorizontal: { style: d.BorderStyle.NONE }, insideVertical: { style: d.BorderStyle.NONE } },
+    rows: [new d.TableRow({ children: [new d.TableCell({
+      shading: { type: d.ShadingType.CLEAR, fill: 'FCF4E2' },
+      margins: { top: 140, bottom: 140, left: 160, right: 160 },
+      children: [new d.Paragraph({ children: [run(title, { bold: true, size: 19, color: '7A5410' })], spacing: { after: 60 } }),
+                 new d.Paragraph({ children: [run(text, { size: 20, color: '4A4A58' })] })],
+    })] })],
+  });
+  const gap = (n) => new d.Paragraph({ children: [run('')], spacing: { after: n || 200 } });
+
   const A = ST.analysis;
-  const kids = [
-    H('Pitch 2 - ' + (val('brandwork') || 'our project'), d.HeadingLevel.TITLE),
-    P(val('team') + ' | Marketing Fundamentals 26-27 | ' + new Date().toLocaleDateString()),
-    P(val('offer')),
-    H('Part 1. Market research', d.HeadingLevel.HEADING_1),
-    H('Research objectives', d.HeadingLevel.HEADING_2), ...bullets(lines(val('objectives'))),
-    H('Qualitative research', d.HeadingLevel.HEADING_2),
+  const brand = val('brandwork') || 'our project';
+  const today = new Date().toLocaleDateString();
+
+  const cover = [
+    gap(1400),
+    new d.Paragraph({ children: [run('PITCH 2', { bold: true, size: 20, color: GREY, characterSpacing: 60 })], alignment: d.AlignmentType.CENTER }),
+    new d.Paragraph({ children: [run(brand, { bold: true, size: 56, color: BLUE })], alignment: d.AlignmentType.CENTER, spacing: { after: 120 } }),
+    new d.Paragraph({ children: [run(val('offer'), { size: 24, color: GREY })], alignment: d.AlignmentType.CENTER, spacing: { after: 360 } }),
+    new d.Paragraph({ children: [run('Market research and marketing mix', { size: 22 })], alignment: d.AlignmentType.CENTER }),
+    new d.Paragraph({ children: [run(val('team'), { size: 22 })], alignment: d.AlignmentType.CENTER }),
+    new d.Paragraph({ children: [run('Marketing Fundamentals 26-27 · IE University · ' + today, { size: 20, color: GREY })],
+      alignment: d.AlignmentType.CENTER, spacing: { after: 400 } }),
+    note('This is a base structure, not the document you hand in',
+      'Everything here comes from your own research, but it is written in notes, not in prose. Rewrite it '
+      + 'in your words, cut what does not earn its place, keep it inside the page limit of the guide, and '
+      + 'format it properly: the slides are a separate deliverable and this is the document that goes with '
+      + 'them. What you must not change are the numbers.'),
+    new d.Paragraph({ children: [new d.PageBreak()] }),
+  ];
+
+  const body = [
+    H1('Part 1. Market research'),
+    H2('Research objectives'), ...bullets(lines(val('objectives'))),
+    H2('Qualitative research'),
     P('Technique and sample: ' + val('qwho')),
-    ...bullets(lines(val('qfind'))),
-    P('Quotes:'), ...bullets(lines(val('qquotes'))),
-    H('Quantitative research', d.HeadingLevel.HEADING_2),
+    ...((QUAL.themes || []).length
+      ? [P('What it found:'), table(['Theme', 'In their words', 'What it implies'],
+          (QUAL.themes || []).map((t) => [t.theme || '', t.quote || '', t.implication || '']))]
+      : bullets(lines(val('qfind')))),
+    gap(),
+    H2('Quantitative research'),
     P('Sample: ' + val('sampleDef')),
     P('Answers analysed: ' + (DATA ? DATA.rows.length : 0)),
-    ...(A.desc ? [P('Descriptive results:'), ...bullets(A.desc)] : []),
-    ...(A.cross ? [P('Significant and readable crosstabs (' + (A.crossMeta ? A.crossMeta.tested : 0) + ' pairs tested):'), ...bullets(A.cross)] : []),
-    ...(A.cluster ? [P('Segmentation: ' + A.cluster.k + ' segments, silhouette ' + fmt(A.cluster.sil)
-      + ', ' + fmt(A.cluster.varExp * 100, 0) + '% of the differences explained. ' + A.cluster.sizes.join(' / ')),
-      ...bullets(A.cluster.top)] : []),
-    ...(A.wtp ? [H('Willingness to pay and price', d.HeadingLevel.HEADING_3),
-      P('Maximum demand ' + A.wtp.D + ' units, variable cost ' + A.wtp.vc + ', fixed cost ' + A.wtp.fc + '.'),
-      tbl(['Price', 'Would pay it or more', 'Demand', 'Revenue', 'Profit'],
+    ...(A.desc ? [H3('What the answers say'), ...bullets(A.desc)] : []),
+    ...(A.cross ? [H3('Differences between groups'),
+      P(`${A.crossMeta ? A.crossMeta.tested : 0} pairs tested, ${A.crossMeta ? A.crossMeta.sig : 0} significant and readable, `
+        + `${A.crossMeta ? A.crossMeta.notValid : 0} not testable with this sample.`), ...bullets(A.cross)] : []),
+    ...(A.cluster ? [H3('Segments'),
+      P(`${A.cluster.k} segments, silhouette ${fmt(A.cluster.sil)}, ${fmt(A.cluster.varExp * 100, 0)}% of the differences explained.`),
+      ...bullets(A.cluster.sizes.concat(A.cluster.top))] : []),
+    ...(A.map ? [H3('The real perceptual map'),
+      table(['Attribute'].concat(A.map.brands), A.map.rows.map((r) => [r.a].concat(r.cells.map((c) => (c === null ? '-' : fmt(c)))))),
+      P('Scores are the average answer, 1 to 5. Put the hypothesised map of Pitch 1 beside it.')] : []),
+    ...(A.wtp ? [H3('Willingness to pay and price'),
+      P(`Maximum demand ${A.wtp.D} units, variable cost ${A.wtp.vc}, fixed cost ${A.wtp.fc}.`),
+      table(['Price', 'Would pay it or more', 'Demand', 'Revenue', 'Profit'],
         A.wtp.rows.map((r) => [fmt(r.p, 2), fmt(r.atOrAbove * 100, 0) + '%', String(Math.round(r.q)), String(Math.round(r.revenue)), String(Math.round(r.profit))])),
-      P('The profit-maximising price is ' + fmt(A.wtp.best, 2) + '.')] : []),
-    H('Verdict on each hypothesis', d.HeadingLevel.HEADING_2),
-    tbl(['Hypothesis', 'Evidence', 'Verdict', 'What changes'],
-      ST.hyps.map((h, i) => [h.text || '', (ST.verdicts[i] || {}).ev || '', (ST.verdicts[i] || {}).res || '', (ST.verdicts[i] || {}).chg || ''])),
-    H('Part 2. Strategy after the research', d.HeadingLevel.HEADING_1),
-    P(val('segRev')),
-    P('Positioning: ' + val('posRev')),
-    P('The map: ' + val('mapMoved')),
-    H('Part 3. Marketing mix', d.HeadingLevel.HEADING_1),
-    H('Product and brand', d.HeadingLevel.HEADING_2),
+      P(`The profit-maximising price is ${fmt(A.wtp.best, 2)}.`)] : []),
+    H2('Verdict on each hypothesis'),
+    table(['Hypothesis', 'Evidence', 'Verdict', 'What changes'],
+      ST.hyps.map((x, i) => [x.text || '', (ST.verdicts[i] || {}).ev || '', (ST.verdicts[i] || {}).res || '', (ST.verdicts[i] || {}).chg || ''])),
+    gap(),
+    H1('Part 2. Strategy after the research'),
+    P(val('segRev')), P('Positioning: ' + val('posRev')), P('The map: ' + val('mapMoved')),
+    H1('Part 3. Marketing mix'),
+    H2('Product and brand'),
     P('Core benefit: ' + val('pCore')), P('Actual product: ' + val('pActual')), P('Augmented: ' + val('pAug')),
     P('Brand: ' + val('pBrandName') + '. ' + val('pIdentity')), P('Brand strategy: ' + val('pBrandStrat')),
     P('Packaging and labelling: ' + val('pPack')),
-    H('Price', d.HeadingLevel.HEADING_2),
+    H2('Price'),
     P('Strategy: ' + val('prStrat')), P('Level: ' + val('prLevel')),
     P('From the research: ' + val('prWtp')), P('Adjustments: ' + val('prAdj')),
-    H('Place', d.HeadingLevel.HEADING_2),
+    H2('Place'),
     P(val('plType') + ' | ' + val('plLength') + ' | ' + val('plMulti')),
     P(val('plWhy')), P('Partners: ' + val('plPartners')),
-    H('Promotion', d.HeadingLevel.HEADING_2),
-    tbl(['Medium', 'What it is there to do', 'Target', 'Message'],
+    H2('Promotion'),
+    table(['Medium', 'What it is there to do', 'Target', 'Message'],
       ST.media.filter((r) => r.m).map((r) => [r.m, r.p, r.who, r.msg])),
     P('Key message: ' + val('prMsg')), P('How it holds together: ' + val('prIMC')),
-    H('Appendix A. The questionnaire', d.HeadingLevel.HEADING_1),
-    ...questionnaireText().split('\n').map((l) => P(l)),
-    H('Appendix B. The discussion guide', d.HeadingLevel.HEADING_1),
-    ...discussionGuide().split('\n').map((l) => P(l)),
+    new d.Paragraph({ children: [new d.PageBreak()] }),
+    H1('Appendix A. The questionnaire'),
+    ...questionnaireText().split('\n').map((l) => P(l, { run: { size: 19 } })),
+    new d.Paragraph({ children: [new d.PageBreak()] }),
+    H1('Appendix B. The discussion guide'),
+    ...discussionGuide().split('\n').map((l) => P(l, { run: { size: 19 } })),
   ];
-  return new d.Document({ sections: [{ children: kids }] });
+
+  return new d.Document({
+    styles: { default: { document: { run: { font: 'Arial', size: 22 }, paragraph: { spacing: { line: 300 } } } } },
+    sections: [{
+      properties: { page: { margin: { top: 1134, bottom: 1134, left: 1418, right: 1418 } } },
+      footers: { default: new d.Footer({ children: [new d.Paragraph({
+        alignment: d.AlignmentType.RIGHT,
+        children: [run('Pitch 2 · ' + brand + ' · ', { size: 16, color: GREY }),
+                   new d.TextRun({ children: [d.PageNumber.CURRENT], font: 'Arial', size: 16, color: GREY })],
+      })] }) },
+      children: cover.concat(body),
+    }],
+  });
 }
+
 $('#dlWord').addEventListener('click', () => {
   if (!window.docx) { alert('The Word library did not load. Check your connection and reload.'); return; }
   window.docx.Packer.toBlob(wordDoc())
@@ -1499,6 +1870,185 @@ $('#theme').addEventListener('click', () => {
   const dark = document.documentElement.getAttribute('data-theme') !== 'light';
   document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
 });
+
+
+/* ===================================================================== the worked example */
+const DEMO = {
+  brand: 'Sobremesa',
+  offer: 'a weekly box with three dinners for two, delivered on Sunday',
+  team: 'Example group - Ana, Marco, Lucia, Tom',
+  targets: 'students aged 18-24 who cook at home\nyoung professionals who batch cook at the weekend',
+  posstat: 'For students who cook at home, Sobremesa provides a week of dinners already decided, unlike delivery apps, because it costs less than eating out and takes twenty minutes.',
+  competitors: 'the supermarket\na delivery app',
+  attributes: 'price\nconvenience\ntaste\nsustainability',
+  prodDesc: 'A box with three dinners for two, delivered on Sunday. Everything measured, twenty minutes each, with the recipe on a card and the ingredients from local suppliers.',
+  sampleDef: '96 students of the campus, reached through four course groups and two residences',
+  qwho: 'three students who cook at home, recruited in the canteen over two days',
+  objectives: `SEGMENTATION. Whether students who cook at home are one group or several, and which of them is worth going for.
+POSITIONING. How Sobremesa is seen against the supermarket and a delivery app on price, convenience, taste and sustainability.
+THE OFFER. Which benefit they actually buy it for, and which parts of the idea they do not care about.
+PRICE. What they would pay at most, how many at each level, and what is left after our costs.
+PLACE. Where they would expect to buy it, and whether that is one channel or several.
+PROMOTION. Where they would first hear about it, and who they trust about it.`,
+  hypotheses: [
+    { text: 'students aged 18-24 who cook at home would pay 7 to 9 euros for a weekly meal kit', kill: 'fewer than 30% choose 7 euros or more' },
+    { text: 'convenience matters more than price for this target', kill: 'price scores higher than convenience on importance' },
+    { text: 'they would buy it online from the brand rather than in a shop', kill: 'fewer than half choose online' },
+  ],
+  themes: [
+    { theme: 'Deciding is the hard part', statement: 'The hardest part of cooking at home is deciding what to cook', quote: 'I do not mind cooking. I mind standing in front of the fridge at nine at night.', implication: 'the benefit is the decision taken away, not the cooking' },
+    { theme: 'Waste hurts twice', statement: 'I end up throwing food away that I bought with good intentions', quote: 'I buy the coriander for one recipe and the rest rots.', implication: 'portioned ingredients are worth paying for' },
+    { theme: 'Delivery is the real competitor', statement: 'When I do not cook I order delivery, not a restaurant', quote: 'It is twelve euros and it is there in half an hour. That is what I compare it with.', implication: 'price the box against delivery, not against the supermarket' },
+    { theme: 'Trust comes from a person', statement: 'I would try it if somebody I know had tried it first', quote: 'If my flatmate says it works, I order it.', implication: 'promotion starts with people, not with reach' },
+  ],
+  mix: {
+    pCore: 'the week is decided: they stop standing in front of the fridge',
+    pActual: 'three dinners for two, twenty minutes each, portioned ingredients, a recipe card, local suppliers',
+    pAug: 'the app that remembers what they liked, a skip-a-week button, the shopping list for the extras',
+    pBrandName: 'Sobremesa', pIdentity: 'warm, domestic, no gloss: a kitchen table, not a studio',
+    pBrandStrat: 'Single brand for everything', pPack: 'one cardboard box, ingredients in paper, the card on top, nothing printed that is not needed',
+    prStrat: 'Customer value-based', prLevel: '9 euros per dinner for two, launched at 7 for the first month',
+    prAdj: 'launch price for four weeks, then the list price; no permanent discounts',
+    plType: 'Direct: we sell to the customer ourselves', plLength: 'Short: at most one intermediary',
+    plMulti: 'Omnichannel: several, joined up', plWhy: 'they said they would buy it online from the brand and pick it up or get it at the residence; a supermarket would take the margin our price does not have',
+    plPartners: 'one local logistics partner for the Sunday delivery, two residences as pick-up points',
+    prMsg: 'Dinner is already decided', prIMC: 'one line and one look across the campus event, the flatmate referral and the Instagram content',
+    media: [
+      { m: 'A flatmate referral code', p: 'Make them try it', who: 'students who cook at home', msg: 'your flatmate already tried it' },
+      { m: 'Instagram reels of the twenty minutes', p: 'Make them like it', who: 'students who cook at home', msg: 'three dinners, twenty minutes each' },
+      { m: 'A stand at the residence on Sunday', p: 'Make them aware', who: 'students in residences', msg: 'dinner is already decided' },
+      { m: 'The app, with the skip-a-week button', p: 'Make them come back', who: 'subscribers', msg: 'this week, or skip it' },
+      { m: 'A photo you want to send', p: 'Make them recommend it', who: 'subscribers', msg: 'look what I made' },
+    ],
+  },
+  csv: `consent,uses_category,theme_1,theme_2,theme_3,theme_4,imp_1,imp_2,imp_3,imp_4,intention,relevance,novelty,us_1,us_2,us_3,us_4,c1_1,c1_2,c1_3,c1_4,c2_1,c2_2,c2_3,c2_4,wtp,channel,media,age_group,gender,occupation,spend\nYes,Once or twice a month,5,5,5,4,4,5,3,5,5,5,3,2,5,5,4,4,1,2,1,2,4,4,4,7 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Several times a week,5,4,5,5,2,4,5,4,5,4,4,3,5,4,3,4,1,4,1,2,5,4,2,11 €,Online, from the brand,From a friend,18-24,Male,Student,10 to 25 €\nYes,Once a week,5,3,5,5,4,5,3,4,5,5,3,3,5,3,5,4,2,3,1,1,3,5,4,9 €,Online, from the brand,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,5,5,5,4,4,5,3,5,5,5,3,3,5,3,4,5,3,2,1,2,4,5,3,9 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Once or twice a month,5,4,5,3,2,4,4,4,4,5,4,4,5,5,4,5,2,3,2,2,4,5,3,9 €,Online, from the brand,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Once a week,5,5,4,5,2,4,3,3,5,5,5,3,5,5,4,5,1,3,2,3,3,5,3,13 €,Online, from the brand,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,1,1,3,3,5,2,3,1,2,2,3,2,2,3,2,5,2,3,1,1,5,4,3,7 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Once a week,1,3,2,2,5,2,3,1,3,2,2,2,3,3,1,5,1,4,1,3,3,5,4,5 €,In a supermarket,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Once a week,1,1,2,1,5,3,4,3,3,3,4,1,2,3,1,5,1,3,1,3,5,4,2,7 €,On campus,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,2,2,3,2,5,3,4,2,3,2,3,3,3,3,3,5,2,3,2,2,5,4,2,5 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Several times a week,5,3,5,5,3,5,5,5,5,5,5,3,4,3,4,4,2,3,2,1,4,5,4,9 €,Online, from the brand,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once a week,5,4,5,3,2,5,3,4,4,5,4,4,5,4,3,5,1,3,2,2,4,5,4,9 €,Online, from the brand,Search or a website,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,5,5,5,5,4,5,3,5,5,5,4,3,4,3,4,5,3,2,2,2,4,4,3,9 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Once a week,4,5,5,5,3,5,3,4,4,5,3,3,5,4,5,5,3,4,1,2,5,5,3,13 €,Online, from the brand,From a friend,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,5,4,5,4,3,5,4,5,5,5,3,2,5,3,3,5,1,4,1,2,3,5,4,13 €,Online, from the brand,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,5,5,5,4,3,5,5,4,4,5,5,2,5,4,3,4,2,3,2,1,4,5,3,7 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Once or twice a month,3,1,4,1,5,2,5,1,3,3,3,2,3,3,2,5,2,3,2,2,4,4,3,7 €,In a supermarket,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Once a week,2,2,2,2,5,1,5,3,2,2,4,1,2,3,2,5,1,3,2,1,5,3,2,5 €,On campus,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,3,2,3,2,4,2,4,2,2,1,2,2,4,2,1,5,3,4,3,2,5,4,3,5 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Once or twice a month,1,2,3,3,5,2,4,3,2,2,2,1,3,2,3,5,2,3,2,1,4,5,3,5 €,In a supermarket,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,5,5,5,5,3,5,3,4,5,5,3,2,5,3,4,5,2,3,2,3,4,4,4,11 €,Online, from the brand,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,5,3,5,3,2,4,4,4,5,5,3,3,5,3,3,5,2,3,2,3,3,5,2,13 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Once or twice a month,4,5,5,5,4,5,5,3,5,5,5,3,5,4,4,5,3,3,2,2,3,4,3,13 €,Online, from the brand,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once a week,5,5,5,3,3,5,3,4,4,5,5,4,5,4,3,4,3,3,2,1,3,5,4,13 €,Online, from the brand,Search or a website,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,4,4,5,3,3,5,4,5,5,5,5,3,5,4,4,5,3,2,2,2,4,5,3,9 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Once a week,5,4,5,3,2,4,4,4,5,4,3,2,5,4,3,4,2,3,2,3,5,5,3,11 €,Online, from the brand,From a friend,18-24,Male,Student,10 to 25 €\nYes,Several times a week,3,2,2,1,5,2,5,3,2,3,3,2,3,3,2,5,3,3,1,3,4,3,2,5 €,On campus,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,3,3,3,1,4,2,4,1,2,3,3,2,3,3,2,5,2,2,2,3,4,5,3,9 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Several times a week,2,3,3,1,5,2,3,2,3,3,3,2,4,3,2,5,1,4,2,1,4,3,3,9 €,In a supermarket,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Several times a week,1,3,2,2,4,2,3,2,1,2,2,1,3,2,3,5,2,4,2,3,5,4,3,7 €,On campus,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,5,5,5,3,2,5,4,3,5,4,5,2,5,3,3,5,3,3,2,2,5,5,3,11 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Several times a week,5,4,5,3,4,5,3,4,5,5,3,4,4,5,3,5,1,3,2,2,4,5,4,9 €,Online, from the brand,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,5,5,5,4,4,5,4,5,5,5,5,3,4,5,4,5,1,3,2,3,4,4,3,13 €,Online, from the brand,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,5,5,5,5,3,5,4,4,5,5,4,3,4,4,4,4,2,3,2,1,4,5,2,9 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Once or twice a month,5,3,5,3,3,5,4,3,5,5,3,4,5,4,4,5,2,4,1,2,5,4,3,7 €,Online, from the brand,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,5,3,5,5,2,5,3,5,5,5,4,2,5,3,4,5,2,4,2,2,5,4,3,9 €,Online, from the brand,Search or a website,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,3,1,3,2,5,3,4,3,3,1,2,2,2,3,2,5,2,4,1,3,3,3,3,7 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Once a week,1,3,4,1,5,3,4,2,2,3,4,2,4,2,3,5,2,2,2,2,4,4,3,5 €,In a supermarket,From a friend,18-24,Male,Student,10 to 25 €\nYes,Once a week,3,2,3,2,4,2,4,2,2,2,3,2,3,2,2,4,2,3,3,3,4,4,2,9 €,On campus,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,3,1,4,2,5,1,4,2,2,2,2,1,3,3,2,5,2,3,1,3,3,5,3,5 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Several times a week,5,3,5,4,4,5,3,4,5,4,5,3,5,4,4,5,2,2,1,2,5,5,2,9 €,Online, from the brand,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Several times a week,5,5,5,5,4,5,5,3,4,5,5,4,4,4,3,5,3,4,2,2,3,5,2,7 €,Online, from the brand,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,5,3,5,3,3,5,5,4,4,5,5,3,5,5,3,4,1,3,1,3,3,5,3,7 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Once a week,5,4,4,5,4,5,4,4,5,4,4,2,5,4,4,5,3,3,3,2,4,5,2,11 €,Online, from the brand,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Several times a week,5,5,4,4,3,5,4,3,4,5,4,3,5,4,4,5,3,2,2,2,4,4,3,9 €,Online, from the brand,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,5,4,5,4,2,5,4,4,5,5,4,2,5,3,5,4,1,2,2,2,5,4,3,11 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Once a week,2,2,3,1,5,2,3,3,3,1,4,1,3,2,2,5,3,2,2,2,4,3,4,5 €,In a supermarket,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,3,2,3,2,5,2,5,2,1,2,2,3,3,3,2,4,3,4,3,2,3,3,2,7 €,On campus,Search or a website,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,2,2,2,2,5,1,4,2,3,1,3,3,3,3,2,5,3,2,2,3,5,4,3,7 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Once a week,3,2,3,3,4,1,4,3,2,1,4,2,4,4,1,4,2,3,2,1,4,5,4,5 €,In a supermarket,From a friend,18-24,Male,Student,10 to 25 €\nYes,Once a week,5,4,5,4,2,5,5,3,5,5,5,4,5,5,5,4,2,4,2,2,4,5,4,9 €,Online, from the brand,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,5,5,5,5,4,5,4,5,5,5,5,2,4,4,4,5,1,3,2,3,4,5,2,9 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Once a week,5,4,5,4,2,4,4,5,5,4,5,3,5,3,4,5,2,4,1,2,4,5,2,11 €,Online, from the brand,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Several times a week,5,5,5,4,3,5,5,5,5,5,4,4,5,4,5,5,2,2,2,2,4,5,3,9 €,Online, from the brand,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,5,3,5,3,3,5,3,4,5,5,3,4,4,5,5,4,3,4,2,2,5,5,3,9 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Several times a week,5,5,5,4,3,4,4,5,5,5,4,3,4,5,3,5,1,4,2,1,5,5,3,9 €,Online, from the brand,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,2,2,2,1,4,2,4,2,2,2,3,3,4,3,2,4,2,2,1,3,5,3,3,9 €,On campus,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,3,3,4,1,5,2,4,3,2,3,2,2,3,3,2,5,2,3,1,3,3,4,4,5 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Once a week,2,2,3,1,4,2,4,3,2,2,3,2,3,4,2,5,3,3,2,3,4,4,3,7 €,In a supermarket,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,2,2,2,1,4,2,3,3,3,1,3,3,4,2,2,5,3,4,2,2,4,4,3,5 €,On campus,Search or a website,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,5,5,5,4,3,5,4,5,5,5,4,2,5,4,4,5,3,3,3,3,4,4,3,11 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Once a week,5,4,5,3,4,5,3,5,5,5,3,3,5,4,4,5,3,3,3,2,4,5,4,9 €,Online, from the brand,From a friend,18-24,Male,Student,10 to 25 €\nYes,Once a week,5,5,5,3,3,5,3,4,5,5,5,3,5,4,3,5,2,3,2,1,4,4,2,9 €,Online, from the brand,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,4,3,5,4,4,5,4,5,5,4,5,3,5,3,4,5,2,3,2,2,5,4,3,11 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Once a week,4,3,5,4,2,5,3,5,4,5,3,3,4,4,4,5,3,3,1,3,5,5,3,9 €,Online, from the brand,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Once a week,4,4,5,4,4,5,4,4,5,5,4,3,4,4,3,5,2,3,2,2,3,5,3,13 €,Online, from the brand,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,2,1,3,2,5,2,4,3,1,1,4,1,4,2,2,5,1,3,2,1,3,4,4,7 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Once a week,3,3,3,2,4,3,4,2,2,1,3,3,2,3,2,5,3,2,1,3,5,5,4,9 €,In a supermarket,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,2,3,2,1,5,3,4,1,1,2,3,3,3,3,2,5,3,4,1,2,5,3,3,9 €,On campus,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,2,1,2,2,5,1,4,1,2,2,3,3,3,2,3,5,3,3,2,1,3,5,4,7 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Once a week,5,3,4,4,3,5,3,4,4,5,4,3,4,5,4,5,1,4,3,1,3,5,3,9 €,Online, from the brand,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,5,5,4,4,3,5,4,4,5,5,4,4,4,4,4,4,2,3,2,2,4,4,2,9 €,Online, from the brand,Search or a website,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,5,4,5,4,3,4,4,5,5,5,4,4,5,3,3,5,3,3,3,1,4,4,3,9 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Once or twice a month,5,4,5,5,3,5,4,5,4,5,5,3,5,5,4,5,1,3,1,3,4,5,3,9 €,Online, from the brand,From a friend,18-24,Male,Student,10 to 25 €\nYes,Several times a week,5,4,4,3,2,5,4,3,5,4,4,2,5,3,4,5,1,3,2,3,4,5,2,7 €,Online, from the brand,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,5,5,5,3,2,4,5,5,5,5,5,3,5,5,3,4,1,3,2,3,3,5,4,9 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Once a week,2,2,2,1,5,3,3,1,2,1,2,2,3,2,2,5,2,3,2,3,5,3,3,7 €,In a supermarket,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Several times a week,2,1,4,2,4,2,4,2,3,1,4,1,3,3,1,5,2,3,1,3,3,5,3,7 €,On campus,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,1,3,4,2,4,2,4,1,3,2,4,2,3,2,3,5,2,3,2,2,3,5,4,7 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Several times a week,3,2,4,1,4,2,3,2,3,2,4,2,2,3,1,5,2,4,2,3,3,4,4,9 €,In a supermarket,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Once a week,4,4,5,4,3,5,4,3,5,5,5,2,5,3,3,5,2,3,3,2,5,4,3,13 €,Online, from the brand,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,4,3,5,4,3,5,3,4,5,5,4,3,4,5,3,5,1,3,2,1,4,4,4,13 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Several times a week,4,4,4,5,3,5,5,5,4,5,4,2,4,4,3,4,3,3,1,2,3,5,3,7 €,Online, from the brand,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once a week,4,4,5,5,4,4,5,5,5,5,5,4,5,5,3,5,2,3,1,2,4,5,4,13 €,Online, from the brand,Search or a website,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once or twice a month,5,5,5,4,3,5,5,4,4,5,4,3,5,5,3,5,1,3,3,2,4,5,2,13 €,Online, from the brand,Instagram or TikTok,18-24,Female,Student,Under 10 €\nYes,Once a week,5,5,5,5,2,5,4,3,5,5,3,3,5,5,4,5,2,4,2,2,3,5,3,13 €,Online, from the brand,From a friend,18-24,Male,Student,10 to 25 €\nYes,Once a week,2,1,3,2,5,2,4,2,1,2,3,1,3,3,1,5,2,3,2,2,4,4,4,7 €,On campus,An event on campus,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,1,2,3,2,5,2,4,1,2,2,3,1,4,3,2,5,3,3,2,2,4,4,3,5 €,Online, from the brand,Search or a website,18-24,Female,Student,Under 10 €\nYes,Once or twice a month,1,1,3,1,4,1,4,2,2,2,3,1,2,3,1,5,2,2,3,2,3,4,4,5 €,In a supermarket,Instagram or TikTok,18-24,Male,Student,10 to 25 €\nYes,Once or twice a month,1,3,3,3,5,1,5,1,1,2,3,2,3,3,2,5,2,4,1,3,4,4,2,7 €,On campus,From a friend,25-34,Prefer not to say,Student,25 to 50 €\nYes,Once a week,4,3,4,4,3,4,5,3,5,5,3,2,5,3,4,5,2,4,2,2,4,5,4,13 €,Online, from the brand,An event on campus,18-24,Female,Student,Under 10 €\nYes,Once a week,5,3,5,4,3,5,4,5,5,5,4,3,5,5,5,5,2,3,2,2,4,4,3,9 €,Online, from the brand,Search or a website,18-24,Male,Student,10 to 25 €\nYes,Once a week,4,4,5,4,2,5,3,3,5,5,4,2,5,4,4,5,1,2,3,2,5,5,3,11 €,Online, from the brand,Instagram or TikTok,25-34,Prefer not to say,Student,25 to 50 €\nYes,Several times a week,5,3,5,3,2,5,3,5,4,5,4,3,4,4,4,5,2,3,2,2,4,5,3,9 €,Online, from the brand,From a friend,18-24,Female,Student,Under 10 €\nYes,Once a week,5,4,5,5,3,5,3,4,5,4,4,3,4,3,4,5,2,2,2,3,4,4,2,9 €,Online, from the brand,An event on campus,18-24,Male,Student,10 to 25 €\nYes,Once a week,4,4,5,4,3,4,4,5,5,5,5,4,4,4,4,5,1,4,3,1,4,5,2,9 €,Online, from the brand,Search or a website,25-34,Prefer not to say,Student,25 to 50 €`,
+};
+
+function demoHtml() {
+  const S = (n, who, title, body) => `<div class="demo-step"><span class="who">${who}</span>
+    <h3>${n}. ${title}</h3>${body}</div>`;
+  return `<section>
+    <h2>A worked example: Sobremesa</h2>
+    <p class="hint">A real-shaped case, from the Pitch 1 document to the Word file, so you can see what
+    each step produces before you do it with your own. At the end there is a button that loads the whole
+    thing into the copilot - answers included - so you can click through it.</p>
+    <div class="row"><button class="btn solid" id="loadDemo">Load this example into the copilot</button>
+      <button class="btn ghost" id="backWork">Back to my project</button></div>
+
+    ${S(0, 'you + the assistant', 'Pitch 1 goes in', `<p>The group uploads the Pitch 1 they handed in. The page
+      pulls the text out and writes a prompt; the assistant answers with a JSON block, and the page reads it:</p>
+      <pre class="out">{ "brand": "Sobremesa",
+  "offer": "a weekly box with three dinners for two, delivered on Sunday",
+  "targets": ["students 18-24 who cook at home", "young professionals who batch cook"],
+  "competitors": ["the supermarket", "a delivery app"],
+  "attributes": ["price", "convenience", "taste", "sustainability"],
+  "hypotheses": [{"text": "they would pay 7 to 9 euros", "wrongIf": "fewer than 30% choose 7 or more"}, ...] }</pre>
+      <p class="hint">Nothing is retyped. What the assistant got wrong is corrected in the boxes on the right.</p>`)}
+
+    ${S(1, 'this page', 'What Pitch 2 has to settle', `<p>Drafted from Pitch 1, one block per thing the pitch is graded on:</p>
+      <ul><li>Segmentation: are these one group or several?</li>
+      <li>Positioning: where do we sit against the supermarket and the delivery app?</li>
+      <li>The offer: which benefit do they actually buy?</li>
+      <li>Price, place and promotion: how much, where, and where would they hear about it?</li></ul>`)}
+
+    ${S(2, 'you + the assistant', 'Three interviews, and what they gave', `<p>Not six to ten: <b>three</b>. The page
+      writes the guide from the objectives; the assistant reads the transcripts and returns the themes, each with a
+      verbatim quote and the sentence the survey will ask agreement with:</p>
+      <table><tr><th>Theme</th><th>In their words</th><th>What it implies</th></tr>
+      ${DEMO.themes.map((t) => `<tr><td><b>${t.theme}</b></td><td>&ldquo;${t.quote}&rdquo;</td><td>${t.implication}</td></tr>`).join('')}
+      </table>
+      <p class="hint">That third theme is why the price question later is argued against delivery and not against the supermarket.</p>`)}
+
+    ${S(3, 'this page', 'The questionnaire writes itself', `<p>About twenty questions, almost all 1 to 5: the four themes
+      as agreement statements, the four attributes as importance, the idea shown and then intention, the
+      <b>same four attributes scored for Sobremesa and for each competitor</b> (that is the real perceptual map),
+      the maximum-price question the guide requires, channel, media and demographics.</p>
+      <p>It comes out as a Google Apps Script that builds the form, a Word version for the appendix, and the CSV
+      template the answers come back in.</p>`)}
+
+    ${S(4, 'this page', 'Ninety-six answers, and what they say', `<div class="grid2">
+      <div><p><b>Describe.</b> Convenience is rated 4.3 on importance against 3.4 for price. Intention to buy
+      averages 3.8, with 61% at 4 or 5.</p>
+      <p><b>Compare groups.</b> Of the pairs that can be read, intention splits by how often they cook: the
+      weekly cooks are not the market, the occasional ones are.</p></div>
+      <div><p><b>Segment.</b> Two groups: one that buys the decision and one that buys the price. The first is
+      smaller and pays more.</p>
+      <p><b>The map.</b> Sobremesa wins convenience and taste, the supermarket wins price, delivery wins
+      convenience too - which is the real fight.</p></div></div>
+      <p><b>The price model.</b> The maximum each person would pay gives the distribution; demand at each level is
+      the share at or above it; profit is computed level by level against the costs the group enters. The table
+      picks the level, not the group's taste.</p>`)}
+
+    ${S(5, 'you', 'A verdict on every hypothesis', `<table><tr><th>Hypothesis</th><th>Verdict</th><th>What changes</th></tr>
+      <tr><td>They would pay 7 to 9 euros</td><td>Confirmed</td><td>launch at 7, list at 9</td></tr>
+      <tr><td>Convenience matters more than price</td><td>Partly confirmed</td><td>true for the segment that buys the decision, false for the other one</td></tr>
+      <tr><td>They would buy online from the brand</td><td>Confirmed</td><td>direct, with residence pick-up</td></tr></table>`)}
+
+    ${S(6, 'you + the assistant', 'The mix, refined with the numbers', `<p>Each section has its own prompt that carries
+      what you wrote <b>and</b> everything the analysis produced, so the assistant argues with your data instead of
+      inventing some. For Sobremesa it ends like this:</p>
+      <ul><li><b>Product:</b> ${DEMO.mix.pCore}</li>
+      <li><b>Price:</b> ${DEMO.mix.prLevel}</li>
+      <li><b>Place:</b> ${DEMO.mix.plWhy}</li>
+      <li><b>Promotion:</b> ${DEMO.mix.prMsg} - and one medium for each step of the adoption process</li></ul>`)}
+
+    ${S(7, 'this page', 'The Word file', `<p>A cover, the three parts in the order the guide grades, the tables with
+      the numbers, and the questionnaire and the discussion guide as appendices. On the first page, in a box, it
+      says what it is: <b>a base structure</b>. The document you hand in is this, rewritten in your words and
+      properly formatted - and the slides are a separate deliverable.</p>`)}
+
+    <div class="row"><button class="btn solid" id="loadDemo2">Load this example into the copilot</button></div>
+  </section>`;
+}
+
+function loadDemo() {
+  const put = (id, v) => { const el = $('#' + id); if (el) el.value = v; };
+  put('team', DEMO.team); put('brandwork', DEMO.brand); put('offer', DEMO.offer);
+  put('targets', DEMO.targets); put('posstat', DEMO.posstat); put('competitors', DEMO.competitors);
+  put('attrs', DEMO.attributes); put('attrsLive', DEMO.attributes); put('compsLive', DEMO.competitors);
+  put('objectives', DEMO.objectives); put('prodDesc', DEMO.prodDesc); put('sampleDef', DEMO.sampleDef);
+  put('qwho', DEMO.qwho); put('brandname', DEMO.brand);
+  put('pMin', '5'); put('pStep', '2'); put('pCount', '5');
+  put('dMax', '12000'); put('vCost', '4.2'); put('fCost', '18000');
+  Object.keys(DEMO.mix).forEach((k) => { if (k !== 'media') put(k, DEMO.mix[k]); });
+  QUAL = { themes: DEMO.themes };
+  ST.hyps = DEMO.hypotheses.map((x) => ({ text: x.text, from: 'Pitch 1', how: '', kill: x.wrongIf }));
+  ST.verdicts = { 0: { ev: '61% would pay 7 euros or more', res: 'Confirmed', chg: 'launch at 7, list at 9' },
+                  1: { ev: 'convenience 4.3 against price 3.4 on importance, but only in one segment', res: 'Partly confirmed', chg: 'two messages, one per segment' },
+                  2: { ev: 'most chose online from the brand', res: 'Confirmed', chg: 'direct, with residence pick-up' } };
+  ST.media = DEMO.mix.media.slice();
+  put('segRev', 'two segments, not one: the ones who buy the decision and the ones who buy the price');
+  put('posRev', 'For students who cook at home and hate deciding, Sobremesa provides the week already decided, unlike a delivery app, because it costs less and takes twenty minutes.');
+  put('mapMoved', 'we are further from the supermarket than we thought and much closer to delivery; convenience is where the fight is');
+  put('qfind', DEMO.themes.map((t) => t.theme + ': ' + t.implication).join('\n'));
+  put('qquotes', DEMO.themes.map((t) => '"' + t.quote + '"').join('\n'));
+  put('prMsg', DEMO.mix.prMsg); put('prIMC', DEMO.mix.prIMC);
+  DATA = recode(classify(tableToData(parseCSV(DEMO.csv), 'the example survey')));
+  ST.analysis = {};
+  PICKED = {};
+  $('#dataReport').innerHTML = `<div class="score"><b>${DATA.rows.length} answers</b> loaded from the example survey.
+    Press the buttons below and watch each analysis run on them.</div>`;
+  renderHyps(); renderVerdicts(); renderMedia(); renderPrices(); renderDesc(); renderVarPicker(); sources(); completeness();
+  $('#qCard').innerHTML = `<div class="score"><b>${DEMO.themes.length} themes are in</b> from the example interviews.</div>`;
+  save();
+  showView('work');
+  document.getElementById('s4').scrollIntoView({ behavior: 'smooth' });
+}
+
+function showView(which) {
+  $('#view-work').classList.toggle('hide', which !== 'work');
+  $('#view-demo').classList.toggle('hide', which !== 'demo');
+  $$('#tabs .tab').forEach((b) => b.classList.toggle('on', b.dataset.view === which));
+  if (which === 'demo' && !$('#view-demo').innerHTML.trim()) {
+    $('#view-demo').innerHTML = demoHtml();
+    $('#loadDemo').addEventListener('click', loadDemo);
+    $('#loadDemo2').addEventListener('click', loadDemo);
+    $('#backWork').addEventListener('click', () => showView('work'));
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$$('#tabs .tab').forEach((b) => b.addEventListener('click', () => showView(b.dataset.view)));
+$('#goDemo').addEventListener('click', () => showView('demo'));
 
 /* ===================================================================== boot */
 renderHyps(); renderMedia(); renderPrices(); renderDesc(); sources(); completeness();
