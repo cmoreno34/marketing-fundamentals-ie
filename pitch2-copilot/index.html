@@ -252,13 +252,13 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <h2><span class="n">0</span>Bring Pitch 1 in</h2>
   <div class="note"><b>What you do here, in order</b>
     <ol style="margin:6px 0 0;padding-left:20px">
-      <li><b>Upload your Pitch 1 document</b> below - the one you handed in. If it will not open,
+      <li><b>a. Upload your Pitch 1 document</b> below - the one you handed in. If it will not open,
         paste its text in the box instead.</li>
-      <li><b>Press "Copy the prompt"</b>. The page puts a long instruction on your clipboard with
+      <li><b>b. Press "Copy the prompt"</b>. The page puts a long instruction on your clipboard with
         your document inside it.</li>
-      <li><b>Paste it into your assistant</b> - ChatGPT, Claude, Copilot, whichever you use - and
+      <li><b>c. Paste it into your assistant</b> - ChatGPT, Claude, Copilot, whichever you use - and
         press enter. It answers with a few lines and a block of code.</li>
-      <li><b>Copy its whole answer, paste it in the second box, and press "Read it into the page"</b>.
+      <li><b>d. Copy its whole answer, paste it in the box, and press "Read it into the page"</b>.
         The page fills in the rest of this step and the hypotheses of step 5 by itself.</li>
     </ol>
     <p style="margin:8px 0 0">That is the only place you leave this page. Everything after it is
@@ -266,15 +266,15 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <div class="flag" id="p1Steps" style="margin-top:10px"></div>
   <div class="grid2">
     <div>
-      <h3>1. Your Pitch 1</h3>
+      <h3>a. Your Pitch 1</h3>
       <input type="file" id="p1file" accept=".docx,.pdf,.txt,.md">
       <div class="hint" id="p1state" style="margin-top:6px">Word, PDF or plain text. It stays in this browser.</div>
       <label class="f" for="p1text">&hellip;or paste the text of your Pitch 1 here</label>
       <textarea id="p1text" data-k rows="3" placeholder="only if the file will not open - copy the document and paste it here"></textarea>
-      <h3>2. The prompt</h3>
+      <h3>b. The prompt</h3>
       <div class="row"><button class="btn ai" id="p1Prompt" data-prompt="readPitch1">Copy the prompt</button>
         <span class="hint">then paste it into your assistant</span></div>
-      <h3>3. What it answers</h3>
+      <h3>c. What it answers</h3>
       <details><summary class="hint" style="cursor:pointer">this is what you are looking for</summary>
         <pre class="out" style="max-height:180px">...a few lines of summary, and then:
 
@@ -288,7 +288,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 ```</pre>
         <p class="hint">Copy the <b>whole answer</b>, block included. The page finds the block itself.</p>
       </details>
-      <label class="f" for="p1paste">4. Paste the answer here</label>
+      <label class="f" for="p1paste">d. Paste the answer here</label>
       <textarea id="p1paste" data-k rows="5" placeholder="paste everything the assistant wrote"></textarea>
       <div class="row"><button class="btn solid" id="p1Read">Read it into the page</button>
         <span class="hint" id="p1Read2"></span></div>
@@ -364,12 +364,12 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <h3>Bring the analysis back here</h3>
       <div class="note"><b>Same round trip as step 0</b>
         <ol style="margin:6px 0 0;padding-left:20px">
-          <li>Run the interviews with the guide on the left and <b>write down what they said</b> -
+          <li><b>a.</b> Run the interviews with the guide on the left and <b>write down what they said</b> -
             a transcript, or your notes with their words in them.</li>
-          <li><b>Copy the analysis prompt</b> below and paste it into your assistant, then paste
+          <li><b>b. Copy the analysis prompt</b> below and paste it into your assistant, then paste
             your transcripts underneath it, in the same message.</li>
-          <li>It answers with the <b>themes</b>, each with a real quote, and a block of code.</li>
-          <li><b>Copy that answer, paste it in the box, press "Read it into the page"</b>. Those
+          <li><b>c.</b> It answers with the <b>themes</b>, each with a real quote, and a block of code.</li>
+          <li><b>d. Copy that answer, paste it in the box, press "Read it into the page"</b>. Those
             themes become the questions of step 3.</li>
         </ol>
         <p style="margin:8px 0 0"><b>What goes in the box is the assistant's answer to the prompt
@@ -381,8 +381,8 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <label class="f" for="qpaste">Paste the answer that prompt gave you</label>
       <textarea id="qpaste" data-k rows="7" placeholder="the whole answer, summary and code block - not the transcript"></textarea>
       <div class="row">
-        <button class="btn ai" data-prompt="qual">1. Copy the analysis prompt</button>
-        <button class="btn solid" id="qRead">2. Read it into the page</button>
+        <button class="btn ai" data-prompt="qual">b. Copy the analysis prompt</button>
+        <button class="btn solid" id="qRead">d. Read it into the page</button>
         <span class="hint" id="qRead2"></span>
       </div>
       <p class="hint">Longer transcripts, coding and quotes:
@@ -517,15 +517,15 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     computes what is left after the variable cost of each unit and the fixed cost of the year. If you
     do not have those numbers yet, <b>get them first</b> - the prompt below asks you the questions an
     accountant would and comes back with two numbers and the assumptions behind them.
-    <div class="row"><button class="btn ai" id="costPrompt" data-prompt="cost">1. Copy the prompt that estimates your costs</button></div></div>
+    <div class="row"><button class="btn ai" id="costPrompt" data-prompt="cost">a. Copy the prompt that estimates your costs</button></div></div>
   <div class="grid3">
-    <div><label class="f" for="dMax">2. Maximum demand D <span class="hint">(units a year if everybody who could, bought)</span></label>
+    <div><label class="f" for="dMax">b. Maximum demand D <span class="hint">(units a year if everybody who could, bought)</span></label>
       <input type="number" id="dMax" data-k value="10000" min="1"></div>
     <div><label class="f" for="vCost">Variable cost per unit</label><input type="number" id="vCost" data-k value="2" step="0.1"></div>
     <div><label class="f" for="fCost">Fixed cost, total</label><input type="number" id="fCost" data-k value="3290" step="10"></div>
   </div>
   <div class="row">
-    <button class="btn solid" id="btnWtp">3. Compute the demand curve and the optimal price</button>
+    <button class="btn solid" id="btnWtp">c. Compute the demand curve and the optimal price</button>
     <span class="hint">the table below picks the level, not your taste</span>
   </div>
   <div id="wtpOut"></div>
@@ -573,6 +573,14 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <h2><span class="n">7</span>The marketing mix<span class="pct">part 3 &middot; 45%</span></h2>
   <p class="hint">Each decision shows, underneath, the number from your own research that supports
   it. If a box has no number under it, you are deciding on taste.</p>
+
+  <div class="note"><b>It starts drafted, not empty</b>
+    What the page already knows is written into the boxes below: the offer and the description from
+    Pitch 1 and the interviews, the price the model chose, the channel most of your respondents
+    picked, the message from your positioning. <b>It is a draft</b> - change all of it, it is your
+    decision - and then let each section's prompt refine it against the numbers.
+    <div class="row"><button class="btn" id="draftMix">Draft the mix from everything above</button>
+      <span class="hint" id="draftMixState"></span></div></div>
 
   <h3>Product and brand <span class="hint">15%</span></h3>
   <div class="grid2">
@@ -651,13 +659,19 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       </select>
     </div>
     <div>
-      <label class="f" for="plMulti">Channels used</label>
-      <select id="plMulti" data-k>
-        <option value="">pick one</option>
-        <option>Single channel</option>
-        <option>Multichannel: several, each on its own</option>
-        <option>Omnichannel: several, joined up</option>
-      </select>
+      <label class="f">Channels you will use <span class="hint">- tick every one</span></label>
+      <div class="opts" id="chanPick">
+        <label class="chk"><input type="checkbox" data-k id="ch_own"><span>Our own online shop</span></label>
+        <label class="chk"><input type="checkbox" data-k id="ch_market"><span>An online marketplace</span></label>
+        <label class="chk"><input type="checkbox" data-k id="ch_retail"><span>A retailer or supermarket</span></label>
+        <label class="chk"><input type="checkbox" data-k id="ch_spec"><span>A specialist shop</span></label>
+        <label class="chk"><input type="checkbox" data-k id="ch_own_shop"><span>Our own physical point</span></label>
+        <label class="chk"><input type="checkbox" data-k id="ch_event"><span>Events, campus, pop-up</span></label>
+        <label class="chk"><input type="checkbox" data-k id="ch_sub"><span>Subscription, direct to them</span></label>
+        <label class="chk"><input type="checkbox" data-k id="ch_joined"><span>They are joined up<small>one account, one stock, one price</small></span></label>
+      </div>
+      <div class="flag" id="chanVerdict"></div>
+      <input type="hidden" id="plMulti" data-k>
     </div>
   </div>
   <div class="grid2">
@@ -727,6 +741,67 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <script>
 'use strict';
 /* ===================================================================== helpers and state */
+/* a small diagram at the top of each section, in the same language as the one on the cover:
+   lettered boxes, an arrow between them, and who does each one */
+const FLOWS = {
+  s0: [['a', 'Upload Pitch 1', 'you'], ['b', 'Copy the prompt', 'you'],
+       ['c', 'The assistant reads it', 'ai'], ['d', 'Paste it back here', 'you'],
+       ['e', 'The page fills in', 'page']],
+  s1: [['a', 'Draft from Pitch 1', 'page'], ['b', 'Cut what you cannot research', 'you'],
+       ['c', 'Sharpen with the prompt', 'ai']],
+  s2: [['a', 'Write the guide', 'page'], ['b', 'Run 2-3 interviews', 'you'],
+       ['c', 'The assistant reads them', 'ai'], ['d', 'Paste the themes back', 'you']],
+  s3: [['a', 'Check the four boxes', 'you'], ['b', 'Build the questionnaire', 'page'],
+       ['c', 'Make the Google Form', 'you'], ['d', 'Collect the answers', 'you']],
+  s4: [['a', 'Load the answers', 'you'], ['b', 'Describe', 'page'], ['c', 'Compare groups', 'page'],
+       ['d', 'Segment', 'page'], ['e', 'The map', 'page'], ['f', 'Costs, then the price', 'page']],
+  s5: [['a', 'Read the evidence', 'you'], ['b', 'Decide the verdict', 'you'],
+       ['c', 'Argue it with the prompt', 'ai']],
+  s6: [['a', 'Segments after the research', 'you'], ['b', 'Rewrite the positioning', 'you'],
+       ['c', 'Both maps side by side', 'you']],
+  s7: [['a', 'The page drafts it', 'page'], ['b', 'You decide', 'you'],
+       ['c', 'Refine with the prompt of that section', 'ai'], ['d', 'Check the mix for contradictions', 'ai']],
+  s8: [['a', 'See what is missing', 'page'], ['b', 'Download the Word', 'page'],
+       ['c', 'Rewrite it in your words', 'you']],
+};
+const WHO = { you: ['var(--ind)', 'YOU'], ai: ['var(--ai)', 'ASSISTANT'], page: ['var(--a)', 'THIS PAGE'] };
+
+function miniFlow(items) {
+  const w = 206, gap = 26, h2 = 76;
+  const total = items.length * w + (items.length - 1) * gap;
+  const boxes = items.map(([letter, title, who], i) => {
+    const x = i * (w + gap);
+    const [col, tag] = WHO[who];
+    return `<g>
+      <rect x="${x}" y="8" width="${w}" height="${h2}" rx="9" fill="var(--surface)" stroke="${col}"
+        stroke-width="${who === 'ai' ? 1.6 : 1.6}" ${who === 'ai' ? 'stroke-dasharray="5 4"' : ''}/>
+      <circle cx="${x + 24}" cy="32" r="12" fill="${col}"/>
+      <text x="${x + 24}" y="37" text-anchor="middle" font="600 13px IBM Plex Mono" fill="#fff"
+        style="font:600 13px 'IBM Plex Mono',monospace">${letter}</text>
+      <text x="${x + 44}" y="29" style="font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.08em" fill="${col}">${tag}</text>
+      <text x="${x + 44}" y="52" style="font:500 13.5px 'IBM Plex Sans',sans-serif" fill="var(--ink)">${title.slice(0, 30)}</text>
+      ${i < items.length - 1 ? `<path d="M${x + w} 46 H${x + w + gap - 6}" stroke="var(--muted)" stroke-width="1.5"
+        marker-end="url(#arr)"/>` : ''}
+    </g>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${total} 92" style="width:100%;max-width:${total}px;height:auto;margin:4px 0 14px">
+    <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>${boxes}</svg>`;
+}
+
+function drawFlows() {
+  Object.keys(FLOWS).forEach((id) => {
+    const sec = document.getElementById(id);
+    if (!sec || sec.querySelector('.miniflow')) return;
+    const box = document.createElement('div');
+    box.className = 'miniflow';
+    box.style.overflowX = 'auto';
+    box.innerHTML = miniFlow(FLOWS[id]);
+    const h2 = sec.querySelector('h2');
+    h2.insertAdjacentElement('afterend', box);
+  });
+}
+
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 const KEY = 'mf26_pitch2_copilot_v1';
@@ -1535,6 +1610,7 @@ $('#btnWtp').addEventListener('click', () => {
     <div class="note"><b>Before you believe it</b>This is what people <i>said</i> with nothing at stake, so it is the ceiling, not the forecast. Two of the levels either side of ${fmt(best.p, 2)} usually earn almost the same: check whether your choice is really a cliff or a plateau. And if the distribution has two humps, you have two segments and possibly two prices.</div>`;
   ST.analysis.wtp = { best: best.p, share: best.atOrAbove, q: best.q, profit: best.profit, rows, D, vc, fc, n: total };
   $('#wtpAi').style.display = 'block';
+  draftMix(false);
   $('#prWtp').value = `${fmt(best.atOrAbove * 100, 0)}% of the ${total} who answered would pay ${fmt(best.p, 2)} or more. `
     + `The profit-maximising level on our cost structure is ${fmt(best.p, 2)}.`;
   sources(); save();
@@ -1644,6 +1720,24 @@ function renderMedia() {
 $('#addMedia').addEventListener('click', () => { ST.media.push({ m: '', p: PURPOSES[0], who: '', msg: '' }); renderMedia(); save(); });
 
 /* ---- what the research says under each mix decision ---- */
+const CHANS = [['ch_own', 'our own online shop'], ['ch_market', 'a marketplace'], ['ch_retail', 'a retailer'],
+  ['ch_spec', 'a specialist shop'], ['ch_own_shop', 'our own physical point'], ['ch_event', 'events and pop-ups'],
+  ['ch_sub', 'a direct subscription']];
+function channels() {
+  const picked = CHANS.filter(([id]) => $('#' + id) && $('#' + id).checked).map(([, t]) => t);
+  const joined = $('#ch_joined') && $('#ch_joined').checked;
+  const kind = picked.length === 0 ? '' : picked.length === 1 ? 'Single channel'
+    : (joined ? 'Omnichannel: several, joined up' : 'Multichannel: several, each on its own');
+  if ($('#plMulti')) $('#plMulti').value = kind + (picked.length ? ' (' + picked.join(', ') + ')' : '');
+  const el = $('#chanVerdict');
+  if (el) {
+    el.innerHTML = !picked.length ? '<b>Nothing ticked yet</b>Tick the channels you would really open in year one.'
+      : `<b>${kind.split(':')[0]}</b>${picked.join(' &middot; ')}.`
+        + (picked.length > 1 && !joined ? ' They are separate: the customer who buys in one does not exist in the other. Tick the last box only if you will really join them up.' : '')
+        + (picked.length > 2 ? ' Three channels in year one is a lot for a student project - say who runs each one.' : '');
+  }
+}
+
 function costBased() {
   const el = $('#costBased');
   if (!el) return;
@@ -1660,6 +1754,51 @@ function costBased() {
     <br><span class="hint">Cost-based pricing is a floor, not a strategy: it ignores what the customer would have paid.</span>`;
 }
 
+function draftMix(force) {
+  const set = (id, v) => { if (!v) return; const el = $('#' + id); if (el && (force || !String(el.value).trim())) el.value = v; };
+  const A = ST.analysis;
+  const themes = (QUAL.themes || []);
+  const topTheme = themes[0] || {};
+  set('pCore', topTheme.implication || P1.coreBenefit || val('offer'));
+  set('pActual', val('prodDesc'));
+  set('pAug', (themes[1] || {}).implication || '');
+  set('pBrandName', val('brandname') || val('brandwork'));
+  if (A.wtp) {
+    set('prLevel', fmt(A.wtp.best, 2) + ' - the level that maximises profit on our own demand curve');
+    set('prStrat', 'Customer value-based');
+  }
+  // the channel most respondents chose, and the medium they named
+  if (DATA) {
+    const cv = DATA.vars.find((v) => /channel/i.test(v.name));
+    if (cv) {
+      const f = freq(cv.name);
+      const top = f.rows[0];
+      if (top) {
+        const label = labelOf(cv.name, top[0]);
+        set('plWhy', `most of them - ${Math.round(top[1] / f.total * 100)}% - said they would buy it through ${label.toLowerCase()}`);
+        const map = { supermarket: 'ch_retail', specialist: 'ch_spec', brand: 'ch_own', marketplace: 'ch_market', campus: 'ch_event' };
+        Object.keys(map).forEach((k) => { if (new RegExp(k, 'i').test(label)) { const el = $('#' + map[k]); if (el && !el.checked) { el.checked = true; el.closest('.chk').classList.add('on'); } } });
+        channels();
+      }
+    }
+    const mv = DATA.vars.find((v) => /media/i.test(v.name));
+    if (mv && !ST.media.some((r) => r.m)) {
+      const f = freq(mv.name);
+      f.rows.slice(0, 3).forEach(([code, n], i) => {
+        ST.media.push({ m: labelOf(mv.name, code), p: ['Make them aware', 'Make them like it', 'Make them try it'][i] || 'Make them aware',
+          who: lines(val('targets'))[0] || '', msg: '' });
+      });
+      renderMedia();
+    }
+  }
+  set('prMsg', val('posRev') ? val('posRev').split(',')[0] : (val('posstat') || '').split(',')[0]);
+  set('plType', 'Direct: we sell to the customer ourselves');
+  set('plLength', 'Short: at most one intermediary');
+  $('#draftMixState').textContent = 'drafted from Pitch 1, the interviews and the analysis ✓';
+  save();
+}
+$('#draftMix').addEventListener('click', () => draftMix(false));
+
 function sources() {
   const a = ST.analysis;
   const put = (id, txt) => { const el = $('#' + id); if (el) el.innerHTML = txt ? '&#8627; ' + txt : ''; };
@@ -1667,6 +1806,7 @@ function sources() {
   put('src_attr', (a.desc || []).filter((d) => /att_|import/i.test(d)).slice(0, 3).join(' &middot; ')
     || (a.cluster ? 'Segments differ most on: ' + a.cluster.top.slice(0, 3).map((t) => t.split(':')[0]).join(', ') : ''));
   costBased();
+  channels();
   put('src_price', a.wtp ? `The model says ${fmt(a.wtp.best, 2)} (${fmt(a.wtp.share * 100, 0)}% would pay it or more, profit ${Math.round(a.wtp.profit)}).` : 'Compute the demand curve in step 4.');
   put('src_place', (a.desc || []).length && DATA && DATA.vars.some((v) => /channel|buy/i.test(v.name))
     ? 'The channel question is in your data: open it in the crosstab scan against the targets.' : '');
@@ -1982,6 +2122,7 @@ function refreshOutputs() {
 function save() {
   completeness();
   p1Steps();
+  channels();
   refreshOutputs();
   $$('.chk').forEach((l) => { const i = l.querySelector('input'); if (i) l.classList.toggle('on', i.checked); });
   clearTimeout(saveTimer);
@@ -2200,6 +2341,7 @@ $$('#tabs .tab').forEach((b) => b.addEventListener('click', () => showView(b.dat
 $('#goDemo').addEventListener('click', () => showView('demo'));
 
 /* ===================================================================== boot */
+drawFlows();
 renderHyps(); renderMedia(); renderPrices(); renderDesc(); sources(); completeness(); p1Steps(); provenance();
 try {
   const auto = localStorage.getItem(KEY + '_auto');
