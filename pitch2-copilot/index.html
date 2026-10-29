@@ -250,15 +250,15 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 0 -->
 <section id="s0">
   <h2><span class="n">0</span>Bring Pitch 1 in</h2>
-  <div class="note"><b>What you do here, in order</b>
+  <div class="note" id="todo-s0"><b>What you do here, in order</b>
     <ol style="margin:6px 0 0;padding-left:20px">
-      <li><b>a. Upload your Pitch 1 document</b> below - the one you handed in. If it will not open,
+      <li><b>0.1 Upload your Pitch 1 document</b> below - the one you handed in. If it will not open,
         paste its text in the box instead.</li>
-      <li><b>b. Press "Copy the prompt"</b>. The page puts a long instruction on your clipboard with
+      <li><b>0.2 Press "Copy the prompt"</b>. The page puts a long instruction on your clipboard with
         your document inside it.</li>
-      <li><b>c. Paste it into your assistant</b> - ChatGPT, Claude, Copilot, whichever you use - and
+      <li><b>0.3 Paste it into your assistant</b> - ChatGPT, Claude, Copilot, whichever you use - and
         press enter. It answers with a few lines and a block of code.</li>
-      <li><b>d. Copy its whole answer, paste it in the box, and press "Read it into the page"</b>.
+      <li><b>0.4 Copy its whole answer, paste it in the box, and press "Read it into the page"</b>.
         The page fills in the rest of this step and the hypotheses of step 5 by itself.</li>
     </ol>
     <p style="margin:8px 0 0">That is the only place you leave this page. Everything after it is
@@ -266,15 +266,15 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <div class="flag" id="p1Steps" style="margin-top:10px"></div>
   <div class="grid2">
     <div>
-      <h3>a. Your Pitch 1</h3>
+      <h3>0.1 Your Pitch 1</h3>
       <input type="file" id="p1file" accept=".docx,.pdf,.txt,.md">
       <div class="hint" id="p1state" style="margin-top:6px">Word, PDF or plain text. It stays in this browser.</div>
       <label class="f" for="p1text">&hellip;or paste the text of your Pitch 1 here</label>
       <textarea id="p1text" data-k rows="3" placeholder="only if the file will not open - copy the document and paste it here"></textarea>
-      <h3>b. The prompt</h3>
+      <h3>0.2 The prompt</h3>
       <div class="row"><button class="btn ai" id="p1Prompt" data-prompt="readPitch1">Copy the prompt</button>
         <span class="hint">then paste it into your assistant</span></div>
-      <h3>c. What it answers</h3>
+      <h3>0.3 What it answers</h3>
       <details><summary class="hint" style="cursor:pointer">this is what you are looking for</summary>
         <pre class="out" style="max-height:180px">...a few lines of summary, and then:
 
@@ -288,14 +288,14 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 ```</pre>
         <p class="hint">Copy the <b>whole answer</b>, block included. The page finds the block itself.</p>
       </details>
-      <label class="f" for="p1paste">d. Paste the answer here</label>
+      <label class="f" for="p1paste">0.4 Paste the answer here</label>
       <textarea id="p1paste" data-k rows="5" placeholder="paste everything the assistant wrote"></textarea>
       <div class="row"><button class="btn solid" id="p1Read">Read it into the page</button>
         <span class="hint" id="p1Read2"></span></div>
       <div id="p1Card"></div>
     </div>
     <div>
-      <h3>What it fills in</h3>
+      <h3>What the page fills in for you</h3>
       <p class="hint">Check it and correct anything it got wrong: what is written here is what the
       rest of the page uses. You can also fill this side in by hand and skip the assistant.</p>
       <label class="f" for="team">Group and members</label>
@@ -321,10 +321,16 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 1 -->
 <section id="s1">
   <h2><span class="n">1</span>What Pitch 2 has to settle<span class="pct">part 1 &middot; 5%</span></h2>
+  <div class="note" id="todo-s1"><b>What you do here, in order</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>1.1 Press "Draft them from Pitch 1"</b> and the page writes one objective per block the pitch is graded on: segmentation, positioning, the offer, price, place, promotion.</li>
+      <li><b>1.2 Cut and rewrite.</b> Anything you cannot research in two weeks with three interviews and one survey does not belong here. These lines are what the guide, the questionnaire and the prompts are built from, so they are worth five minutes.</li>
+      <li><b>1.3 Copy the prompt</b>, paste it into your assistant, and keep the objectives it sharpens if they are better than yours.</li>
+    </ol></div>
   <p class="hint">Not a list of hypotheses: the decisions still open, in the four blocks the pitch is
   graded on - <b>segmentation</b>, <b>positioning</b>, <b>the offer</b>, and <b>price, place and
   promotion</b>. Everything after this exists to close them.</p>
-  <div class="row"><button class="btn" id="draftObj">Draft them from Pitch 1</button>
+  <div class="row"><button class="btn" id="draftObj">1.1 Draft them from Pitch 1</button>
     <span class="hint">then cut anything you cannot research in two weeks</span></div>
   <label class="f" for="objectives">Research objectives</label>
   <textarea id="objectives" data-k rows="8" placeholder="one per line"></textarea>
@@ -335,6 +341,22 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 2 -->
 <section id="s2">
   <h2><span class="n">2</span>Qualitative research<span class="pct">part 1 &middot; 10%</span></h2>
+  <div class="note" id="todo-s2"><b>What you do here, in order - the same round trip as step 0</b>
+        <ol style="margin:6px 0 0;padding-left:20px">
+          <li><b>2.1 </b> Press <b>"Write the discussion guide"</b> below, take it out and run the interviews and <b>write down what they said</b> -
+            a transcript, or your notes with their words in them.</li>
+          <li><b>2.2 Copy the analysis prompt</b> below and paste it into your assistant, then paste
+            your transcripts underneath it, in the same message.</li>
+          <li><b>2.3 </b> It answers with the <b>themes</b>, each with a real quote, and a block of code.</li>
+          <li><b>2.4 Copy that answer, paste it in the box, press "Read it into the page"</b>. Those
+            themes become the questions of step 3.</li>
+        </ol>
+        <p style="margin:8px 0 0"><b>What goes in the box is the assistant's answer to the prompt
+        on this page.</b> Not the transcript, and not what interview-studio or focus-group-studio
+        export on their own: the page needs the code block, and only this prompt writes it. If you
+        coded the interviews in one of those tools, paste <i>their</i> output under this prompt
+        instead of the raw transcript - it works the same, and the answer still comes back here.</p>
+        </div>
   <p class="hint">Small and well done: <b>two or three interviews</b>, or <b>one focus group</b>.
   Enough to hear the words your customers use, which is what the questionnaire is then built from.</p>
   <div class="grid2">
@@ -348,7 +370,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <label class="f" for="qwho">Who you spoke to and how you found them</label>
       <textarea id="qwho" data-k rows="2" placeholder="e.g. 3 students who cook at home, recruited in the canteen"></textarea>
       <div class="row">
-        <button class="btn solid" id="genGuide">Write the discussion guide</button>
+        <button class="btn solid" id="genGuide">2.1 Write the discussion guide</button>
         <button class="btn sm" id="copyGuide">Copy it</button>
         <button class="btn sm" id="wordGuide">As Word</button>
       </div>
@@ -361,28 +383,13 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <input type="text" id="brandname" data-k placeholder="the name, if you have it">
     </div>
     <div>
-      <h3>Bring the analysis back here</h3>
-      <div class="note"><b>Same round trip as step 0</b>
-        <ol style="margin:6px 0 0;padding-left:20px">
-          <li><b>a.</b> Run the interviews with the guide on the left and <b>write down what they said</b> -
-            a transcript, or your notes with their words in them.</li>
-          <li><b>b. Copy the analysis prompt</b> below and paste it into your assistant, then paste
-            your transcripts underneath it, in the same message.</li>
-          <li><b>c.</b> It answers with the <b>themes</b>, each with a real quote, and a block of code.</li>
-          <li><b>d. Copy that answer, paste it in the box, press "Read it into the page"</b>. Those
-            themes become the questions of step 3.</li>
-        </ol>
-        <p style="margin:8px 0 0"><b>What goes in the box is the assistant's answer to the prompt
-        on this page.</b> Not the transcript, and not what interview-studio or focus-group-studio
-        export on their own: the page needs the code block, and only this prompt writes it. If you
-        coded the interviews in one of those tools, paste <i>their</i> output under this prompt
-        instead of the raw transcript - it works the same, and the answer still comes back here.</p>
-        </div>
+      <h3>2.3 Bring the analysis back here</h3>
+
       <label class="f" for="qpaste">Paste the answer that prompt gave you</label>
       <textarea id="qpaste" data-k rows="7" placeholder="the whole answer, summary and code block - not the transcript"></textarea>
       <div class="row">
-        <button class="btn ai" data-prompt="qual">b. Copy the analysis prompt</button>
-        <button class="btn solid" id="qRead">d. Read it into the page</button>
+        <button class="btn ai" data-prompt="qual">2.2 Copy the analysis prompt</button>
+        <button class="btn solid" id="qRead">2.4 Read it into the page</button>
         <span class="hint" id="qRead2"></span>
       </div>
       <p class="hint">Longer transcripts, coding and quotes:
@@ -398,6 +405,13 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 3 -->
 <section id="s3">
   <h2><span class="n">3</span>The questionnaire<span class="pct">part 1 &middot; 15%</span></h2>
+  <div class="note" id="todo-s3"><b>What you do here, in order</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>3.1 Check the four boxes below.</b> They came from Pitch 1 and from the interviews; change anything, and use the prompt in the box if you want them sharpened against the research.</li>
+      <li><b>3.2 Press "Build the questionnaire"</b> and read it once from top to bottom.</li>
+      <li><b>3.3 Download the Google Forms script</b> and follow the three lines underneath: the form builds itself in your Drive.</li>
+      <li><b>3.4 Send the link and collect the answers</b>, then download them as CSV from the Responses tab and take them to step 4.</li>
+    </ol></div>
   <p class="hint">Built for you: about twenty questions, almost all on a 1 to 5 scale so the analysis
   in step 4 runs on them, aimed at the objectives of step 1 and worded with what the interviews gave
   you. The price question and the competitor ratings that rebuild the perceptual map are in it
@@ -435,7 +449,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       one you hypothesised in Pitch 1.</p>
     </div>
   </div>
-  <h3>The price question <span class="hint">- required by the guide</span></h3>
+  <h3>3.3 The price question <span class="hint">- required by the guide</span></h3>
   <div class="grid3">
     <div><label class="f" for="pMin">Lowest level</label><input type="number" id="pMin" data-k value="2" step="0.5"></div>
     <div><label class="f" for="pStep">Interval</label><input type="number" id="pStep" data-k value="2" step="0.5"></div>
@@ -443,8 +457,8 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   </div>
   <div class="flag" id="pPreview"><b>The options the respondent will see</b><span id="pList">&nbsp;</span></div>
   <div class="row">
-    <button class="btn solid" id="genQ">Build the questionnaire</button>
-    <button class="btn" id="dlScript">Google Forms script</button>
+    <button class="btn solid" id="genQ">3.2 Build the questionnaire</button>
+    <button class="btn" id="dlScript">3.3 Google Forms script</button>
     <button class="btn" id="dlQWord">As Word</button>
     <button class="btn" id="dlTemplate">Data template (CSV)</button>
     <button class="btn ai" data-prompt="questionnaire">Prompt to check it</button>
@@ -461,33 +475,43 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 4 -->
 <section id="s4">
   <h2><span class="n">4</span>Your data, and what it says<span class="pct">part 1 &middot; 15%</span></h2>
+  <div class="note" id="todo-s4"><b>What you do here, step by step</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>4.1 Load the answers.</b> The CSV Google Forms gives you, or any Excel with one row per respondent. The page says how many answers and how many questions it found.</li>
+      <li><b>4.2 Describe.</b> It fills in by itself: the average and the top-two box of every rating, and the frequencies of every category. This is the first paragraph of your findings - the three strongest results and the two weakest, each with its number and its base.</li>
+      <li><b>4.3 Compare groups.</b> Press <i>Scan every pair</i>. It tests all of them and shows only the ones that can be read, because a test needs enough people in each cell. If nothing comes out, say so in the document: that is a finding too.</li>
+      <li><b>4.4 Segment.</b> Tick the variables, choose how many segments, and press run. Read the silhouette before you believe the groups, and run it again with another number of segments to see whether they survive.</li>
+      <li><b>4.5 The map.</b> Press <i>Build the map table</i>: the same attributes scored for you and for each competitor. Download it, open positioning-maps, and put the real map next to the one you drew in Pitch 1.</li>
+      <li><b>4.6 The costs, first.</b> Copy the cost prompt and get your variable cost per unit and your fixed cost for the year, with the assumptions written down.</li>
+      <li><b>4.7 The price.</b> Put the costs and your maximum demand in, press compute, and read the table: it gives the price that makes most money and what you give up at the level above and below. Every block has a prompt beside it that already carries these numbers.</li>
+    </ol></div>
   <p class="hint">Drop the file Google Forms gave you, or any CSV or Excel with one row per
   respondent. Nothing is uploaded: it is read here, in your browser.</p>
   <input type="file" id="file" accept=".csv,.xlsx,.xls">
   <div id="dataReport"></div>
 
-  <h3>Describe</h3>
+  <h3>4.2 Describe</h3>
   <p class="hint">Ratings by their average and their top-two box, categories by their frequency.
   This is the first paragraph of your quantitative findings.</p>
   <div id="descOut"></div>
   <div class="aibox" id="descAi" style="display:none"><b>Prompt with these numbers in it</b>
     <button class="btn ai sm" data-prompt="describe">Copy the prompt</button></div>
 
-  <h3>Compare groups</h3>
+  <h3>4.3 Compare groups</h3>
   <p class="hint">Every pair is tested, and only the ones that can be read are shown: the test needs
   enough people in each cell before its p-value means anything.</p>
-  <div class="row"><button class="btn" id="btnScan">Scan every pair</button><span class="hint" id="scanState"></span></div>
+  <div class="row"><button class="btn" id="btnScan">4.3 Scan every pair</button><span class="hint" id="scanState"></span></div>
   <div id="scanOut"></div>
   <div class="aibox" id="crossAi" style="display:none"><b>Prompt with the significant pairs</b>
     <button class="btn ai sm" data-prompt="cross">Copy the prompt</button></div>
 
-  <h3>Segment</h3>
+  <h3>4.4 Segment</h3>
   <p class="hint">k-prototypes, so ratings and categories go in together. The report says how good
   the division is before you believe it.</p>
   <div class="row">
     <label class="hint" for="kN">segments</label>
     <select id="kN" style="width:auto"><option>2</option><option selected>3</option><option>4</option></select>
-    <button class="btn" id="btnClust">Run the segmentation</button>
+    <button class="btn" id="btnClust">4.4 Run the segmentation</button>
     <button class="btn sm ghost" id="pickEvery">use every variable</button>
   </div>
   <div id="varPick"></div>
@@ -495,11 +519,11 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <div class="aibox" id="clustAi" style="display:none"><b>Prompt with the centroids</b>
     <button class="btn ai sm" data-prompt="cluster">Copy the prompt</button></div>
 
-  <h3>The real perceptual map</h3>
+  <h3>4.5 The real perceptual map</h3>
   <p class="hint">The same attributes you scored by hand in Pitch 1, now scored by the people who
   answered - for you and for each competitor. This table is what goes into the positioning tool, and
   next to the hypothesised map it is Part 2 of the pitch.</p>
-  <div class="row"><button class="btn" id="btnMap">Build the map table</button>
+  <div class="row"><button class="btn" id="btnMap">4.5 Build the map table</button>
     <button class="btn sm" id="dlMap">Download it as CSV</button>
     <span class="hint">then open
       <a href="https://cmoreno34.github.io/marketing-fundamentals-ie/positioning-maps/" target="_blank" rel="noopener">positioning-maps</a>
@@ -508,7 +532,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <div class="aibox" id="mapAi" style="display:none"><b>Prompt that reads the map</b>
     <button class="btn ai sm" data-prompt="map">Copy the prompt</button></div>
 
-  <h3>Willingness to pay, demand and the price that makes most money</h3>
+  <h3>4.6 The costs, and 4.7 the price that makes most money</h3>
   <p class="hint">The model of the pricing session, after Phillips: the maximum price each person
   would pay gives a distribution; demand at a price is the maximum demand times the frequencies at
   or above it; profit is computed at every level and the best one wins.</p>
@@ -517,15 +541,15 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     computes what is left after the variable cost of each unit and the fixed cost of the year. If you
     do not have those numbers yet, <b>get them first</b> - the prompt below asks you the questions an
     accountant would and comes back with two numbers and the assumptions behind them.
-    <div class="row"><button class="btn ai" id="costPrompt" data-prompt="cost">a. Copy the prompt that estimates your costs</button></div></div>
+    <div class="row"><button class="btn ai" id="costPrompt" data-prompt="cost">4.6 Copy the prompt that estimates your costs</button></div></div>
   <div class="grid3">
-    <div><label class="f" for="dMax">b. Maximum demand D <span class="hint">(units a year if everybody who could, bought)</span></label>
+    <div><label class="f" for="dMax">4.7a Maximum demand D <span class="hint">(units a year if everybody who could, bought)</span></label>
       <input type="number" id="dMax" data-k value="10000" min="1"></div>
     <div><label class="f" for="vCost">Variable cost per unit</label><input type="number" id="vCost" data-k value="2" step="0.1"></div>
     <div><label class="f" for="fCost">Fixed cost, total</label><input type="number" id="fCost" data-k value="3290" step="10"></div>
   </div>
   <div class="row">
-    <button class="btn solid" id="btnWtp">c. Compute the demand curve and the optimal price</button>
+    <button class="btn solid" id="btnWtp">4.7b Compute the demand curve and the optimal price</button>
     <span class="hint">the table below picks the level, not your taste</span>
   </div>
   <div id="wtpOut"></div>
@@ -536,6 +560,13 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 5 -->
 <section id="s5">
   <h2><span class="n">5</span>Verdict on every hypothesis<span class="pct">part 1 &middot; 10%</span></h2>
+  <div class="note" id="todo-s5"><b>What you do here, in order</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>5.1 </b> For each hypothesis, write the evidence from step 4 - the number with its base, or the quote.</li>
+      <li><b>5.2 </b> Choose the verdict: confirmed, partly confirmed, or rejected. Rejected is a result, not a failure.</li>
+      <li><b>5.3 </b> Say what changes in the strategy because of it. If nothing changes, the hypothesis was not worth testing.</li>
+      <li><b>5.4 </b> The prompt challenges your verdicts: it will tell you when "partly confirmed" is a way of not admitting a rejection.</li>
+    </ol></div>
   <p class="hint">These come out of your Pitch 1, read in step 0. For each one: the evidence, whether
   it is confirmed, rejected or partly confirmed, and what changes in the strategy. A hypothesis that
   turns out to be wrong costs you nothing; one you never tested does.</p>
@@ -548,6 +579,13 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 6 -->
 <section id="s6">
   <h2><span class="n">6</span>Your strategy after the research<span class="pct">part 2 &middot; 15%</span></h2>
+  <div class="note" id="todo-s6"><b>What you do here, in order</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>6.1 </b> Say what the research did to your segments and targets: confirmed, redefined, or one of them dropped.</li>
+      <li><b>6.2 </b> Rewrite the positioning statement - the button drafts it from the research - and keep the form the guide asks for.</li>
+      <li><b>6.3 </b> Put the real map from step 4 next to the hypothesised one from Pitch 1 and say what moved and what it means.</li>
+      <li><b>6.4 </b> The prompt checks that the benefit, the competitor and the reason to believe are things your own data supports.</li>
+    </ol></div>
   <div class="grid2">
     <div>
       <label class="f" for="segRev">Segments and targets, confirmed or redefined</label>
@@ -571,6 +609,15 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 7 -->
 <section id="s7">
   <h2><span class="n">7</span>The marketing mix<span class="pct">part 3 &middot; 45%</span></h2>
+  <div class="note" id="todo-s7"><b>What you do here, step by step</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>7.1 Press "Draft the mix"</b> - or simply compute the price in step 4 and it drafts itself. You start from what the page already knows, never from an empty box.</li>
+      <li><b>7.2 Product and brand.</b> Write the core benefit (a benefit, not a feature), the actual product and the augmented layer, then the brand: name, identity, strategy, packaging. Finish with <i>Refine Product with the research</i>.</li>
+      <li><b>7.3 Price.</b> Choose the strategy, take the level the model gave you in step 4 or say why you are leaving it, and add the adjustments you would really make. Finish with <i>Refine Price with the research</i>.</li>
+      <li><b>7.4 Place.</b> Direct or through intermediaries, short or long, and then <b>tick every channel you will open</b> - the page tells you whether that is single, multichannel or omnichannel. Say how the product reaches them. Finish with <i>Refine Place</i>.</li>
+      <li><b>7.5 Promotion.</b> One row per medium, and for each one which step of the adoption process it is there for: aware, like, try, repeat, recommend. The page warns you about the steps with nothing behind them. Then the key message per target. Finish with <i>Refine Promotion</i>.</li>
+      <li><b>7.6 Check the whole thing</b> with the last prompt: it looks for decisions that contradict your own data, decisions with no evidence at all, and decisions that contradict each other - a premium price in a discount channel, a target you never measured.</li>
+    </ol></div>
   <p class="hint">Each decision shows, underneath, the number from your own research that supports
   it. If a box has no number under it, you are deciding on taste.</p>
 
@@ -579,10 +626,10 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     Pitch 1 and the interviews, the price the model chose, the channel most of your respondents
     picked, the message from your positioning. <b>It is a draft</b> - change all of it, it is your
     decision - and then let each section's prompt refine it against the numbers.
-    <div class="row"><button class="btn" id="draftMix">Draft the mix from everything above</button>
+    <div class="row"><button class="btn" id="draftMix">7.1 Draft the mix from everything above</button>
       <span class="hint" id="draftMixState"></span></div></div>
 
-  <h3>Product and brand <span class="hint">15%</span></h3>
+  <h3>7.2 Product and brand <span class="hint">15%</span></h3>
   <div class="grid2">
     <div>
       <label class="f" for="pCore">Core benefit <span class="hint">- what they are really buying</span></label>
@@ -614,7 +661,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     </div>
   </div>
 
-  <h3>Price <span class="hint">10%</span></h3>
+  <h3>7.3 Price <span class="hint">10%</span></h3>
   <div class="grid2">
     <div>
       <label class="f" for="prStrat">Pricing strategy</label>
@@ -639,7 +686,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     </div>
   </div>
 
-  <h3>Place <span class="hint">10%</span></h3>
+  <h3>7.4 Place <span class="hint">10%</span></h3>
   <div class="grid3">
     <div>
       <label class="f" for="plType">Direct or through intermediaries</label>
@@ -683,7 +730,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <div class="row"><button class="btn ai sm" data-prompt="mixPlace">Refine Place with the research</button></div></div>
   </div>
 
-  <h3>Promotion <span class="hint">10%</span></h3>
+  <h3>7.5 Promotion <span class="hint">10%</span></h3>
   <p class="hint">One row per medium, and what it is there to do along the way the customer adopts a
   new product: first they hear about it, then they like it, then they try it, then they come back,
   then they tell somebody.</p>
@@ -705,13 +752,19 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 8 -->
 <section id="s8">
   <h2><span class="n">8</span>Check it, then take it away</h2>
+  <div class="note" id="todo-s8"><b>What you do here, in order</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>8.1 </b> Read what is still missing - the page lists it - and go back for it.</li>
+      <li><b>8.2 Download the Word file.</b> It has the cover, the three parts in the order the guide grades, your tables, and the questionnaire and discussion guide as appendices.</li>
+      <li><b>8.3 Rewrite it in your own words and format it.</b> What you hand in is that document, inside the page limit; the slides are a separate deliverable. The numbers are the one thing not to touch.</li>
+    </ol></div>
   <div id="completeness"></div>
   <div class="rules"><b>Before you hand it in</b>Every claim about customers has a number or a quote
   behind it &middot; every hypothesis has a verdict &middot; the price is the one the model gives, or you say
   why not &middot; the mix decisions point at the research &middot; the questionnaire and the discussion guide
   are in the appendix.</div>
   <div class="row">
-    <button class="btn solid" id="dlWord">Download the Pitch 2 document (Word)</button>
+    <button class="btn solid" id="dlWord">8.2 Download the Pitch 2 document (Word)</button>
     <button class="btn" id="dlAll">Download everything (Word + questionnaire + template)</button>
     <button class="btn" id="btnSave">Save the draft</button>
     <button class="btn" id="btnLoad">Load the draft</button>
@@ -766,20 +819,22 @@ const FLOWS = {
 };
 const WHO = { you: ['var(--ind)', 'YOU'], ai: ['var(--ai)', 'ASSISTANT'], page: ['var(--a)', 'THIS PAGE'] };
 
-function miniFlow(items) {
+const STEPNO = (id) => String(id).replace('s', '');
+function miniFlow(items, sec) {
   const w = 206, gap = 26, h2 = 76;
   const total = items.length * w + (items.length - 1) * gap;
   const boxes = items.map(([letter, title, who], i) => {
+    const badge = (sec === undefined ? letter : STEPNO(sec) + '.' + (i + 1));
     const x = i * (w + gap);
     const [col, tag] = WHO[who];
     return `<g>
       <rect x="${x}" y="8" width="${w}" height="${h2}" rx="9" fill="var(--surface)" stroke="${col}"
         stroke-width="${who === 'ai' ? 1.6 : 1.6}" ${who === 'ai' ? 'stroke-dasharray="5 4"' : ''}/>
-      <circle cx="${x + 24}" cy="32" r="12" fill="${col}"/>
-      <text x="${x + 24}" y="37" text-anchor="middle" font="600 13px IBM Plex Mono" fill="#fff"
-        style="font:600 13px 'IBM Plex Mono',monospace">${letter}</text>
-      <text x="${x + 44}" y="29" style="font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.08em" fill="${col}">${tag}</text>
-      <text x="${x + 44}" y="52" style="font:500 13.5px 'IBM Plex Sans',sans-serif" fill="var(--ink)">${title.slice(0, 30)}</text>
+      <circle cx="${x + 26}" cy="32" r="14" fill="${col}"/>
+      <text x="${x + 26}" y="36.5" text-anchor="middle" font="600 13px IBM Plex Mono" fill="#fff"
+        style="font:600 11.5px 'IBM Plex Mono',monospace">${badge}</text>
+      <text x="${x + 48}" y="29" style="font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.08em" fill="${col}">${tag}</text>
+      <text x="${x + 48}" y="52" style="font:500 13.5px 'IBM Plex Sans',sans-serif" fill="var(--ink)">${title.slice(0, 30)}</text>
       ${i < items.length - 1 ? `<path d="M${x + w} 46 H${x + w + gap - 6}" stroke="var(--muted)" stroke-width="1.5"
         marker-end="url(#arr)"/>` : ''}
     </g>`;
@@ -796,7 +851,7 @@ function drawFlows() {
     const box = document.createElement('div');
     box.className = 'miniflow';
     box.style.overflowX = 'auto';
-    box.innerHTML = miniFlow(FLOWS[id]);
+    box.innerHTML = miniFlow(FLOWS[id], id);
     const h2 = sec.querySelector('h2');
     h2.insertAdjacentElement('afterend', box);
   });
