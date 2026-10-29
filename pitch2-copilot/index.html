@@ -236,6 +236,12 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     <path class="ln" d="M1085 154 V192 H604 V208" marker-end="url(#ar)"/>
   </svg>
   </div>
+  <div class="rules"><b>Everything flows downwards</b>Change a box and what is built from it
+  changes with it: the attributes and the competitors you set in step 3 are the questions of the
+  survey and the rows of the map in step 4; the themes of step 2 are the agreement questions; the
+  price levels decide the demand curve; and the Word file at the end is built from whatever the
+  boxes say at the moment you press the button. If the questionnaire or the discussion guide is on
+  screen, it rewrites itself as you type and tells you so underneath.</div>
   <div class="rules"><b>The two rules</b>Nothing you paste leaves this browser, and nothing the
   assistant says is taken on trust: every number in the document comes from your own data, and every
   prompt on this page carries that data with it, so there is nothing for it to invent.</div>
@@ -244,24 +250,54 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 <!-- ============================================================ 0 -->
 <section id="s0">
   <h2><span class="n">0</span>Bring Pitch 1 in</h2>
-  <p class="hint">Upload what you handed in and the page does the rest: it pulls the text out,
-  writes the prompt that turns it into the pieces Pitch 2 needs, and reads the answer back. If you
-  would rather type a part, type it on the right - what is written there is what the page uses.</p>
+  <div class="note"><b>What you do here, in order</b>
+    <ol style="margin:6px 0 0;padding-left:20px">
+      <li><b>Upload your Pitch 1 document</b> below - the one you handed in. If it will not open,
+        paste its text in the box instead.</li>
+      <li><b>Press "Copy the prompt"</b>. The page puts a long instruction on your clipboard with
+        your document inside it.</li>
+      <li><b>Paste it into your assistant</b> - ChatGPT, Claude, Copilot, whichever you use - and
+        press enter. It answers with a few lines and a block of code.</li>
+      <li><b>Copy its whole answer, paste it in the second box, and press "Read it into the page"</b>.
+        The page fills in the rest of this step and the hypotheses of step 5 by itself.</li>
+    </ol>
+    <p style="margin:8px 0 0">That is the only place you leave this page. Everything after it is
+    built from what comes back.</p></div>
+  <div class="flag" id="p1Steps" style="margin-top:10px"></div>
   <div class="grid2">
     <div>
-      <label class="f" for="p1file">1. Your Pitch 1 document</label>
+      <h3>1. Your Pitch 1</h3>
       <input type="file" id="p1file" accept=".docx,.pdf,.txt,.md">
       <div class="hint" id="p1state" style="margin-top:6px">Word, PDF or plain text. It stays in this browser.</div>
-      <div class="row">
-        <button class="btn ai" id="p1Prompt" data-prompt="readPitch1">2. Copy the prompt that reads it</button>
-      </div>
-      <label class="f" for="p1paste">3. Paste the assistant's answer here</label>
-      <textarea id="p1paste" data-k rows="5" placeholder="paste the whole answer - the page takes the JSON block out of it"></textarea>
-      <div class="row"><button class="btn solid" id="p1Read">4. Read it into the page</button>
+      <label class="f" for="p1text">&hellip;or paste the text of your Pitch 1 here</label>
+      <textarea id="p1text" data-k rows="3" placeholder="only if the file will not open - copy the document and paste it here"></textarea>
+      <h3>2. The prompt</h3>
+      <div class="row"><button class="btn ai" id="p1Prompt" data-prompt="readPitch1">Copy the prompt</button>
+        <span class="hint">then paste it into your assistant</span></div>
+      <h3>3. What it answers</h3>
+      <details><summary class="hint" style="cursor:pointer">this is what you are looking for</summary>
+        <pre class="out" style="max-height:180px">...a few lines of summary, and then:
+
+```json
+{ "brand": "Sobremesa",
+  "offer": "a weekly box with three dinners for two",
+  "targets": ["students 18-24 who cook at home"],
+  "competitors": ["the supermarket", "a delivery app"],
+  "attributes": ["price", "convenience", "taste"],
+  "hypotheses": [{"text": "...", "wrongIf": "..."}] }
+```</pre>
+        <p class="hint">Copy the <b>whole answer</b>, block included. The page finds the block itself.</p>
+      </details>
+      <label class="f" for="p1paste">4. Paste the answer here</label>
+      <textarea id="p1paste" data-k rows="5" placeholder="paste everything the assistant wrote"></textarea>
+      <div class="row"><button class="btn solid" id="p1Read">Read it into the page</button>
         <span class="hint" id="p1Read2"></span></div>
       <div id="p1Card"></div>
     </div>
     <div>
+      <h3>What it fills in</h3>
+      <p class="hint">Check it and correct anything it got wrong: what is written here is what the
+      rest of the page uses. You can also fill this side in by hand and skip the assistant.</p>
       <label class="f" for="team">Group and members</label>
       <input type="text" id="team" data-k placeholder="e.g. Group 4 - Ana, Marco, Lucia, Tom">
       <label class="f" for="brandwork">Working name</label>
@@ -325,14 +361,28 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <input type="text" id="brandname" data-k placeholder="the name, if you have it">
     </div>
     <div>
-      <label class="f" for="qpaste">Bring the analysis back here</label>
-      <p class="hint" style="margin:0 0 6px">Copy the prompt, give it your transcripts, and paste the
-      answer here. The themes it finds are what the questionnaire is written from, so this is not a
-      detour: it is the step that makes step 3 yours and not generic.</p>
-      <textarea id="qpaste" data-k rows="7" placeholder="paste the whole answer - the page takes the JSON block out of it"></textarea>
+      <h3>Bring the analysis back here</h3>
+      <div class="note"><b>Same round trip as step 0</b>
+        <ol style="margin:6px 0 0;padding-left:20px">
+          <li>Run the interviews with the guide on the left and <b>write down what they said</b> -
+            a transcript, or your notes with their words in them.</li>
+          <li><b>Copy the analysis prompt</b> below and paste it into your assistant, then paste
+            your transcripts underneath it, in the same message.</li>
+          <li>It answers with the <b>themes</b>, each with a real quote, and a block of code.</li>
+          <li><b>Copy that answer, paste it in the box, press "Read it into the page"</b>. Those
+            themes become the questions of step 3.</li>
+        </ol>
+        <p style="margin:8px 0 0"><b>What goes in the box is the assistant's answer to the prompt
+        on this page.</b> Not the transcript, and not what interview-studio or focus-group-studio
+        export on their own: the page needs the code block, and only this prompt writes it. If you
+        coded the interviews in one of those tools, paste <i>their</i> output under this prompt
+        instead of the raw transcript - it works the same, and the answer still comes back here.</p>
+        </div>
+      <label class="f" for="qpaste">Paste the answer that prompt gave you</label>
+      <textarea id="qpaste" data-k rows="7" placeholder="the whole answer, summary and code block - not the transcript"></textarea>
       <div class="row">
-        <button class="btn ai" data-prompt="qual">Copy the analysis prompt</button>
-        <button class="btn solid" id="qRead">Read it into the page</button>
+        <button class="btn ai" data-prompt="qual">1. Copy the analysis prompt</button>
+        <button class="btn solid" id="qRead">2. Read it into the page</button>
         <span class="hint" id="qRead2"></span>
       </div>
       <p class="hint">Longer transcripts, coding and quotes:
@@ -352,18 +402,35 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   in step 4 runs on them, aimed at the objectives of step 1 and worded with what the interviews gave
   you. The price question and the competitor ratings that rebuild the perceptual map are in it
   because the guide requires them.</p>
+  <div class="note"><b>These four boxes come from above</b>
+    The attributes and the competitors are the ones of your hypothesised map in Pitch 1; the
+    description is the idea in the words the interviews gave you. <b>Change anything you like</b> -
+    what is in the box is what the questionnaire uses - and if you have edited Pitch 1 or read new
+    themes since, pull them again. The prompt below sharpens all four against your own research.
+    <div class="row">
+      <button class="btn sm" id="pullAbove">Pull them again from Pitch 1 and the interviews</button>
+      <button class="btn ai sm" data-prompt="qinputs">Copy the prompt that sharpens them</button>
+    </div>
+    <label class="f" for="qinPaste">Paste the answer here to apply it</label>
+    <textarea id="qinPaste" data-k rows="3" placeholder="the whole answer, code block included"></textarea>
+    <div class="row"><button class="btn solid sm" id="qinRead">Apply it to the four boxes</button>
+      <span class="hint" id="qinRead2"></span></div>
+  </div>
   <div class="grid2">
     <div>
       <label class="f" for="prodDesc">The description the respondent reads before pricing it</label>
       <textarea id="prodDesc" data-k rows="3" placeholder="two or three lines: what it is, what it does, what it includes"></textarea>
+      <div class="src" id="src_desc"></div>
       <label class="f" for="sampleDef">Sample: who answers, how many, how you reach them</label>
       <textarea id="sampleDef" data-k rows="2" placeholder="e.g. 120 students, four course groups and two residences"></textarea>
     </div>
     <div>
       <label class="f" for="attrsLive">The attributes everybody is rated on <span class="hint">- yours and the competitors'</span></label>
       <textarea id="attrsLive" data-k rows="3" placeholder="four or five, from your hypothesised map"></textarea>
+      <div class="src" id="src_attrs"></div>
       <label class="f" for="compsLive">The competing brands to rate</label>
       <textarea id="compsLive" data-k rows="2" placeholder="two or three, the ones the customer really compares"></textarea>
+      <div class="src" id="src_comps"></div>
       <p class="hint">These two boxes are what rebuilds the real perceptual map in step 4, next to the
       one you hypothesised in Pitch 1.</p>
     </div>
@@ -387,6 +454,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     just downloaded &rarr; Run. Google asks for permission once; the form then appears in your Drive with
     every question in it. Send the link, and when the answers are in, download them as CSV from the
     Responses tab and bring that file to step 4.</div>
+  <div class="src" id="qStamp"></div>
   <pre class="out" id="qOut" style="display:none"></pre>
 </section>
 
@@ -444,15 +512,21 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <p class="hint">The model of the pricing session, after Phillips: the maximum price each person
   would pay gives a distribution; demand at a price is the maximum demand times the frequencies at
   or above it; profit is computed at every level and the best one wins.</p>
+  <div class="note"><b>First the costs, then the model</b>
+    The model cannot pick a price without knowing what the thing costs you: at every price level it
+    computes what is left after the variable cost of each unit and the fixed cost of the year. If you
+    do not have those numbers yet, <b>get them first</b> - the prompt below asks you the questions an
+    accountant would and comes back with two numbers and the assumptions behind them.
+    <div class="row"><button class="btn ai" id="costPrompt" data-prompt="cost">1. Copy the prompt that estimates your costs</button></div></div>
   <div class="grid3">
-    <div><label class="f" for="dMax">Maximum demand D <span class="hint">(units a year if everybody who could, bought)</span></label>
+    <div><label class="f" for="dMax">2. Maximum demand D <span class="hint">(units a year if everybody who could, bought)</span></label>
       <input type="number" id="dMax" data-k value="10000" min="1"></div>
     <div><label class="f" for="vCost">Variable cost per unit</label><input type="number" id="vCost" data-k value="2" step="0.1"></div>
     <div><label class="f" for="fCost">Fixed cost, total</label><input type="number" id="fCost" data-k value="3290" step="10"></div>
   </div>
   <div class="row">
-    <button class="btn solid" id="btnWtp">Compute the demand curve and the optimal price</button>
-    <button class="btn ai" data-prompt="cost">Prompt to estimate the costs</button>
+    <button class="btn solid" id="btnWtp">3. Compute the demand curve and the optimal price</button>
+    <span class="hint">the table below picks the level, not your taste</span>
   </div>
   <div id="wtpOut"></div>
   <div class="aibox" id="wtpAi" style="display:none"><b>Prompt with the pricing table</b>
@@ -704,10 +778,26 @@ $('#p1file').addEventListener('change', async (e) => {
     $('#p1state').innerHTML = `<b>${esc(f.name)}</b> read: ${P1TEXT.length.toLocaleString()} characters. `
       + 'Now copy the prompt, give it to your assistant, and paste the answer back.';
   } catch (err) {
-    $('#p1state').textContent = 'That file could not be read here. Save it as .docx or .txt, or fill the boxes on the right.';
+    $('#p1state').textContent = 'That file could not be read here. Open it, copy the text, and paste it in the box below.';
   }
+  p1Steps();
   save();
 });
+
+function p1Steps() {
+  const el = $('#p1Steps');
+  if (!el) return;
+  const hasDoc = !!(P1TEXT || val('p1text'));
+  const hasAnswer = !!val('p1paste');
+  const read = !!(P1 && Object.keys(P1).length);
+  const mark = (ok, n, t) => `<span style="color:${ok ? 'var(--ok)' : 'var(--muted)'}">${ok ? '✓' : n + '.'} ${t}</span>`;
+  el.innerHTML = '<b>Where you are</b>'
+    + [mark(hasDoc, 1, 'document in'), mark(hasDoc, 2, 'prompt copied'),
+       mark(hasAnswer, 3, 'answer pasted'), mark(read, 4, 'read into the page')].join(' &nbsp;&rarr;&nbsp; ')
+    + (read ? '' : '<br><span class="hint">' + (!hasDoc ? 'Start by uploading the document, or paste its text.'
+      : !hasAnswer ? 'Now copy the prompt, take it to your assistant, and paste its answer below.'
+      : 'Press "Read it into the page".') + '</span>');
+}
 
 function jsonFrom(text) {
   const t = String(text || '');
@@ -732,6 +822,7 @@ $('#p1Read').addEventListener('click', () => {
   if (!val('compsLive')) $('#compsLive').value = (o.competitors || []).join('\n');
   if (!val('objectives') && o.objectives) $('#objectives').value = (o.objectives || []).join('\n');
   $('#p1Read2').textContent = 'read ✓';
+  p1Steps();
   $('#p1Card').innerHTML = `<div class="score"><b>Pitch 1 is in.</b>
     ${(o.targets || []).length} target${(o.targets || []).length === 1 ? '' : 's'} &middot;
     ${(o.competitors || []).length} competitors &middot; ${(o.attributes || []).length} attributes &middot;
@@ -769,6 +860,7 @@ $('#qRead').addEventListener('click', () => {
     ${th.slice(0, 4).map((t) => esc(t.theme || t.name || '')).join(' &middot; ')}.
     The questionnaire in step 3 is written from these.</div>` : '';
   if (o.attributesToTest && !val('attrsLive')) $('#attrsLive').value = o.attributesToTest.join('\n');
+  provenance();
   if (o.productDescription && !val('prodDesc')) $('#prodDesc').value = o.productDescription;
   if (o.nameIdeas && o.nameIdeas.length && !val('brandname')) $('#brandname').value = o.nameIdeas[0];
   save();
@@ -840,6 +932,36 @@ function renderPrices() {
   $('#pList').textContent = L.map((p) => p + ' €').join('  ·  ') + '  ·  more than ' + L[L.length - 1] + ' €';
 }
 ['pMin', 'pStep', 'pCount'].forEach((id) => { const el = $('#' + id); if (el) el.addEventListener('input', renderPrices); });
+
+function pullFromAbove(force) {
+  const set = (id, v) => { if (!v) return; const el = $('#' + id); if (el && (force || !el.value.trim())) el.value = v; };
+  set('attrsLive', (P1.attributes || lines(val('attrs'))).join ? (P1.attributes || lines(val('attrs'))).join('\n') : '');
+  set('compsLive', (P1.competitors || lines(val('competitors'))).join ? (P1.competitors || lines(val('competitors'))).join('\n') : '');
+  set('prodDesc', QUAL.productDescription || P1.description || val('offer'));
+  if ((QUAL.attributesToTest || []).length) set('attrsLive', QUAL.attributesToTest.join('\n'));
+  provenance();
+  save();
+}
+function provenance() {
+  const put = (id, t) => { const el = $('#' + id); if (el) el.innerHTML = t ? '&#8627; ' + t : ''; };
+  put('src_attrs', (QUAL.attributesToTest || []).length ? 'what the interviews said people compare on'
+    : (P1.attributes || []).length ? 'the attributes of your hypothesised map in Pitch 1' : 'type them, or read Pitch 1 in step 0');
+  put('src_comps', (P1.competitors || []).length ? 'the competitors named in Pitch 1' : 'type them, or read Pitch 1 in step 0');
+  put('src_desc', QUAL.productDescription ? 'the idea in the words the interviews used'
+    : P1.description ? 'from your Pitch 1' : 'write it as the respondent will read it');
+}
+$('#pullAbove').addEventListener('click', () => pullFromAbove(true));
+$('#qinRead').addEventListener('click', () => {
+  const o = jsonFrom(val('qinPaste'));
+  if (!o) { $('#qinRead2').textContent = 'No code block found in what you pasted.'; return; }
+  if (o.description) $('#prodDesc').value = o.description;
+  if (o.sample) $('#sampleDef').value = o.sample;
+  if (o.attributes) $('#attrsLive').value = o.attributes.join('\n');
+  if (o.competitors) $('#compsLive').value = o.competitors.join('\n');
+  $('#qinRead2').textContent = 'applied ✓';
+  provenance();
+  save();
+});
 
 function attrsList() { return (lines(val('attrsLive')).length ? lines(val('attrsLive')) : lines(val('attrs'))).slice(0, 5); }
 function compsList() { return (lines(val('compsLive')).length ? lines(val('compsLive')) : lines(val('competitors'))).slice(0, 3); }
@@ -1577,7 +1699,7 @@ Return a short list of what you found, and then a JSON block exactly in this sha
 
 THE DOCUMENT:
 """
-${P1TEXT ? P1TEXT.slice(0, 14000) : '(upload the file first, or paste the text of your Pitch 1 here)'}
+${(P1TEXT || val('p1text') || '(upload the file first, or paste the text of your Pitch 1 here)').slice(0, 14000)}
 """`;
   if (kind === 'qual') return base + `\nWe ran ${$('#q_fg').checked ? 'one focus group' : 'two or three in-depth interviews'} with: ${val('qwho')}\n\nWhat Pitch 2 has to settle:\n${val('objectives')}\n\nI will paste the transcripts after this message.
 
@@ -1594,6 +1716,16 @@ Answer with the themes in plain words, and then a JSON block exactly in this sha
 }
 ` + '```';
   if (kind === 'objectives') return base + `\nOur hypotheses:\n${H}\n\nOur research objectives:\n${val('objectives')}\n\nCheck each objective: is it testable, does it name the hypothesis it serves, and could it be answered with the research we can actually run (one qualitative technique and one survey of students)? Rewrite the weak ones in one line each.`;
+  if (kind === 'qinputs') return base + `\nWhat Pitch 2 has to settle:\n${val('objectives')}\n\n`
+    + `What the interviews found:\n${(QUAL.themes || []).map((t) => '- ' + (t.theme || '') + ': ' + (t.statement || '')).join('\n') || '(none read in yet)'}\n\n`
+    + `The four inputs of our questionnaire as they stand:\n`
+    + `description the respondent reads: ${val('prodDesc') || '(empty)'}\n`
+    + `sample: ${val('sampleDef') || '(empty)'}\n`
+    + `attributes everybody is rated on: ${lines(val('attrsLive')).join(', ') || '(empty)'}\n`
+    + `competitors to rate: ${lines(val('compsLive')).join(', ') || '(empty)'}\n\n`
+    + `Sharpen these four. The description must be two or three lines a stranger could price, in the customers' words and with no adjectives we cannot defend. The attributes must be four, the ones people actually compare on - if the interviews named something we are missing, swap it in and say which one you dropped. The competitors must be the real alternatives the customer mentioned, not the ones we admire. The sample must be reachable in two weeks and say who, how many and how.\n\n`
+    + `Explain the changes in three lines, then give exactly this block:\n\n`
+    + '```json' + `\n{"description": "...", "sample": "...", "attributes": ["...","...","...","..."], "competitors": ["...","..."]}\n` + '```';
   if (kind === 'questionnaire') return base + `\nHere is our questionnaire:\n\n${questionnaireText()}\n\nCheck it against these rules: a 1 to 5 labelled scale wherever there is an opinion; no leading, double-barrelled, ambiguous or hypothetical questions; no jargon; demographics at the end; every question must serve a hypothesis or a mix decision - if one serves nothing, say so and cut it. List the problems with the question number and give the rewrite.`;
   if (kind === 'describe') return base + `\nDescriptive results from our survey (n = ${DATA ? DATA.rows.length : 0}):\n${(A.desc || []).join('\n')}\n\nWrite the quantitative findings paragraph of the document: the three strongest results and the two weakest, each with its number and its base, no adjectives we cannot defend, and one sentence on what it means for the offer. Then name the one result that argues against our idea.`;
   if (kind === 'cross') return base + `\nWe tested ${A.crossMeta ? A.crossMeta.tested : 0} pairs of questions; ${A.crossMeta ? A.crossMeta.sig : 0} came out significant and readable and ${A.crossMeta ? A.crossMeta.notValid : 0} could not be tested with this sample.\nThe significant ones:\n${(A.cross || []).join('\n')}\n\nFor each pair: say what it could mean for our targeting or our mix, and remind us why it is a lead and not a finding (we looked at many pairs, and association is not causation). Flag any that is significant but too weak to act on.`;
@@ -1836,8 +1968,21 @@ function restore(o) {
   renderHyps(); renderMedia(); renderPrices(); sources(); completeness();
 }
 let saveTimer = null;
+function refreshOutputs() {
+  // anything the page has already written on screen follows the boxes as they change
+  if ($('#guideOut') && $('#guideOut').style.display !== 'none') $('#guideOut').textContent = discussionGuide();
+  if ($('#qOut') && $('#qOut').style.display !== 'none') {
+    $('#qOut').textContent = questionnaireText();
+    const st = $('#qStamp');
+    if (st) st.innerHTML = '&#8627; rewritten just now from ' + attrsList().length + ' attributes, '
+      + compsList().length + ' competitors and ' + ((QUAL.themes || []).length) + ' themes from the interviews';
+  }
+}
+
 function save() {
   completeness();
+  p1Steps();
+  refreshOutputs();
   $$('.chk').forEach((l) => { const i = l.querySelector('input'); if (i) l.classList.toggle('on', i.checked); });
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
@@ -2011,7 +2156,14 @@ function loadDemo() {
   put('pMin', '5'); put('pStep', '2'); put('pCount', '5');
   put('dMax', '12000'); put('vCost', '4.2'); put('fCost', '18000');
   Object.keys(DEMO.mix).forEach((k) => { if (k !== 'media') put(k, DEMO.mix[k]); });
-  QUAL = { themes: DEMO.themes };
+  QUAL = { themes: DEMO.themes, productDescription: DEMO.prodDesc, attributesToTest: DEMO.attributes.split('
+') };
+  P1 = { brand: DEMO.brand, offer: DEMO.offer, description: DEMO.prodDesc,
+         targets: DEMO.targets.split('
+'), competitors: DEMO.competitors.split('
+'),
+         attributes: DEMO.attributes.split('
+'), hypotheses: DEMO.hypotheses };
   ST.hyps = DEMO.hypotheses.map((x) => ({ text: x.text, from: 'Pitch 1', how: '', kill: x.wrongIf }));
   ST.verdicts = { 0: { ev: '61% would pay 7 euros or more', res: 'Confirmed', chg: 'launch at 7, list at 9' },
                   1: { ev: 'convenience 4.3 against price 3.4 on importance, but only in one segment', res: 'Partly confirmed', chg: 'two messages, one per segment' },
@@ -2028,7 +2180,7 @@ function loadDemo() {
   PICKED = {};
   $('#dataReport').innerHTML = `<div class="score"><b>${DATA.rows.length} answers</b> loaded from the example survey.
     Press the buttons below and watch each analysis run on them.</div>`;
-  renderHyps(); renderVerdicts(); renderMedia(); renderPrices(); renderDesc(); renderVarPicker(); sources(); completeness();
+  renderHyps(); renderVerdicts(); renderMedia(); renderPrices(); renderDesc(); renderVarPicker(); sources(); completeness(); provenance(); p1Steps();
   $('#qCard').innerHTML = `<div class="score"><b>${DEMO.themes.length} themes are in</b> from the example interviews.</div>`;
   save();
   showView('work');
@@ -2051,7 +2203,7 @@ $$('#tabs .tab').forEach((b) => b.addEventListener('click', () => showView(b.dat
 $('#goDemo').addEventListener('click', () => showView('demo'));
 
 /* ===================================================================== boot */
-renderHyps(); renderMedia(); renderPrices(); renderDesc(); sources(); completeness();
+renderHyps(); renderMedia(); renderPrices(); renderDesc(); sources(); completeness(); p1Steps(); provenance();
 try {
   const auto = localStorage.getItem(KEY + '_auto');
   if (auto) restore(JSON.parse(auto));
