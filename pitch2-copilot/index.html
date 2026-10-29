@@ -2156,14 +2156,11 @@ function loadDemo() {
   put('pMin', '5'); put('pStep', '2'); put('pCount', '5');
   put('dMax', '12000'); put('vCost', '4.2'); put('fCost', '18000');
   Object.keys(DEMO.mix).forEach((k) => { if (k !== 'media') put(k, DEMO.mix[k]); });
-  QUAL = { themes: DEMO.themes, productDescription: DEMO.prodDesc, attributesToTest: DEMO.attributes.split('
-') };
+  const L = (t) => String(t || '').split('\n').filter(Boolean);
+  QUAL = { themes: DEMO.themes, productDescription: DEMO.prodDesc, attributesToTest: L(DEMO.attributes) };
   P1 = { brand: DEMO.brand, offer: DEMO.offer, description: DEMO.prodDesc,
-         targets: DEMO.targets.split('
-'), competitors: DEMO.competitors.split('
-'),
-         attributes: DEMO.attributes.split('
-'), hypotheses: DEMO.hypotheses };
+         targets: L(DEMO.targets), competitors: L(DEMO.competitors),
+         attributes: L(DEMO.attributes), hypotheses: DEMO.hypotheses };
   ST.hyps = DEMO.hypotheses.map((x) => ({ text: x.text, from: 'Pitch 1', how: '', kill: x.wrongIf }));
   ST.verdicts = { 0: { ev: '61% would pay 7 euros or more', res: 'Confirmed', chg: 'launch at 7, list at 9' },
                   1: { ev: 'convenience 4.3 against price 3.4 on importance, but only in one segment', res: 'Partly confirmed', chg: 'two messages, one per segment' },
