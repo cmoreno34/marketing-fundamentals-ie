@@ -1642,12 +1642,15 @@ function renderPriceCol() {
       + 'maximum price. Pick it above, or the model has nothing to work with.</b>';
     return;
   }
-  const vals = DATA.rows.map((r) => parsePrice(rawOf(r, cur))).filter((x) => x !== null);
+  const PA = priceAnswers(cur);
+  const vals = PA.values;
   const uniq = [...new Set(vals)].sort((a, b) => a - b);
   st.innerHTML = vals.length < 5
     ? `<b style="color:var(--warn)">Only ${vals.length} answers in that column look like money.</b> Pick another one.`
     : `read as money: ${uniq.slice(0, 9).map((x) => fmt(x, 2)).join(', ')}${uniq.length > 9 ? ' ...' : ''}
-       &middot; ${vals.length} answers${uniq[0] === 0 ? ' (one level is "would not pay")' : ''}`;
+       &middot; ${vals.length} answers${uniq[0] === 0 ? ' (one level is "would not pay")' : ''}`
+      + (PA.scale.inBands ? `<br><b>asked in bands</b>, so each answer counts at the middle of its band:
+         ${esc(PA.scale.shown.join(', '))}` : '');
 }
 function mapColFor(i, k) {
   if (ST.mapCols && ST.mapCols[i] && ST.mapCols[i][k] !== undefined) return ST.mapCols[i][k];
@@ -1961,6 +1964,52 @@ function wtpColumn() {
     || DATA.vars.find((v) => MONEYNAME.test(fold(v.name)));
   return cand ? cand.name : null;
 }
+/* "10-15 EUR", "entre 10 y 15", "menos de 10", "mas de 30", "30+", "25 EUR": what was meant */
+function priceParts(raw) {
+  const s = String(raw == null ? '' : raw).toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/(\d)[.,](\d)/g, '$1.$2');
+  const nums = (s.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+  if (!nums.length) return /no pagar|nothing|ninguno|nada|gratis|free|0/.test(s) ? { lo: 0, hi: 0 } : null;
+  const openLow = /menos|less|under|below|hasta|up to|inferior|como maximo|maximo de/.test(s) || /^\s*</.test(s);
+  const openHigh = /mas de|more than|over|o mas|or more|and over|plus|superior|mayor/.test(s)
+    || /\d\s*\+/.test(s) || /^\s*>/.test(s);
+  if (openLow && !openHigh) return { lo: null, hi: Math.max.apply(null, nums) };
+  if (openHigh && !openLow) return { lo: Math.min.apply(null, nums), hi: null };
+  if (nums.length >= 2) return { lo: Math.min(nums[0], nums[1]), hi: Math.max(nums[0], nums[1]) };
+  return { lo: nums[0], hi: nums[0] };
+}
+/* one number per distinct answer: the middle of the band, with the open ends closed using the
+   width of the others - so the levels of the model are the midpoints, not the lower bounds */
+function priceScale(col) {
+  const labels = [...new Set(DATA.rows.map((r) => String(rawOf(r, col) == null ? '' : rawOf(r, col)).trim())
+    .filter(Boolean))];
+  const parts = labels.map((l) => ({ l, p: priceParts(l) })).filter((x) => x.p);
+  const widths = parts.filter((x) => x.p.lo !== null && x.p.hi !== null && x.p.hi > x.p.lo)
+    .map((x) => x.p.hi - x.p.lo).sort((a, b) => a - b);
+  const w = widths.length ? widths[Math.floor(widths.length / 2)] : 0;
+  const map = {}; const shown = [];
+  let bands = 0, ends = 0;
+  parts.forEach(({ l, p }) => {
+    let v;
+    if (p.lo === null) { v = w ? Math.max(0, p.hi - w / 2) : p.hi / 2; ends++; }
+    else if (p.hi === null) { v = w ? p.lo + w / 2 : p.lo * 1.25; ends++; }
+    else if (p.hi > p.lo) { v = (p.lo + p.hi) / 2; bands++; }
+    else v = p.lo;
+    map[l] = Math.round(v * 100) / 100;
+    if (bands + ends && shown.length < 3 && (p.lo === null || p.hi === null || p.hi > p.lo)) shown.push(l + ' → ' + fmt(map[l], 2));
+  });
+  return { map, bands, ends, width: w, shown, inBands: bands + ends > 0 };
+}
+function priceAnswers(col) {
+  const PS = priceScale(col);
+  const values = DATA.rows.map((r) => {
+    const raw = String(rawOf(r, col) == null ? '' : rawOf(r, col)).trim();
+    if (!raw) return null;
+    return PS.map[raw] !== undefined ? PS.map[raw] : parsePrice(raw);
+  }).filter((x) => x !== null);
+  return { values, scale: PS };
+}
 function parsePrice(x) {
   const s = String(x || '').replace(',', '.');
   if (/not pay|no pagar|nothing/i.test(s)) return 0;
@@ -1971,7 +2020,8 @@ $('#btnWtp').addEventListener('click', () => {
   if (!DATA) { alert('Load the answers first.'); return; }
   const col = wtpColumn();
   if (!col) { $('#wtpOut').innerHTML = '<div class="note"><b>No price column found</b>Pick the column in 4.7b: it is the question that asked the most each person would pay. In the template it is called <b>wtp</b>.</div>'; return; }
-  const answers = DATA.rows.map((r) => parsePrice(rawOf(r, col))).filter((x) => x !== null);
+  const PA = priceAnswers(col);
+  const answers = PA.values;
   if (answers.length < 5) { $('#wtpOut').innerHTML = '<div class="note"><b>Too few price answers</b>Only ' + answers.length + ' could be read.</div>'; return; }
   const levels = [...new Set(answers.filter((x) => x > 0))].sort((a, b) => a - b);
   const D = Number(val('dMax') || 0), vc = Number(val('vCost') || 0), fc = Number(val('fCost') || 0);
@@ -2000,7 +2050,16 @@ $('#btnWtp').addEventListener('click', () => {
       ${noPay ? `<br>${noPay} of ${total} said they would not pay anything: they are in the base, which is why the percentages are of everybody who answered.` : ''}
       <br>Charge more and you earn more per unit on fewer people; charge less and the extra people do not pay for the margin you gave up. That is the whole argument, and it is in the table above.</div>
     <div class="note"><b>Before you believe it</b>This is what people <i>said</i> with nothing at stake, so it is the ceiling, not the forecast. Two of the levels either side of ${fmt(best.p, 2)} usually earn almost the same: check whether your choice is really a cliff or a plateau. And if the distribution has two humps, you have two segments and possibly two prices.</div>`;
-  ST.analysis.wtp = { best: best.p, share: best.atOrAbove, q: best.q, profit: best.profit, rows, D, vc, fc, n: total };
+  if (PA.scale.inBands) {
+    $('#wtpOut').insertAdjacentHTML('beforeend', `<div class="note"><b>Your question was asked in bands</b>
+      Each answer is counted at the middle of its band (${esc(PA.scale.shown.join(', '))}), which is what you
+      do with grouped data: the band itself is not a price, its middle is the best single estimate of it.
+      ${PA.scale.ends ? `The open band${PA.scale.ends === 1 ? '' : 's'} at the end${PA.scale.ends === 1 ? '' : 's'}
+        ${PA.scale.ends === 1 ? 'is' : 'are'} closed with the width of the others (${fmt(PA.scale.width, 2)}).` : ''}
+      Say so in the document when you report the price: it is a decision you made, and it is the right one.</div>`);
+  }
+  ST.analysis.wtp = { best: best.p, share: best.atOrAbove, q: best.q, profit: best.profit, rows, D, vc, fc,
+    n: total, bands: PA.scale.inBands, bandNote: PA.scale.shown.join(', ') };
   $('#wtpAi').style.display = 'block';
   draftMix(false);
   $('#prWtp').value = `${fmt(best.atOrAbove * 100, 0)}% of the ${total} who answered would pay ${fmt(best.p, 2)} or more. `
@@ -2263,7 +2322,9 @@ Answer with the themes in plain words, and then a JSON block exactly in this sha
   if (kind === 'cross') return base + `\nWe tested ${A.crossMeta ? A.crossMeta.tested : 0} pairs of questions; ${A.crossMeta ? A.crossMeta.sig : 0} came out significant and readable and ${A.crossMeta ? A.crossMeta.notValid : 0} could not be tested with this sample.\nThe significant ones:\n${(A.cross || []).join('\n')}\n\nFor each pair: say what it could mean for our targeting or our mix, and remind us why it is a lead and not a finding (we looked at many pairs, and association is not causation). Flag any that is significant but too weak to act on.`;
   if (kind === 'cluster') return base + `\nOur segmentation: ${A.cluster ? A.cluster.k : 0} segments, silhouette ${A.cluster ? fmt(A.cluster.sil) : '-'}, explaining ${A.cluster ? fmt(A.cluster.varExp * 100, 0) : '-'}% of the differences.\nSizes: ${A.cluster ? A.cluster.sizes.join(' / ') : ''}\nThe variables that separate them:\n${A.cluster ? A.cluster.top.join('\n') : ''}\n\nName each segment after what separates it (not after demographics we did not measure), say which one we should target and why, and say honestly how much weight this segmentation can carry given the silhouette.`;
   if (kind === 'cost') return base + `\nWe need the cost side to price this. Ask me, one at a time, the questions you need to estimate: the variable cost per unit (materials, packaging, the part of labour that goes up with each unit, payment and delivery fees) and the fixed cost for the first year (equipment, software, rent, the part of labour that does not change). For each item give a plausible European range for a student-scale project and the source type I should check. Finish with two numbers: variable cost per unit and total fixed cost, with the assumptions written out.`;
-  if (kind === 'price') return base + `\nWillingness to pay from our survey (n = ${A.wtp ? A.wtp.n : 0}), with maximum demand ${A.wtp ? A.wtp.D : 0} units, variable cost ${A.wtp ? A.wtp.vc : 0} and fixed cost ${A.wtp ? A.wtp.fc : 0}:\n`
+  if (kind === 'price') return base
+    + (A.wtp && A.wtp.bands ? `\nThe maximum-price question was asked in bands, so every answer is counted at the middle of its band (${A.wtp.bandNote}).\n` : '')
+    + `\nWillingness to pay from our survey (n = ${A.wtp ? A.wtp.n : 0}), with maximum demand ${A.wtp ? A.wtp.D : 0} units, variable cost ${A.wtp ? A.wtp.vc : 0} and fixed cost ${A.wtp ? A.wtp.fc : 0}:\n`
     + (A.wtp ? A.wtp.rows.map((r) => `${fmt(r.p, 2)}: ${fmt(r.atOrAbove * 100, 0)}% would pay it or more, demand ${Math.round(r.q)}, profit ${Math.round(r.profit)}`).join('\n') : '(compute it first)')
     + `\n\nThe profit-maximising level is ${A.wtp ? fmt(A.wtp.best, 2) : '-'}. Write the Price section: the strategy we are following (value, cost or competition based), the launch price and why, what we give up by not charging the level above and the level below, and the risk that stated willingness to pay overstates real behaviour. Keep it to one paragraph plus three bullets.`;
   if (kind === 'verdicts') return base + `\nHypotheses and what we found:\n`
