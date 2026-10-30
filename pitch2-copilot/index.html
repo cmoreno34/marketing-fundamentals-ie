@@ -135,6 +135,9 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 </head>
 <body>
 <button class="themebtn" id="theme">&#9689; Theme</button>
+<div class="save" id="tabWarn" style="bottom:48px;color:var(--warn);border-color:var(--warn);display:none"
+  title="Both tabs write into the same draft of this browser, so the last one to save is the one that is kept.">
+  &#9888; another tab of this page is open here - the last to save wins</div>
 <div class="save" id="saveState" title="The draft lives in this browser. Download the file to keep it, move it to another laptop, or pass it to your group.">in this browser: saved - | file: not downloaded yet</div>
 <div class="wrap">
 
@@ -774,6 +777,12 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
         opens on any laptop with <b>Load a draft file</b>.</li>
       <li><b>One person keeps it.</b> Four people on four laptops means four different drafts: decide
         who holds the file, and pass it around after each session instead of typing things twice.</li>
+      <li><b>To work in parallel, divide by section and then merge.</b> One takes the product, another
+        the price, another place and promotion. Each downloads their own draft file; one person loads
+        them one after the other with <b>Load or merge a draft file</b>. Merging never wipes what is on
+        your page: empty boxes are filled from the file, and anything you both wrote differently is
+        listed for you to choose. Two people in the <b>same browser</b> (two tabs on one laptop) do
+        overwrite each other - the page warns you when it sees a second tab.</li>
       <li><b>The page also saves itself into this browser</b> every few seconds, which is enough
         between one day and the next on the same machine - and only there.</li>
       <li><b>What loses the work:</b> a private or incognito window, clearing the site data or
@@ -784,12 +793,13 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     <button class="btn solid" id="dlWord">8.2 Download the Pitch 2 document (Word)</button>
     <button class="btn" id="dlAll">Download everything (Word + questionnaire + template)</button>
     <button class="btn solid" id="btnExport">8.3 Download the draft file</button>
-    <label class="btn" for="draftFile" style="cursor:pointer">Load a draft file</label>
+    <label class="btn" for="draftFile" style="cursor:pointer">Load or merge a draft file</label>
     <input type="file" id="draftFile" accept=".json" style="display:none">
     <button class="btn" id="btnSave">Keep it in this browser</button>
     <button class="btn" id="btnLoad">Recover it from this browser</button>
     <button class="btn ghost" id="btnReset">Clear everything</button>
   </div>
+  <div id="mergeOut"></div>
   <div class="note"><b>What you hand in is not this file</b>The Word you download is the
   <b>base structure</b>: every number and every table is already yours, in the order the guide grades,
   with a cover and the two appendices. What it is not is written: rewrite it in your own words, cut
@@ -885,7 +895,7 @@ const fmt = (x, d = 2) => (x === null || x === undefined || Number.isNaN(x) ? '-
 const lines = (s) => String(s || '').split('\n').map((x) => x.trim()).filter(Boolean);
 const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
 
-const ST = { hyps: [], media: [], verdicts: {}, analysis: {} };
+const ST = { hyps: [], media: [], verdicts: {}, analysis: {}, merge: null };
 let lastSaved = null, exportedAt = null, dirtySince = null;   // when it was saved, and whether the file was taken out
 
 /* ===================================================================== 0 Pitch 1 comes in */
@@ -2257,15 +2267,193 @@ function draftState(how) {
       : '<b style="color:var(--warn)">not downloaded yet</b>');
 }
 
+/* ------------------------------------------------------------------ merging two drafts */
+const NOCLASH = ['p1text', 'p1paste', 'qpaste', 'qinPaste'];   // raw paste areas: never argue about them
+function boxLabel(id) {
+  const el = $('#' + id);
+  if (!el) return id;
+  let txt = '';
+  const forLab = document.querySelector('label[for="' + id + '"]');
+  if (forLab) txt = forLab.textContent;
+  if (!txt) {
+    let s = el.previousElementSibling;
+    while (s && !/^(LABEL|H3|H4)$/.test(s.tagName)) s = s.previousElementSibling;
+    if (s) txt = s.textContent;
+  }
+  const sec = el.closest('section');
+  const n = sec ? sec.querySelector('h2 .n') : null;
+  txt = String(txt || id).replace(/\s+/g, ' ').trim().slice(0, 52);
+  return (n ? 'step ' + n.textContent + ' - ' : '') + txt;
+}
+const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+
+function pageIsEmpty() {
+  return !val('brandwork') && !val('objectives') && !ST.hyps.length && !DATA && !(QUAL.themes || []).length;
+}
+
+function mergeDraft(o, fname) {
+  const M = { name: fname, took: 0, same: 0, added: [], clashes: [] };
+
+  /* the boxes */
+  Object.keys(o).forEach((id) => {
+    if (id.charAt(0) === '_') return;
+    const el = $('#' + id);
+    if (!el) return;
+    if (el.type === 'hidden') return;          // the page works these out itself (the channel summary)
+    if (el.type === 'checkbox') {
+      if (o[id] && !el.checked) { el.checked = true; M.took++; }
+      else if (o[id]) M.same++;
+      return;
+    }
+    const theirs = String(o[id] == null ? '' : o[id]);
+    const mine = String(el.value || '');
+    if (!theirs.trim()) return;
+    if (!mine.trim()) { el.value = theirs; M.took++; return; }
+    if (theirs.trim() === mine.trim()) { M.same++; return; }
+    if (NOCLASH.indexOf(id) >= 0) { M.same++; return; }
+    M.clashes.push({ kind: 'box', id, label: boxLabel(id), mine: mine.trim(), theirs: theirs.trim() });
+  });
+
+  /* what came out of the interviews */
+  const q = o._qual || {};
+  if ((q.themes || []).length) {
+    QUAL.themes = QUAL.themes || [];
+    const have = QUAL.themes.map((t) => norm(t.theme || t.statement));
+    q.themes.forEach((t) => {
+      if (have.indexOf(norm(t.theme || t.statement)) < 0) { QUAL.themes.push(t); M.added.push('a theme from the interviews'); }
+    });
+  }
+  ['productDescription'].forEach((k) => { if (!QUAL[k] && q[k]) QUAL[k] = q[k]; });
+  if (!(QUAL.attributesToTest || []).length && (q.attributesToTest || []).length) QUAL.attributesToTest = q.attributesToTest;
+  if (!Object.keys(P1).length && o._p1) P1 = o._p1;
+  if (!P1TEXT && o._p1text) P1TEXT = o._p1text;
+
+  /* the hypotheses, each with its verdict */
+  const theirH = (o._st && o._st.hyps) || [];
+  const theirV = (o._st && o._st.verdicts) || {};
+  theirH.forEach((hyp, j) => {
+    const v = theirV[j] || {};
+    let at = ST.hyps.findIndex((x) => norm(x.text) && norm(x.text) === norm(hyp.text));
+    if (at < 0) {
+      ST.hyps.push(hyp);
+      at = ST.hyps.length - 1;
+      ST.verdicts[at] = Object.assign({}, v);
+      M.added.push('hypothesis "' + String(hyp.text || '').slice(0, 40) + '"');
+      return;
+    }
+    ST.verdicts[at] = ST.verdicts[at] || {};
+    ['ev', 'res', 'chg'].forEach((f) => {
+      const t = String(v[f] || '').trim(), m = String(ST.verdicts[at][f] || '').trim();
+      if (!t) return;
+      if (!m) { ST.verdicts[at][f] = t; M.took++; return; }
+      if (t === m) { M.same++; return; }
+      M.clashes.push({ kind: 'verdict', i: at, f, label: 'H' + (at + 1) + ' - ' + ({ ev: 'the evidence', res: 'the verdict', chg: 'what changes' }[f]), mine: m, theirs: t });
+    });
+  });
+
+  /* the media table */
+  const theirM = (o._st && o._st.media) || [];
+  const haveM = ST.media.map((x) => norm(x.m) + '|' + norm(x.p));
+  theirM.forEach((row) => {
+    if (haveM.indexOf(norm(row.m) + '|' + norm(row.p)) < 0) { ST.media.push(row); M.added.push('a medium: ' + (row.m || '')); }
+  });
+
+  /* the answers to the survey */
+  if (o._data && o._data.csv) {
+    if (!RAWCSV) { takeData(o._data); M.added.push(DATA ? DATA.rows.length + ' answers' : 'the answers'); }
+    else if (RAWCSV.trim() !== o._data.csv.trim()) {
+      M.clashes.push({ kind: 'data', data: o._data, label: 'the survey answers',
+        mine: RAWNAME + ' (' + (DATA ? DATA.rows.length : '?') + ' answers)',
+        theirs: (o._data.name || 'their file') + ' (' + (o._data.csv.split('\n').length - 1) + ' lines)' });
+    } else M.same++;
+  }
+  Object.keys(o._analysis || {}).forEach((k) => { if (!ST.analysis[k]) ST.analysis[k] = o._analysis[k]; });
+
+  ST.merge = M;
+  afterMerge();
+  return M;
+}
+
+function takeData(d) {
+  RAWCSV = d.csv; RAWNAME = d.name || 'their file';
+  try {
+    DATA = recode(classify(tableToData(parseCSV(RAWCSV), RAWNAME)));
+    if ($('#dataReport')) $('#dataReport').innerHTML =
+      `<div class="score"><b>${DATA.rows.length} answers came in with the draft</b> (${esc(RAWNAME)}).
+       Press the buttons of step 4 again to redraw the tables.</div>`;
+    renderDesc(); renderVarPicker();
+  } catch (e) { /* a corrupt draft should not take the page down */ }
+}
+
+function afterMerge() {
+  renderHyps(); renderVerdicts(); renderMedia(); renderPrices(); sources(); completeness(); renderMerge();
+  save();
+}
+
+function renderMerge() {
+  const el = $('#mergeOut');
+  if (!el) return;
+  const M = ST.merge;
+  if (!M) { el.innerHTML = ''; return; }
+  const open = M.clashes.filter((c) => !c.done);
+  const cut = (s) => esc(String(s).replace(/\s+/g, ' ').slice(0, 90)) + (String(s).length > 90 ? '&hellip;' : '');
+  let out = `<div class="score"><b>Merged ${esc(M.name)}</b> `
+    + `${M.took} empty box${M.took === 1 ? '' : 'es'} filled in from the file, ${M.same} already the same`
+    + (M.added.length ? `, and added: ${esc(M.added.slice(0, 6).join(', '))}${M.added.length > 6 ? ' and ' + (M.added.length - 6) + ' more' : ''}` : '')
+    + `. Nothing you had written was replaced.</div>`;
+  if (open.length) {
+    out += `<div class="note"><b>${open.length} thing${open.length === 1 ? '' : 's'} you both wrote differently</b>
+      Yours is what the page and the Word file use. Press <i>use theirs</i> on any line you would rather keep from the file.
+      <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:14px">
+      <tr><th style="text-align:left;padding:3px 6px">where</th><th style="text-align:left;padding:3px 6px">what you have</th>
+      <th style="text-align:left;padding:3px 6px">what the file has</th><th></th></tr>`
+      + M.clashes.map((c, i) => c.done ? '' : `<tr style="border-top:1px solid var(--line)">
+        <td style="padding:4px 6px;vertical-align:top"><b>${esc(c.label)}</b></td>
+        <td style="padding:4px 6px;vertical-align:top">${cut(c.mine)}</td>
+        <td style="padding:4px 6px;vertical-align:top">${cut(c.theirs)}</td>
+        <td style="padding:4px 6px;vertical-align:top"><button class="btn" data-mg="${i}">use theirs</button></td></tr>`).join('')
+      + `</table><div class="row"><button class="btn" id="mgAll">Use theirs on all ${open.length}</button>
+         <button class="btn ghost" id="mgKeep">Keep mine, close this</button></div></div>`;
+  }
+  el.innerHTML = out;
+  $$('#mergeOut [data-mg]').forEach((b) => b.addEventListener('click', () => { applyClash(ST.merge.clashes[+b.dataset.mg]); afterMerge(); }));
+  if ($('#mgAll')) $('#mgAll').addEventListener('click', () => { ST.merge.clashes.forEach(applyClash); afterMerge(); });
+  if ($('#mgKeep')) $('#mgKeep').addEventListener('click', () => { ST.merge = null; renderMerge(); });
+}
+
+function applyClash(c) {
+  if (!c || c.done) return;
+  if (c.kind === 'box') { const el = $('#' + c.id); if (el) el.value = c.theirs; }
+  if (c.kind === 'verdict') { ST.verdicts[c.i] = ST.verdicts[c.i] || {}; ST.verdicts[c.i][c.f] = c.theirs; }
+  if (c.kind === 'data') takeData(c.data);
+  c.done = true;
+}
+
+/* two tabs of this page in one browser share one draft - the storage event only fires in the
+   other tabs, which makes it a perfect detector */
+window.addEventListener('storage', (e) => {
+  if (e.key !== KEY + '_auto' || !$('#tabWarn')) return;
+  $('#tabWarn').style.display = '';
+});
+
 $('#btnExport').addEventListener('click', exportDraft);
 $('#draftFile').addEventListener('change', async (e) => {
   const f = e.target.files[0];
   if (!f) return;
   try {
     const o = JSON.parse(await f.text());
-    restore(o);
-    alert('Draft loaded: ' + f.name + (o._when ? '\nSaved on ' + o._when.slice(0, 16).replace('T', ' ') : ''));
+    if (pageIsEmpty()) {
+      restore(o);
+      ST.merge = null; renderMerge();
+      alert('Draft loaded: ' + f.name + (o._when ? '\nSaved on ' + o._when.slice(0, 16).replace('T', ' ') : ''));
+    } else {
+      const M = mergeDraft(o, f.name);
+      $('#mergeOut').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (M.clashes.length) alert('Merged ' + f.name + '.\nNothing you wrote was replaced. '
+        + M.clashes.length + ' thing(s) you both wrote differently are listed under the buttons, for you to choose.');
+    }
   } catch (err) { alert('That file is not a draft of this page.'); }
+  e.target.value = '';
 });
 window.addEventListener('beforeunload', (e) => {
   const something = val('brandwork') || ST.hyps.length || DATA;
