@@ -167,6 +167,11 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
 </div>
 
 <div id="view-work">
+<div class="note" id="demoBand" style="display:none"><b>The worked example is in the boxes</b>
+  Everything you see is Sobremesa, the example project, so that you can see what each step
+  produces. The moment you work on your own Pitch 2, clear it - otherwise the example's
+  competitors, objectives and numbers end up inside your prompts.
+  <div class="row"><button class="btn solid" id="startMine">Clear the example and start my own project</button></div></div>
 <section id="how">
   <h2>How this works</h2>
   <p class="hint">You do not type your project in again. You hand the page what you already have, it
@@ -296,6 +301,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <div class="row"><button class="btn solid" id="p1Read">Read it into the page</button>
         <span class="hint" id="p1Read2"></span></div>
       <div id="p1Card"></div>
+      <div id="p1Clash"></div>
     </div>
     <div>
       <h3>What the page fills in for you</h3>
@@ -895,7 +901,7 @@ const fmt = (x, d = 2) => (x === null || x === undefined || Number.isNaN(x) ? '-
 const lines = (s) => String(s || '').split('\n').map((x) => x.trim()).filter(Boolean);
 const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
 
-const ST = { hyps: [], media: [], verdicts: {}, analysis: {}, merge: null };
+const ST = { hyps: [], media: [], verdicts: {}, analysis: {}, merge: null, demo: false };
 let lastSaved = null, exportedAt = null, dirtySince = null;   // when it was saved, and whether the file was taken out
 
 /* ===================================================================== 0 Pitch 1 comes in */
@@ -970,26 +976,68 @@ function jsonFrom(text) {
 $('#p1Read').addEventListener('click', () => {
   const o = jsonFrom(val('p1paste'));
   if (!o) { $('#p1Read2').textContent = 'No JSON block found in what you pasted.'; return; }
+
+  /* if the worked example is in the boxes, it goes now: this is your project, not Sobremesa */
+  const wasDemo = ST.demo;
+  if (wasDemo) {
+    const answer = val('p1paste'), typed = val('p1text'), doc = P1TEXT;
+    clearAll();
+    $('#p1paste').value = answer; $('#p1text').value = typed; P1TEXT = doc;
+  }
   P1 = o;
-  const put = (id, v) => { if (v && $('#' + id) && !val(id)) $('#' + id).value = Array.isArray(v) ? v.join('\n') : v; };
-  put('brandwork', o.brand || o.workingName);
-  put('offer', o.offer || o.idea);
-  put('targets', o.targets);
-  put('posstat', o.positioning || o.positioningStatement);
-  put('competitors', o.competitors);
-  put('attrs', o.attributes);
-  put('prodDesc', o.description || o.offer);
-  if (!val('attrsLive')) $('#attrsLive').value = (o.attributes || []).join('\n');
-  if (!val('compsLive')) $('#compsLive').value = (o.competitors || []).join('\n');
-  if (!val('objectives') && o.objectives) $('#objectives').value = (o.objectives || []).join('\n');
+
+  const got = [], none = [], clash = [];
+  const take = (id, v, label) => {
+    const el = $('#' + id);
+    if (!el) return;
+    const theirs = (Array.isArray(v) ? v.filter(Boolean).join('\n') : String(v == null ? '' : v)).trim();
+    if (!theirs) { none.push(label); return; }
+    const mine = String(el.value || '').trim();
+    if (!mine || untouched(id, mine)) { el.value = theirs; got.push(label); return; }
+    if (mine === theirs) { got.push(label); return; }
+    clash.push({ kind: 'box', id, label, mine, theirs });
+  };
+  take('brandwork', o.brand || o.workingName, 'the working name');
+  take('offer', o.offer || o.idea, 'what it is, in one line');
+  take('prodDesc', o.description || o.offer, 'the description the survey will show');
+  take('targets', o.targets, 'the targets');
+  take('posstat', o.positioning || o.positioningStatement, 'the positioning statement');
+  take('competitors', o.competitors, 'the competing brands');
+  take('attrs', o.attributes, 'the attributes of the hypothesised map');
+  take('objectives', o.objectives, 'what Pitch 2 has to settle');
+  if (!val('attrsLive') || untouched('attrsLive', val('attrsLive'))) $('#attrsLive').value = (o.attributes || []).join('\n');
+  if (!val('compsLive') || untouched('compsLive', val('compsLive'))) $('#compsLive').value = (o.competitors || []).join('\n');
+
+  /* the hypotheses were being counted and then dropped - they belong in step 5 */
+  const H = (o.hypotheses || []).map((x) => (typeof x === 'string' ? { text: x } : x || {}));
+  let added = 0;
+  H.forEach((x) => {
+    const t = String(x.text || x.hypothesis || '').trim();
+    if (!t || ST.hyps.some((y) => norm(y.text) === norm(t))) return;
+    ST.hyps.push({ text: t, from: 'Pitch 1', how: '', kill: String(x.wrongIf || x.wrongif || x.falsifiedBy || '') });
+    added++;
+  });
+  if (added) got.push(added + (added === 1 ? ' hypothesis' : ' hypotheses') + ', now in step 5 waiting for a verdict');
+  else if (!H.length) none.push('the hypotheses (add them by hand in step 5)');
+  if ((o.segments || []).length) got.push((o.segments || []).length + ' segments, kept for step 6');
+  else none.push('the segments');
+
+  ST.demo = false;
   $('#p1Read2').textContent = 'read ✓';
-  p1Steps();
-  $('#p1Card').innerHTML = `<div class="score"><b>Pitch 1 is in.</b>
-    ${(o.targets || []).length} target${(o.targets || []).length === 1 ? '' : 's'} &middot;
-    ${(o.competitors || []).length} competitors &middot; ${(o.attributes || []).length} attributes &middot;
-    ${(o.segments || []).length} segments &middot; ${(o.hypotheses || []).length} hypotheses, which are waiting
-    for their verdict in step 5. Anything it got wrong, correct it on the right: what is in the boxes
-    is what the page uses.</div>`;
+  const list = (a) => a.map((x) => '<li>' + esc(x) + '</li>').join('');
+  $('#p1Card').innerHTML = `<div class="score"><b>Read from your Pitch 1.</b>`
+    + (wasDemo ? ' The worked example was cleared first, so nothing of Sobremesa is left in your project.' : '')
+    + `<div class="grid2" style="margin-top:6px">
+      <div><b>It took</b><ul style="margin:3px 0 0;padding-left:18px">${list(got) || '<li>nothing - is the JSON block complete?</li>'}</ul></div>
+      <div><b>Your document did not say</b><ul style="margin:3px 0 0;padding-left:18px">${none.length ? list(none) : '<li>nothing was missing</li>'}</ul>
+      ${none.length ? '<span class="hint">Write those by hand on the right. The page uses the boxes, not the document.</span>' : ''}</div>
+    </div></div>`;
+  if (clash.length) {
+    ST.merge = { name: 'your Pitch 1', took: 0, same: 0, add: { theme: 0, media: 0 }, notes: [],
+      clashes: clash, into: '#p1Clash', src: 'your Pitch 1', quiet: true };
+  } else if (ST.merge && ST.merge.into === '#p1Clash') ST.merge = null;
+  renderMerge();
+  renderHyps(); p1Steps(); demoBand(); sources(); completeness();
   save();
 });
 
@@ -2183,7 +2231,7 @@ $('#wordGuide').addEventListener('click', () => {
 function state() {
   const o = { _v: 2, _when: new Date().toISOString(),
     _st: { hyps: ST.hyps, media: ST.media, verdicts: ST.verdicts },
-    _p1: P1, _qual: QUAL, _p1text: (P1TEXT || '').slice(0, 20000),
+    _p1: P1, _qual: QUAL, _p1text: (P1TEXT || '').slice(0, 20000), _demo: !!ST.demo,
     _data: RAWCSV ? { name: RAWNAME, csv: RAWCSV.slice(0, 900000) } : null,
     _analysis: ST.analysis };
   $$('[data-k]').forEach((el) => { o[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
@@ -2212,7 +2260,8 @@ function restore(o) {
     if (!el) return;
     if (el.type === 'checkbox') el.checked = !!o[id]; else el.value = o[id];
   });
-  renderHyps(); renderMedia(); renderPrices(); sources(); completeness();
+  ST.demo = !!o._demo;
+  renderHyps(); renderMedia(); renderPrices(); sources(); completeness(); demoBand();
 }
 let saveTimer = null;
 function refreshOutputs() {
@@ -2291,6 +2340,27 @@ function boxLabel(id) {
   return (n ? 'step ' + n.textContent + ' - ' : '') + txt;
 }
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+
+/* the worked example must never be mistaken for the group's own project */
+function demoBand() {
+  const el = $('#demoBand');
+  if (el) el.style.display = ST.demo ? '' : 'none';
+}
+function clearAll() {
+  ST.hyps = []; ST.media = []; ST.verdicts = {}; ST.analysis = {}; ST.merge = null; ST.demo = false;
+  DATA = null; PICKED = {}; CODEMAP = {}; CODEBOOK = [];
+  QUAL = {}; P1 = {}; P1TEXT = ''; RAWCSV = ''; RAWNAME = '';
+  $$('[data-k]').forEach((el) => {
+    if (el.type === 'checkbox') el.checked = !!DEFAULTS[el.id];
+    else el.value = DEFAULTS[el.id] == null ? '' : DEFAULTS[el.id];
+  });
+  ['dataReport', 'qCard', 'p1Card', 'p1Clash', 'mergeOut', 'qRead2', 'p1Read2', 'p1state'].forEach((id) => {
+    if ($('#' + id)) $('#' + id).innerHTML = '';
+  });
+  try { renderVarPicker(); } catch (e) {}
+  renderHyps(); renderMedia(); renderPrices(); renderDesc(); sources(); completeness(); provenance(); p1Steps(); demoBand();
+  save();
+}
 
 function pageIsEmpty() {
   return !val('brandwork') && !val('objectives') && !ST.hyps.length && !DATA && !(QUAL.themes || []).length;
@@ -2396,26 +2466,26 @@ function afterMerge() {
 }
 
 function renderMerge() {
-  const el = $('#mergeOut');
-  if (!el) return;
   const M = ST.merge;
-  if (!M) { el.innerHTML = ''; return; }
+  if (!M) { ['#mergeOut', '#p1Clash'].forEach((s) => { if ($(s)) $(s).innerHTML = ''; }); return; }
+  const el = $(M.into || '#mergeOut');
+  if (!el) return;
   const open = M.clashes.filter((c) => !c.done);
   const cut = (s) => esc(String(s).replace(/\s+/g, ' ').slice(0, 90)) + (String(s).length > 90 ? '&hellip;' : '');
   const added = [];
   if (M.add.theme) added.push(M.add.theme + (M.add.theme === 1 ? ' theme' : ' themes') + ' from the interviews');
   if (M.add.media) added.push(M.add.media + (M.add.media === 1 ? ' medium' : ' media rows') + ' in the promotion table');
   M.notes.forEach((x) => added.push(x));
-  let out = `<div class="score"><b>Merged ${esc(M.name)}</b> `
+  let out = M.quiet ? '' : `<div class="score"><b>Merged ${esc(M.name)}</b> `
     + `${M.took} empty box${M.took === 1 ? '' : 'es'} filled in from the file, ${M.same} already the same`
     + (added.length ? `, and brought in ${esc(added.join(', '))}` : '')
     + `. Nothing you had written was replaced.</div>`;
   if (open.length) {
     out += `<div class="note"><b>${open.length} thing${open.length === 1 ? '' : 's'} you both wrote differently</b>
-      Yours is what the page and the Word file use. Press <i>use theirs</i> on any line you would rather keep from the file.
+      Yours is what the page and the Word file use. Press <i>use theirs</i> on any line you would rather take from ${esc(M.src || 'the file')}.
       <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:14px">
       <tr><th style="text-align:left;padding:3px 6px">where</th><th style="text-align:left;padding:3px 6px">what you have</th>
-      <th style="text-align:left;padding:3px 6px">what the file has</th><th></th></tr>`
+      <th style="text-align:left;padding:3px 6px">what ${esc(M.src || 'the file')} has</th><th></th></tr>`
       + M.clashes.map((c, i) => c.done ? '' : `<tr style="border-top:1px solid var(--line)">
         <td style="padding:4px 6px;vertical-align:top"><b>${esc(c.label)}</b></td>
         <td style="padding:4px 6px;vertical-align:top">${cut(c.mine)}</td>
@@ -2483,10 +2553,12 @@ $('#btnLoad').addEventListener('click', () => {
   } catch (e) { alert('The saved draft could not be read.'); }
 });
 $('#btnReset').addEventListener('click', () => {
-  if (!confirm('Clear everything on this page? The kept draft stays.')) return;
-  ST.hyps = []; ST.media = []; ST.verdicts = {}; ST.analysis = {}; DATA = null; PICKED = {};
-  $$('[data-k]').forEach((el) => { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
-  renderHyps(); renderMedia(); renderPrices(); renderDesc(); sources(); completeness();
+  if (!confirm('Clear everything on this page? The draft file you downloaded is not touched.')) return;
+  clearAll();
+});
+$('#startMine').addEventListener('click', () => {
+  clearAll();
+  document.getElementById('s0').scrollIntoView({ behavior: 'smooth' });
 });
 $('#theme').addEventListener('click', () => {
   const dark = document.documentElement.getAttribute('data-theme') !== 'light';
@@ -2657,6 +2729,8 @@ function loadDemo() {
     Press the buttons below and watch each analysis run on them.</div>`;
   renderHyps(); renderVerdicts(); renderMedia(); renderPrices(); renderDesc(); renderVarPicker(); sources(); completeness(); provenance(); p1Steps();
   $('#qCard').innerHTML = `<div class="score"><b>${DEMO.themes.length} themes are in</b> from the example interviews.</div>`;
+  ST.demo = true;
+  demoBand();
   save();
   showView('work');
   document.getElementById('s4').scrollIntoView({ behavior: 'smooth' });
