@@ -494,10 +494,12 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
       <li><b>4.6 The costs, first.</b> Copy the cost prompt and get your variable cost per unit and your fixed cost for the year, with the assumptions written down.</li>
       <li><b>4.7 The price.</b> Put the costs and your maximum demand in, press compute, and read the table: it gives the price that makes most money and what you give up at the level above and below. Every block has a prompt beside it that already carries these numbers.</li>
     </ol></div>
-  <p class="hint">Drop the file Google Forms gave you, or any CSV or Excel with one row per
-  respondent. Nothing is uploaded: it is read here, in your browser.</p>
-  <input type="file" id="file" accept=".csv,.xlsx,.xls">
+  <p class="hint">Drop whatever came out of your form: the CSV or the zip Google gives you, an
+  Excel file, or the sheet saved as CSV - commas, semicolons or tabs, it works out which. One row
+  per respondent. Nothing is uploaded: it is read here, in your browser.</p>
+  <input type="file" id="file" accept=".csv,.tsv,.txt,.xlsx,.xls,.zip">
   <div id="dataReport"></div>
+  <div id="colReport"></div>
 
   <h3>4.2 Describe</h3>
   <p class="hint">Ratings by their average and their top-two box, categories by their frequency.
@@ -532,6 +534,7 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
   <p class="hint">The same attributes you scored by hand in Pitch 1, now scored by the people who
   answered - for you and for each competitor. This table is what goes into the positioning tool, and
   next to the hypothesised map it is Part 2 of the pitch.</p>
+  <div id="mapCols"></div>
   <div class="row"><button class="btn" id="btnMap">4.5 Build the map table</button>
     <button class="btn sm" id="dlMap">Download it as CSV</button>
     <span class="hint">then open
@@ -557,8 +560,11 @@ footer{margin-top:22px;color:var(--muted);font-size:14px}
     <div><label class="f" for="vCost">Variable cost per unit</label><input type="number" id="vCost" data-k value="2" step="0.1"></div>
     <div><label class="f" for="fCost">Fixed cost, total</label><input type="number" id="fCost" data-k value="3290" step="10"></div>
   </div>
+  <div><label class="f" for="priceCol">4.7b Which column holds the maximum price each person would pay</label>
+    <select id="priceCol" style="max-width:420px"><option value="">load the answers first</option></select>
+    <div class="hint" id="priceColState"></div></div>
   <div class="row">
-    <button class="btn solid" id="btnWtp">4.7b Compute the demand curve and the optimal price</button>
+    <button class="btn solid" id="btnWtp">4.7c Compute the demand curve and the optimal price</button>
     <span class="hint">the table below picks the level, not your taste</span>
   </div>
   <div id="wtpOut"></div>
@@ -901,7 +907,8 @@ const fmt = (x, d = 2) => (x === null || x === undefined || Number.isNaN(x) ? '-
 const lines = (s) => String(s || '').split('\n').map((x) => x.trim()).filter(Boolean);
 const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
 
-const ST = { hyps: [], media: [], verdicts: {}, analysis: {}, merge: null, demo: false };
+const ST = { hyps: [], media: [], verdicts: {}, analysis: {}, merge: null, demo: false,
+  priceCol: null, mapCols: null, mapOpen: false };
 let lastSaved = null, exportedAt = null, dirtySince = null;   // when it was saved, and whether the file was taken out
 
 /* ===================================================================== 0 Pitch 1 comes in */
@@ -1287,7 +1294,14 @@ $('#dlScript').addEventListener('click', () => download('build-form.gs', appsScr
 $('#dlTemplate').addEventListener('click', () => download('survey_template.csv', templateCsv(), 'text/csv'));
 
 /* ENGINE:BEGIN - lifted from the VAJA lab by build_pitch2_copilot.py, do not edit here */
-function parseCSV(text) {
+function sniffDelim(text) {
+  const line = String(text || '').split('\n')[0] || '';
+  const count = (c) => (line.split(c).length - 1);
+  const tab = count('\t'), semi = count(';'), comma = count(',');
+  return tab > comma && tab > semi ? '\t' : (semi > comma ? ';' : ',');
+}
+function parseCSV(text, delim) {
+  const D = delim || sniffDelim(text);
   const out = [];
   let row = [], cur = '', q = false;
   for (let i = 0; i < text.length; i++) {
@@ -1297,7 +1311,7 @@ function parseCSV(text) {
       else if (c === '"') q = false;
       else cur += c;
     } else if (c === '"') q = true;
-    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === D) { row.push(cur); cur = ''; }
     else if (c === '\n') { row.push(cur); out.push(row); row = []; cur = ''; }
     else if (c !== '\r') cur += c;
   }
@@ -1317,6 +1331,12 @@ function tableToData(rows, name) {
   return { name, vars, rows: objs };
 }
 
+/* Google writes the moment of the answer in the first column, whatever the language */
+function looksLikeADate(vals) {
+  if (vals.length < 5) return false;
+  const like = vals.filter((x) => /^\s*\d{4}[/.-]\d{1,2}[/.-]\d{1,2}|^\s*\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}/.test(String(x))).length;
+  return like > vals.length * 0.8;
+}
 function classify(d) {
   d.vars.forEach((v) => {
     const vals = d.rows.map((r) => r[v.name]).filter((x) => x !== '' && x !== undefined);
@@ -1325,7 +1345,9 @@ function classify(d) {
     const meta = CODEBOOK.find((c) => c.variable === v.name);
     v.question = meta ? meta.question : '';
     v.codes = meta ? meta.codes : '';
-    if (/^(id|respondent|timestamp|date|hora|comments?|notes?|email)$/i.test(v.name)) v.type = 'meta';
+    if (/^(id|respondent|timestamp|date|hora|comments?|notes?|email)$/i.test(v.name)
+        || /marca temporal|timestamp|fecha|^hora|correo|e-?mail|direcci.n de correo/i.test(v.name)
+        || looksLikeADate(vals)) v.type = 'meta';
     else if (!vals.length) v.type = 'empty';
     else if (nums.length < vals.length * 0.6) v.type = 'text';
     else if (nums.length < vals.length) v.type = (meta && meta.type === 'category') ? 'category' : 'rating';
@@ -1539,47 +1561,279 @@ const labelOf = (v, code) => (CODEMAP[v] && CODEMAP[v][Number(code) - 1]) || Str
 $('#file').addEventListener('change', async (e) => {
   const f = e.target.files[0];
   if (!f) return;
-  let rows;
-  try {
-    if (/\.csv$/i.test(f.name)) { RAWCSV = await f.text(); RAWNAME = f.name; rows = parseCSV(RAWCSV); }
-    else {
-      const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
-      rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' })
-        .filter((r) => r.some((c) => String(c).trim() !== ''));
-      RAWNAME = f.name;
-      RAWCSV = rows.map((r) => r.map((c) => (/[",\n]/.test(String(c)) ? '"' + String(c).replace(/"/g, '""') + '"' : c)).join(',')).join('\n');
-    }
-  } catch (err) { $('#dataReport').innerHTML = '<div class="flag"><b>That file could not be read</b>Save it as CSV and try again.</div>'; return; }
-  DATA = recode(classify(tableToData(rows, f.name)));
-  ST.analysis = {};
-  const r = ratings().length, c = cats().length;
+  let t;
+  try { t = await readAnyTable(f); }
+  catch (err) {
+    $('#dataReport').innerHTML = '<div class="flag"><b>That file could not be read</b>'
+      + esc(String((err && err.message) || err)) + '. A CSV, an Excel file, or the zip Google gives '
+      + 'you all work - if nothing else does, open it and save it as CSV.</div>';
+    return;
+  }
+  if (!t.rows || t.rows.length < 2) {
+    $('#dataReport').innerHTML = '<div class="flag"><b>That file has no answers in it</b>It needs a '
+      + 'header row and one row per respondent.</div>';
+    return;
+  }
+  DATA = recode(classify(tableToData(t.rows, t.name)));
+  ST.analysis = {}; ST.priceCol = null; ST.mapCols = null;
+  const r = ratings().length, c = cats().length, words = DATA.vars.filter((v) => v.wasWords).length;
+  const price = wtpColumn();
   $('#dataReport').innerHTML = `<div class="score"><b>${DATA.rows.length} answers</b> from ${esc(DATA.name)} &middot;
     ${r} rating question${r === 1 ? '' : 's'} &middot; ${c} categorical &middot; ${DATA.vars.length} columns in total.
+    ${words ? words + ' column' + (words === 1 ? '' : 's') + ' answered in words were turned into numbers. ' : ''}
+    ${price ? 'The maximum price was found in <b>' + esc(price) + '</b>.' : '<b style="color:var(--warn)">The maximum-price question was not recognised - pick it in 4.7b.</b>'}
     Everything below now runs on this file.</div>`;
-  renderDesc(); renderVarPicker(); renderVerdicts(); sources(); save();
+  colReport(); renderDesc(); renderVarPicker(); renderVerdicts(); renderPriceCol(); renderMapCols(); sources(); save();
 });
+
+/* ---- what the page made of each column, and how to correct it ---------------------------- */
+const TYPENAME = { rating: 'a 1 to 5 rating', category: 'a category', price: 'money - the maximum price',
+  number: 'a number', text: 'free text, left out of the statistics', meta: 'left out (id, date or e-mail)',
+  empty: 'empty', id: 'left out (an id)', unknown: 'not recognised' };
+function sampleOf(v) {
+  const vals = DATA.rows.map((r) => rawOf(r, v.name)).filter((x) => String(x == null ? '' : x) !== '');
+  return [...new Set(vals.map(String))].slice(0, 4).join(' / ').slice(0, 56);
+}
+function colReport() {
+  const el = $('#colReport');
+  if (!el) return;
+  if (!DATA) { el.innerHTML = ''; return; }
+  const answered = (v) => DATA.rows.filter((r) => String(r[v.name] == null ? '' : r[v.name]) !== '').length;
+  const opts = (v) => ['rating', 'category', 'price', 'number', 'text'].map((t) =>
+    `<option value="${t}"${v.type === t ? ' selected' : ''}>${TYPENAME[t]}</option>`).join('');
+  el.innerHTML = `<details><summary class="hint" style="cursor:pointer;margin-top:6px">
+      <b>How the page read your ${DATA.vars.length} columns</b> - open this if something ended up in the wrong place</summary>
+    <table style="margin-top:6px"><tr><th>column</th><th>read as</th><th class="num">answered</th><th>what is in it</th></tr>`
+    + DATA.vars.map((v) => `<tr><td>${esc(v.name)}</td>
+        <td>${/^(meta|empty|id)$/.test(v.type) ? '<span class="hint">' + TYPENAME[v.type] + '</span>'
+          : `<select data-coltype="${esc(v.name)}" style="max-width:210px">${opts(v)}</select>`}</td>
+        <td class="num">${answered(v)}</td>
+        <td class="hint">${esc(sampleOf(v))}${v.wasWords ? ' <i>(words turned into numbers)</i>' : ''}</td></tr>`).join('')
+    + `</table>
+    <p class="hint">Change one only if it is wrong. <b>Money</b> is the maximum-price question;
+    <b>a rating</b> is a 1 to 5 answer; <b>a category</b> is a choice between words. Free text is left
+    out of the statistics, which is right for comments and wrong for anything else.</p></details>`;
+  $$('#colReport [data-coltype]').forEach((s) => s.addEventListener('change', () => setColType(s.dataset.coltype, s.value)));
+}
+function setColType(name, t) {
+  const v = DATA.vars.find((x) => x.name === name);
+  if (!v) return;
+  if (t === 'price' || t === 'text' || t === 'number') uncode(name);
+  if (t === 'category' || t === 'rating') { if (v.type === 'text') codeOne(DATA, v); }
+  v.type = t;
+  if (t === 'price') ST.priceCol = name;
+  else if (ST.priceCol === name) ST.priceCol = null;
+  ST.analysis = {};
+  colReport(); renderDesc(); renderVarPicker(); renderPriceCol(); renderMapCols(); sources(); save();
+}
+
+/* ---- the two things that cannot be guessed: ask ------------------------------------------ */
+function renderPriceCol() {
+  const sel = $('#priceCol');
+  if (!sel) return;
+  const st = $('#priceColState');
+  if (!DATA) { sel.innerHTML = '<option value="">load the answers first</option>'; if (st) st.innerHTML = ''; return; }
+  const cur = wtpColumn() || '';
+  sel.innerHTML = '<option value="">(pick the column)</option>'
+    + DATA.vars.map((v) => `<option value="${esc(v.name)}"${v.name === cur ? ' selected' : ''}>${esc(v.name)}</option>`).join('');
+  if (!st) return;
+  if (!cur) {
+    st.innerHTML = '<b style="color:var(--warn)">The page cannot tell which question asked for the '
+      + 'maximum price. Pick it above, or the model has nothing to work with.</b>';
+    return;
+  }
+  const vals = DATA.rows.map((r) => parsePrice(rawOf(r, cur))).filter((x) => x !== null);
+  const uniq = [...new Set(vals)].sort((a, b) => a - b);
+  st.innerHTML = vals.length < 5
+    ? `<b style="color:var(--warn)">Only ${vals.length} answers in that column look like money.</b> Pick another one.`
+    : `read as money: ${uniq.slice(0, 9).map((x) => fmt(x, 2)).join(', ')}${uniq.length > 9 ? ' ...' : ''}
+       &middot; ${vals.length} answers${uniq[0] === 0 ? ' (one level is "would not pay")' : ''}`;
+}
+function mapColFor(i, k) {
+  if (ST.mapCols && ST.mapCols[i] && ST.mapCols[i][k] !== undefined) return ST.mapCols[i][k];
+  if (!DATA) return '';
+  const byName = k === 0 ? 'us_' + (i + 1) : 'c' + k + '_' + (i + 1);
+  if (DATA.vars.some((v) => v.name === byName)) return byName;
+  const atts = attrsList(), brands = [val('brandwork') || 'us'].concat(compsList());
+  const aTok = fold(atts[i] || '').split(' ').filter((w) => w.length > 3);
+  const bTok = fold(brands[k] || '').split(' ').filter((w) => w.length > 2);
+  if (!aTok.length || !bTok.length) return '';
+  const hit = DATA.vars.find((v) => {
+    if (v.type !== 'rating' && v.type !== 'number') return false;
+    const nm = fold(v.name);
+    return aTok.some((w) => nm.indexOf(w) >= 0) && bTok.some((w) => nm.indexOf(w) >= 0);
+  });
+  return hit ? hit.name : '';
+}
+function renderMapCols() {
+  const el = $('#mapCols');
+  if (!el) return;
+  if (!DATA) { el.innerHTML = ''; return; }
+  const atts = attrsList().slice(0, 4);
+  if (!atts.length) { el.innerHTML = '<p class="hint">Write the attributes in step 3 and the columns can be matched.</p>'; return; }
+  const brands = [val('brandwork') || 'Us'].concat(compsList());
+  const pool = DATA.vars.filter((v) => v.type === 'rating' || v.type === 'number');
+  const one = (i, k) => {
+    const cur = mapColFor(i, k);
+    return `<select data-mapi="${i}" data-mapk="${k}" style="max-width:180px"><option value="">(not asked)</option>`
+      + pool.map((v) => `<option value="${esc(v.name)}"${v.name === cur ? ' selected' : ''}>${esc(v.name)}</option>`).join('')
+      + '</select>';
+  };
+  const matched = atts.reduce((acc, a, i) => acc + brands.filter((b, k) => mapColFor(i, k)).length, 0);
+  el.innerHTML = `<details${ST.mapOpen ? ' open' : ''}><summary class="hint" style="cursor:pointer">
+      <b>Which column holds which score</b> - ${matched} of ${atts.length * brands.length} matched by name; open this to correct them</summary>
+    <table style="margin-top:6px"><tr><th>attribute</th>${brands.map((b) => `<th>${esc(b)}</th>`).join('')}</tr>`
+    + atts.map((a, i) => `<tr><td>${esc(a)}</td>${brands.map((b, k) => `<td>${one(i, k)}</td>`).join('')}</tr>`).join('')
+    + `</table><p class="hint">One column per cell: the 1 to 5 score that respondents gave that brand on
+       that attribute. Leave "(not asked)" where your form did not ask it.</p></details>`;
+  $$('#mapCols [data-mapi]').forEach((s) => s.addEventListener('change', () => {
+    ST.mapCols = ST.mapCols || {};
+    ST.mapCols[s.dataset.mapi] = ST.mapCols[s.dataset.mapi] || {};
+    ST.mapCols[s.dataset.mapi][s.dataset.mapk] = s.value;
+    ST.mapOpen = true;
+    renderMapCols(); save();
+  }));
+}
+['attrsLive', 'compsLive', 'attrs', 'competitors', 'brandwork'].forEach((id) => {
+  if ($('#' + id)) $('#' + id).addEventListener('change', () => { renderMapCols(); });
+});
+if ($('#priceCol')) $('#priceCol').addEventListener('change', () => {
+  ST.priceCol = $('#priceCol').value || null;
+  if (ST.priceCol) {
+    const v = DATA && DATA.vars.find((x) => x.name === ST.priceCol);
+    if (v) { uncode(v.name); v.type = 'price'; colReport(); }
+  }
+  renderPriceCol(); renderDesc(); renderVarPicker(); save();
+});
+
+/* ---- whatever the group brings, it opens ------------------------------------------------- */
+function fromText(text, name) {
+  RAWCSV = text; RAWNAME = name;
+  return { rows: parseCSV(text), name };
+}
+function fromBook(buf, name) {
+  const wb = XLSX.read(buf, { type: 'array' });
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' })
+    .filter((r) => r.some((c) => String(c).trim() !== ''));
+  RAWNAME = name;
+  RAWCSV = rows.map((r) => r.map((c) => (/[",\n]/.test(String(c)) ? '"' + String(c).replace(/"/g, '""') + '"' : c)).join(',')).join('\n');
+  return { rows, name };
+}
+async function readAnyTable(f) {
+  const nm = (f.name || '').toLowerCase();
+  if (/\.zip$/.test(nm)) {
+    const zip = await JSZip.loadAsync(await f.arrayBuffer());
+    const names = Object.keys(zip.files).filter((k) => !zip.files[k].dir
+      && !/(^|\/)__MACOSX|(^|\/)\._/.test(k) && /\.(csv|tsv|txt|xlsx|xls)$/i.test(k));
+    if (!names.length) throw new Error('there is no CSV or Excel file inside that zip');
+    let pick = names[0], big = -1;
+    for (const k of names) {
+      const b = await zip.files[k].async('uint8array');
+      if (b.length > big) { big = b.length; pick = k; }
+    }
+    const short = pick.split('/').pop() + ' (out of ' + f.name + ')';
+    return /\.(xlsx|xls)$/i.test(pick)
+      ? fromBook(await zip.files[pick].async('arraybuffer'), short)
+      : fromText(await zip.files[pick].async('string'), short);
+  }
+  if (/\.(xlsx|xls)$/.test(nm)) return fromBook(await f.arrayBuffer(), f.name);
+  return fromText(await f.text(), f.name);
+}
+
+/* ---- words that are really a scale ------------------------------------------------------- */
+const fold = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+const SCALES = [
+  ['totalmente en desacuerdo', 'en desacuerdo', 'ni de acuerdo ni en desacuerdo', 'de acuerdo', 'totalmente de acuerdo'],
+  ['muy en desacuerdo', 'en desacuerdo', 'neutral', 'de acuerdo', 'muy de acuerdo'],
+  ['strongly disagree', 'disagree', 'neither agree nor disagree', 'agree', 'strongly agree'],
+  ['strongly disagree', 'disagree', 'neutral', 'agree', 'strongly agree'],
+  ['nada importante', 'poco importante', 'algo importante', 'bastante importante', 'muy importante'],
+  ['not at all important', 'slightly important', 'moderately important', 'very important', 'extremely important'],
+  ['muy improbable', 'improbable', 'ni probable ni improbable', 'probable', 'muy probable'],
+  ['definitely not', 'probably not', 'might or might not', 'probably yes', 'definitely yes'],
+  ['nunca', 'casi nunca', 'a veces', 'a menudo', 'siempre'],
+  ['never', 'rarely', 'sometimes', 'often', 'always'],
+  ['muy malo', 'malo', 'normal', 'bueno', 'muy bueno'],
+  ['very poor', 'poor', 'average', 'good', 'very good'],
+  ['nada', 'poco', 'algo', 'bastante', 'mucho'],
+];
+/* "1 - en desacuerdo" ... "5 = totalmente de acuerdo": the number is the answer */
+function scaleMap(labels) {
+  const f = labels.map(fold);
+  if (f.every((l) => /^[1-5]\b/.test(l)) && new Set(f.map((l) => l[0])).size === f.length) {
+    const m = {}; labels.forEach((l, i) => { m[l] = Number(fold(l)[0]); }); return m;
+  }
+  for (const sc of SCALES) {
+    if (f.every((l) => sc.indexOf(l) >= 0)) {
+      const m = {}; labels.forEach((l, i) => { m[l] = sc.indexOf(f[i]) + 1; }); return m;
+    }
+  }
+  return null;
+}
+
+/* ---- money, by its name or by its currency ----------------------------------------------- */
+const MONEYNAME = /wtp|willing|max.*pri|pri.*max|precio|pagar|paga|pay|afford|cuanto|how much|coste|cost max|presupuesto|budget/i;
+function moneyish(d, v) {
+  const vals = d.rows.map((r) => String(r[v.name] == null ? '' : r[v.name]).trim()).filter(Boolean);
+  if (vals.length < 5) return false;
+  const sym = vals.filter((x) => /[€$£]|\beur\b|euros?/i.test(x)).length / vals.length;
+  const nums = vals.map(parsePrice).filter((x) => x !== null && x >= 0);
+  if (nums.length < vals.length * 0.6) return false;
+  const uniq = new Set(nums).size;
+  if (sym > 0.5) return true;
+  if (!MONEYNAME.test(fold(v.name))) return false;
+  return uniq >= 3 && Math.max.apply(null, nums) > 5;   // a 1-5 rating is not a price
+}
+
+function codeOne(d, v) {
+  const vals = d.rows.map((r) => r[v.name]).filter((x) => x !== '' && x !== undefined);
+  const labels = [...new Set(vals.map((x) => String(x).trim()))];
+  if (labels.length < 2 || labels.length > 12 || vals.length < 5) return false;
+  const scale = scaleMap(labels);
+  const order = scale ? labels.slice() : labels.slice().sort();
+  v.type = scale ? 'rating' : 'category';
+  v.wasWords = true;
+  CODEMAP[v.name] = scale ? (() => {           // the labels in the order of the scale
+    const byCode = [];
+    labels.forEach((l) => { byCode[scale[l] - 1] = l; });
+    return byCode;
+  })() : order;
+  d.rows.forEach((r) => {
+    const raw = String(r[v.name] || '').trim();
+    if (!raw) { r[v.name] = ''; return; }
+    const code = scale ? scale[raw] : (order.indexOf(raw) + 1);
+    r[v.name] = code ? String(code) : '';
+  });
+  return true;
+}
+function uncode(name) {
+  const labels = CODEMAP[name];
+  if (!labels) return;
+  DATA.rows.forEach((r) => {
+    const i = Number(r[name]);
+    if (i >= 1 && i <= labels.length && labels[i - 1] !== undefined) r[name] = labels[i - 1];
+  });
+  delete CODEMAP[name];
+}
+function rawOf(r, col) {
+  const labels = CODEMAP[col];
+  if (!labels) return r[col];
+  const i = Number(r[col]);
+  return (i >= 1 && i <= labels.length && labels[i - 1] !== undefined) ? labels[i - 1] : r[col];
+}
 
 function recode(d) {
   // The lab's classifier expects coded numbers; a Google Forms export brings words, which it
   // files as text. Any text column with few different answers becomes a category here, and its
   // words are replaced by codes so the statistics work - the words come back through labelOf().
   CODEMAP = {};
+  // money first, whatever its type: once a price column is coded into 1..5 the euros are gone
   d.vars.forEach((v) => {
-    if (v.type !== 'text') return;
-    // the price question keeps its words: it is money, not a category, and the price model
-    // reads the number out of "9 EUR" itself. Coding it would turn prices into 1, 2, 3...
-    if (/wtp|willing|max.*pri|pri.*max|precio/i.test(v.name)) { v.type = 'price'; return; }
-    const vals = d.rows.map((r) => r[v.name]).filter((x) => x !== '' && x !== undefined);
-    const labels = [...new Set(vals.map((x) => String(x).trim()))].sort();
-    if (labels.length < 2 || labels.length > 12 || vals.length < 5) return;
-    v.type = 'category';
-    CODEMAP[v.name] = labels;
-    d.rows.forEach((r) => {
-      const raw = String(r[v.name] || '').trim();
-      const i = labels.indexOf(raw);
-      r[v.name] = i >= 0 ? String(i + 1) : '';
-    });
+    if (v.type === 'meta' || v.type === 'empty' || v.type === 'id') return;
+    if (moneyish(d, v)) v.type = 'price';
   });
+  d.vars.forEach((v) => { if (v.type === 'text') codeOne(d, v); });
   return d;
 }
 
@@ -1702,8 +1956,9 @@ $('#btnClust').addEventListener('click', () => {
 /* ---- willingness to pay, demand, optimal price ---- */
 function wtpColumn() {
   if (!DATA) return null;
+  if (ST.priceCol && DATA.vars.some((v) => v.name === ST.priceCol)) return ST.priceCol;
   const cand = DATA.vars.find((v) => v.type === 'price')
-    || DATA.vars.find((v) => /wtp|max.*pri|pri.*max|willing|precio/i.test(v.name));
+    || DATA.vars.find((v) => MONEYNAME.test(fold(v.name)));
   return cand ? cand.name : null;
 }
 function parsePrice(x) {
@@ -1715,8 +1970,8 @@ function parsePrice(x) {
 $('#btnWtp').addEventListener('click', () => {
   if (!DATA) { alert('Load the answers first.'); return; }
   const col = wtpColumn();
-  if (!col) { $('#wtpOut').innerHTML = '<div class="note"><b>No price column found</b>The file needs the maximum-price question. In the template it is called <b>wtp</b>.</div>'; return; }
-  const answers = DATA.rows.map((r) => parsePrice(r[col])).filter((x) => x !== null);
+  if (!col) { $('#wtpOut').innerHTML = '<div class="note"><b>No price column found</b>Pick the column in 4.7b: it is the question that asked the most each person would pay. In the template it is called <b>wtp</b>.</div>'; return; }
+  const answers = DATA.rows.map((r) => parsePrice(rawOf(r, col))).filter((x) => x !== null);
   if (answers.length < 5) { $('#wtpOut').innerHTML = '<div class="note"><b>Too few price answers</b>Only ' + answers.length + ' could be read.</div>'; return; }
   const levels = [...new Set(answers.filter((x) => x > 0))].sort((a, b) => a - b);
   const D = Number(val('dMax') || 0), vc = Number(val('vCost') || 0), fc = Number(val('fCost') || 0);
@@ -1761,8 +2016,8 @@ function mapTable() {
   const brands = [val('brandwork') || 'Us'].concat(comps);
   const rows = atts.map((a, i) => {
     const cells = brands.map((b, k) => {
-      const col = k === 0 ? 'us_' + (i + 1) : 'c' + k + '_' + (i + 1);
-      const v = DATA.vars.find((x) => x.name === col);
+      const col = mapColFor(i, k);
+      const v = col ? DATA.vars.find((x) => x.name === col) : null;
       if (!v) return null;
       const s = stats(col);
       return s && s.n ? s.mean : null;
@@ -1774,7 +2029,7 @@ function mapTable() {
 $('#btnMap').addEventListener('click', () => {
   const m = mapTable();
   if (!m) {
-    $('#mapOut').innerHTML = '<div class="note"><b>No competitor ratings in the file</b>The map needs the questions the page writes as us_1, c1_1 and so on. If your form used other names, rename the columns in the file and load it again.</div>';
+    $('#mapOut').innerHTML = '<div class="note"><b>No competitor ratings matched</b>Open <i>Which column holds which score</i> just above and point each cell at the right column. The page matches them by itself only when the form is the one it wrote (us_1, c1_1 and so on). If your form has no competitor questions, rename the columns in the file and load it again.</div>';
     return;
   }
   $('#mapOut').innerHTML = `<table><tr><th>Attribute</th>${m.brands.map((b) => `<th class="num">${esc(b)}</th>`).join('')}</tr>`
@@ -2230,7 +2485,8 @@ $('#wordGuide').addEventListener('click', () => {
 /* ===================================================================== state */
 function state() {
   const o = { _v: 2, _when: new Date().toISOString(),
-    _st: { hyps: ST.hyps, media: ST.media, verdicts: ST.verdicts },
+    _st: { hyps: ST.hyps, media: ST.media, verdicts: ST.verdicts,
+           priceCol: ST.priceCol, mapCols: ST.mapCols },
     _p1: P1, _qual: QUAL, _p1text: (P1TEXT || '').slice(0, 20000), _demo: !!ST.demo,
     _data: RAWCSV ? { name: RAWNAME, csv: RAWCSV.slice(0, 900000) } : null,
     _analysis: ST.analysis };
@@ -2239,7 +2495,10 @@ function state() {
 }
 function restore(o) {
   if (!o) return;
-  if (o._st) { ST.hyps = o._st.hyps || []; ST.media = o._st.media || []; ST.verdicts = o._st.verdicts || {}; }
+  if (o._st) {
+    ST.hyps = o._st.hyps || []; ST.media = o._st.media || []; ST.verdicts = o._st.verdicts || {};
+    ST.priceCol = o._st.priceCol || null; ST.mapCols = o._st.mapCols || null;
+  }
   if (o._p1) P1 = o._p1;
   if (o._qual) QUAL = o._qual;
   if (o._p1text) P1TEXT = o._p1text;
@@ -2251,7 +2510,7 @@ function restore(o) {
       if ($('#dataReport')) $('#dataReport').innerHTML =
         `<div class="score"><b>${DATA.rows.length} answers came back with the draft</b> (${esc(RAWNAME)}).
          Press the buttons of step 4 again to redraw the tables.</div>`;
-      renderDesc(); renderVarPicker();
+      renderDesc(); renderVarPicker(); colReport(); renderPriceCol(); renderMapCols();
     } catch (e) { /* a corrupt draft should not take the page down */ }
   }
   Object.keys(o).forEach((id) => {
@@ -2456,7 +2715,7 @@ function takeData(d) {
     if ($('#dataReport')) $('#dataReport').innerHTML =
       `<div class="score"><b>${DATA.rows.length} answers came in with the draft</b> (${esc(RAWNAME)}).
        Press the buttons of step 4 again to redraw the tables.</div>`;
-    renderDesc(); renderVarPicker();
+    renderDesc(); renderVarPicker(); colReport(); renderPriceCol(); renderMapCols();
   } catch (e) { /* a corrupt draft should not take the page down */ }
 }
 
@@ -2727,7 +2986,7 @@ function loadDemo() {
   PICKED = {};
   $('#dataReport').innerHTML = `<div class="score"><b>${DATA.rows.length} answers</b> loaded from the example survey.
     Press the buttons below and watch each analysis run on them.</div>`;
-  renderHyps(); renderVerdicts(); renderMedia(); renderPrices(); renderDesc(); renderVarPicker(); sources(); completeness(); provenance(); p1Steps();
+  renderHyps(); renderVerdicts(); renderMedia(); renderPrices(); renderDesc(); renderVarPicker(); colReport(); renderPriceCol(); renderMapCols(); sources(); completeness(); provenance(); p1Steps();
   $('#qCard').innerHTML = `<div class="score"><b>${DEMO.themes.length} themes are in</b> from the example interviews.</div>`;
   ST.demo = true;
   demoBand();
