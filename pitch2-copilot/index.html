@@ -2268,6 +2268,11 @@ function draftState(how) {
 }
 
 /* ------------------------------------------------------------------ merging two drafts */
+/* what the page starts with: a box still holding its default was never touched, so a file's
+   value should walk straight in instead of being reported as a disagreement */
+const DEFAULTS = {};
+$$('[data-k]').forEach((el) => { DEFAULTS[el.id] = el.type === 'checkbox' ? el.checked : String(el.value || ''); });
+const untouched = (id, v) => String(v || '').trim() === String(DEFAULTS[id] == null ? '' : DEFAULTS[id]).trim();
 const NOCLASH = ['p1text', 'p1paste', 'qpaste', 'qinPaste'];   // raw paste areas: never argue about them
 function boxLabel(id) {
   const el = $('#' + id);
@@ -2292,7 +2297,7 @@ function pageIsEmpty() {
 }
 
 function mergeDraft(o, fname) {
-  const M = { name: fname, took: 0, same: 0, added: [], clashes: [] };
+  const M = { name: fname, took: 0, same: 0, add: { theme: 0, media: 0 }, notes: [], clashes: [] };
 
   /* the boxes */
   Object.keys(o).forEach((id) => {
@@ -2308,7 +2313,7 @@ function mergeDraft(o, fname) {
     const theirs = String(o[id] == null ? '' : o[id]);
     const mine = String(el.value || '');
     if (!theirs.trim()) return;
-    if (!mine.trim()) { el.value = theirs; M.took++; return; }
+    if (!mine.trim() || untouched(id, mine)) { el.value = theirs; M.took++; return; }
     if (theirs.trim() === mine.trim()) { M.same++; return; }
     if (NOCLASH.indexOf(id) >= 0) { M.same++; return; }
     M.clashes.push({ kind: 'box', id, label: boxLabel(id), mine: mine.trim(), theirs: theirs.trim() });
@@ -2320,7 +2325,7 @@ function mergeDraft(o, fname) {
     QUAL.themes = QUAL.themes || [];
     const have = QUAL.themes.map((t) => norm(t.theme || t.statement));
     q.themes.forEach((t) => {
-      if (have.indexOf(norm(t.theme || t.statement)) < 0) { QUAL.themes.push(t); M.added.push('a theme from the interviews'); }
+      if (have.indexOf(norm(t.theme || t.statement)) < 0) { QUAL.themes.push(t); M.add.theme++; }
     });
   }
   ['productDescription'].forEach((k) => { if (!QUAL[k] && q[k]) QUAL[k] = q[k]; });
@@ -2338,7 +2343,7 @@ function mergeDraft(o, fname) {
       ST.hyps.push(hyp);
       at = ST.hyps.length - 1;
       ST.verdicts[at] = Object.assign({}, v);
-      M.added.push('hypothesis "' + String(hyp.text || '').slice(0, 40) + '"');
+      M.notes.push('the hypothesis "' + String(hyp.text || '').slice(0, 40) + '"');
       return;
     }
     ST.verdicts[at] = ST.verdicts[at] || {};
@@ -2355,12 +2360,12 @@ function mergeDraft(o, fname) {
   const theirM = (o._st && o._st.media) || [];
   const haveM = ST.media.map((x) => norm(x.m) + '|' + norm(x.p));
   theirM.forEach((row) => {
-    if (haveM.indexOf(norm(row.m) + '|' + norm(row.p)) < 0) { ST.media.push(row); M.added.push('a medium: ' + (row.m || '')); }
+    if (haveM.indexOf(norm(row.m) + '|' + norm(row.p)) < 0) { ST.media.push(row); M.add.media++; }
   });
 
   /* the answers to the survey */
   if (o._data && o._data.csv) {
-    if (!RAWCSV) { takeData(o._data); M.added.push(DATA ? DATA.rows.length + ' answers' : 'the answers'); }
+    if (!RAWCSV) { takeData(o._data); M.notes.push(DATA ? DATA.rows.length + ' answers to the survey' : 'the answers to the survey'); }
     else if (RAWCSV.trim() !== o._data.csv.trim()) {
       M.clashes.push({ kind: 'data', data: o._data, label: 'the survey answers',
         mine: RAWNAME + ' (' + (DATA ? DATA.rows.length : '?') + ' answers)',
@@ -2397,9 +2402,13 @@ function renderMerge() {
   if (!M) { el.innerHTML = ''; return; }
   const open = M.clashes.filter((c) => !c.done);
   const cut = (s) => esc(String(s).replace(/\s+/g, ' ').slice(0, 90)) + (String(s).length > 90 ? '&hellip;' : '');
+  const added = [];
+  if (M.add.theme) added.push(M.add.theme + (M.add.theme === 1 ? ' theme' : ' themes') + ' from the interviews');
+  if (M.add.media) added.push(M.add.media + (M.add.media === 1 ? ' medium' : ' media rows') + ' in the promotion table');
+  M.notes.forEach((x) => added.push(x));
   let out = `<div class="score"><b>Merged ${esc(M.name)}</b> `
     + `${M.took} empty box${M.took === 1 ? '' : 'es'} filled in from the file, ${M.same} already the same`
-    + (M.added.length ? `, and added: ${esc(M.added.slice(0, 6).join(', '))}${M.added.length > 6 ? ' and ' + (M.added.length - 6) + ' more' : ''}` : '')
+    + (added.length ? `, and brought in ${esc(added.join(', '))}` : '')
     + `. Nothing you had written was replaced.</div>`;
   if (open.length) {
     out += `<div class="note"><b>${open.length} thing${open.length === 1 ? '' : 's'} you both wrote differently</b>
