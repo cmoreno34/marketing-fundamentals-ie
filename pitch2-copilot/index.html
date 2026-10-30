@@ -1652,47 +1652,135 @@ function renderPriceCol() {
       + (PA.scale.inBands ? `<br><b>asked in bands</b>, so each answer counts at the middle of its band:
          ${esc(PA.scale.shown.join(', '))}` : '');
 }
-function mapColFor(i, k) {
-  if (ST.mapCols && ST.mapCols[i] && ST.mapCols[i][k] !== undefined) return ST.mapCols[i][k];
-  if (!DATA) return '';
-  const byName = k === 0 ? 'us_' + (i + 1) : 'c' + k + '_' + (i + 1);
-  if (DATA.vars.some((v) => v.name === byName)) return byName;
-  const atts = attrsList(), brands = [val('brandwork') || 'us'].concat(compsList());
-  const aTok = fold(atts[i] || '').split(' ').filter((w) => w.length > 3);
-  const bTok = fold(brands[k] || '').split(' ').filter((w) => w.length > 2);
-  if (!aTok.length || !bTok.length) return '';
-  const hit = DATA.vars.find((v) => {
-    if (v.type !== 'rating' && v.type !== 'number') return false;
-    const nm = fold(v.name);
-    return aTok.some((w) => nm.indexOf(w) >= 0) && bTok.some((w) => nm.indexOf(w) >= 0);
+/* the words that carry no meaning in a question header, in both languages */
+const MAPSTOP = ['valora', 'valoracion', 'valoras', 'puntua', 'puntuacion', 'como', 'cual', 'cuales',
+  'que', 'del', 'las', 'los', 'una', 'uno', 'para', 'por', 'con', 'the', 'how', 'would', 'you',
+  'rate', 'rating', 'score', 'please', 'and', 'respecto', 'sobre', 'frente', 'escala', 'marca',
+  'opinion', 'piensas', 'crees', 'parece', 'siendo', 'donde', 'nivel'];
+const mtoks = (s) => fold(s).split(' ').filter((w) => w.length > 2 && MAPSTOP.indexOf(w) < 0);
+const namesIt = (header, phrase) => {
+  const t = mtoks(phrase);
+  if (!t.length) return false;
+  const f = fold(header);
+  return t.every((w) => f.indexOf(w) >= 0);
+};
+const without = (header, phrase) => {
+  let f = fold(header);
+  mtoks(phrase).forEach((w) => { f = f.split(w).join(' '); });
+  return f.split(' ').filter((w) => w.length > 2 && MAPSTOP.indexOf(w) < 0).join(' ').trim();
+};
+const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+/* the places a brand or an attribute sits in a question: "... de Decathlon?",
+   "Taller de barrio - Precio", "Precio: Decathlon", "Comodidad (Rueda)" */
+function brandSlots(header) {
+  const raw = String(header || '').trim();
+  const out = [];
+  let m;
+  if ((m = raw.match(/\bde (?:la |el |los |las )?([A-ZÀ-Ü][^?,;:|]{1,26})\s*\??$/))) out.push(m[1]);
+  if ((m = raw.match(/^([^-–:|?]{2,28})\s*[-–:|]/))) out.push(m[1]);
+  if ((m = raw.match(/[-–:|]\s*([^-–:|?]{2,28})\s*\??$/))) out.push(m[1]);
+  if ((m = raw.match(/\(([^)]{2,28})\)\s*\??$/))) out.push(m[1]);
+  return out.map((s) => s.replace(/^[\s¿?¡!]+/, '').replace(/[\s¿?¡!.]+$/, '').trim())
+    .filter((s) => s && mtoks(s).length);
+}
+const mapKey = (a, b) => fold(a) + '|' + fold(b);
+
+/* every rating question that scores a brand on something: the brands and attributes typed in the
+   boxes are the starting point, the file is allowed to add to both */
+function mapAxes() {
+  const brands = [val('brandwork') || 'Us'].concat(compsList());
+  const atts = attrsList().slice();
+  const grid = {};
+  if (!DATA) return { atts, brands, grid, found: 0 };
+  const pool = DATA.vars.filter((v) => v.type === 'rating' || v.type === 'number');
+
+  // 1. the questionnaire this page writes names them us_1, c1_1, ...
+  atts.forEach((a, i) => brands.forEach((b, k) => {
+    const nm = k === 0 ? 'us_' + (i + 1) : 'c' + k + '_' + (i + 1);
+    if (DATA.vars.some((v) => v.name === nm)) grid[mapKey(a, b)] = nm;
+  }));
+
+  const addAtt = (label) => {
+    if (!label) return -1;
+    let i = atts.findIndex((a) => fold(a) === fold(label) || namesIt(label, a) || namesIt(a, label));
+    if (i < 0) { atts.push(cap(label)); i = atts.length - 1; }
+    return i;
+  };
+
+  // 2. a column that names a brand: the rest of the question is the attribute
+  pool.forEach((v) => {
+    const k = brands.findIndex((b) => namesIt(v.name, b));
+    if (k < 0) return;
+    const slot = brandSlots(v.name).find((s) => !namesIt(s, brands[k]));
+    const i = addAtt(slot || without(v.name, brands[k]));
+    if (i < 0) return;
+    const key = mapKey(atts[i], brands[k]);
+    if (!grid[key]) grid[key] = v.name;
   });
-  return hit ? hit.name : '';
+
+  // 3. a column that names an attribute but no brand we know: a competitor nobody typed. Only
+  //    believed when the same name turns up against two different attributes.
+  const cand = {};
+  pool.forEach((v) => {
+    if (brands.some((b) => namesIt(v.name, b))) return;
+    const i = atts.findIndex((a) => namesIt(v.name, a));
+    if (i < 0) return;
+    const slot = brandSlots(v.name).find((s) => !namesIt(s, atts[i]));
+    const rest = slot || without(v.name, atts[i]);
+    if (!rest) return;
+    const key = fold(rest);
+    cand[key] = cand[key] || { label: rest, slot: !!slot, atts: {}, cols: [] };
+    if (slot) cand[key].slot = true;
+    cand[key].atts[i] = 1;
+    cand[key].cols.push([i, v.name]);
+  });
+  Object.keys(cand).forEach((key) => {
+    const c = cand[key];
+    // a name in a brand's place is believed at once; a bare remainder still needs two attributes
+    if (!c.slot && Object.keys(c.atts).length < 2) return;
+    const b = cap(c.label);
+    if (brands.some((x) => fold(x) === fold(b))) return;
+    brands.push(b);
+    c.cols.forEach((pair) => {
+      const k2 = mapKey(atts[pair[0]], b);
+      if (!grid[k2]) grid[k2] = pair[1];
+    });
+  });
+
+  return { atts: atts.slice(0, 10), brands: brands.slice(0, 8), grid, found: Object.keys(grid).length };
+}
+function mapColFor(a, b, ax) {
+  const key = mapKey(a, b);
+  if (ST.mapCols && ST.mapCols[key] !== undefined) return ST.mapCols[key];
+  const g = (ax || mapAxes()).grid;
+  return g[key] || '';
 }
 function renderMapCols() {
   const el = $('#mapCols');
   if (!el) return;
   if (!DATA) { el.innerHTML = ''; return; }
-  const atts = attrsList().slice(0, 4);
-  if (!atts.length) { el.innerHTML = '<p class="hint">Write the attributes in step 3 and the columns can be matched.</p>'; return; }
-  const brands = [val('brandwork') || 'Us'].concat(compsList());
+  const ax = mapAxes();
+  if (!ax.atts.length) { el.innerHTML = '<p class="hint">Write the attributes in step 3, or load a file whose questions name the brands, and the columns match themselves.</p>'; return; }
   const pool = DATA.vars.filter((v) => v.type === 'rating' || v.type === 'number');
-  const one = (i, k) => {
-    const cur = mapColFor(i, k);
-    return `<select data-mapi="${i}" data-mapk="${k}" style="max-width:180px"><option value="">(not asked)</option>`
+  const one = (a, b) => {
+    const cur = mapColFor(a, b, ax);
+    return `<select data-mapa="${esc(a)}" data-mapb="${esc(b)}" style="max-width:180px"><option value="">(not asked)</option>`
       + pool.map((v) => `<option value="${esc(v.name)}"${v.name === cur ? ' selected' : ''}>${esc(v.name)}</option>`).join('')
       + '</select>';
   };
-  const matched = atts.reduce((acc, a, i) => acc + brands.filter((b, k) => mapColFor(i, k)).length, 0);
+  const matched = ax.atts.reduce((acc, a) => acc + ax.brands.filter((b) => mapColFor(a, b, ax)).length, 0);
   el.innerHTML = `<details${ST.mapOpen ? ' open' : ''}><summary class="hint" style="cursor:pointer">
-      <b>Which column holds which score</b> - ${matched} of ${atts.length * brands.length} matched by name; open this to correct them</summary>
-    <table style="margin-top:6px"><tr><th>attribute</th>${brands.map((b) => `<th>${esc(b)}</th>`).join('')}</tr>`
-    + atts.map((a, i) => `<tr><td>${esc(a)}</td>${brands.map((b, k) => `<td>${one(i, k)}</td>`).join('')}</tr>`).join('')
-    + `</table><p class="hint">One column per cell: the 1 to 5 score that respondents gave that brand on
-       that attribute. Leave "(not asked)" where your form did not ask it.</p></details>`;
-  $$('#mapCols [data-mapi]').forEach((s) => s.addEventListener('change', () => {
+      <b>Which column holds which score</b> - the page found ${matched} of them in your file
+      (${ax.atts.length} attribute${ax.atts.length === 1 ? '' : 's'} &times; ${ax.brands.length} brand${ax.brands.length === 1 ? '' : 's'});
+      open this to correct or complete them</summary>
+    <table style="margin-top:6px"><tr><th>attribute</th>${ax.brands.map((b) => `<th>${esc(b)}</th>`).join('')}</tr>`
+    + ax.atts.map((a) => `<tr><td>${esc(a)}</td>${ax.brands.map((b) => `<td>${one(a, b)}</td>`).join('')}</tr>`).join('')
+    + `</table><p class="hint">One column per cell: the 1 to 5 score respondents gave that brand on that
+       attribute. The rows and columns come from your own questions - attributes you never typed in step 3
+       are in there too. Leave "(not asked)" where your form did not ask it.</p></details>`;
+  $$('#mapCols [data-mapa]').forEach((s) => s.addEventListener('change', () => {
     ST.mapCols = ST.mapCols || {};
-    ST.mapCols[s.dataset.mapi] = ST.mapCols[s.dataset.mapi] || {};
-    ST.mapCols[s.dataset.mapi][s.dataset.mapk] = s.value;
+    ST.mapCols[mapKey(s.dataset.mapa, s.dataset.mapb)] = s.value;
     ST.mapOpen = true;
     renderMapCols(); save();
   }));
@@ -2070,12 +2158,10 @@ $('#btnWtp').addEventListener('click', () => {
 /* ---- the perceptual map out of the competitor ratings ---- */
 function mapTable() {
   if (!DATA) return null;
-  const atts = attrsList().slice(0, 4);
-  const comps = compsList();
-  const brands = [val('brandwork') || 'Us'].concat(comps);
-  const rows = atts.map((a, i) => {
-    const cells = brands.map((b, k) => {
-      const col = mapColFor(i, k);
+  const ax = mapAxes();
+  let rows = ax.atts.map((a) => {
+    const cells = ax.brands.map((b) => {
+      const col = mapColFor(a, b, ax);
       const v = col ? DATA.vars.find((x) => x.name === col) : null;
       if (!v) return null;
       const s = stats(col);
@@ -2083,7 +2169,12 @@ function mapTable() {
     });
     return { a, cells };
   }).filter((r) => r.cells.some((c) => c !== null));
-  return rows.length ? { brands, rows } : null;
+  if (!rows.length) return null;
+  // a brand nobody was asked about leaves an empty column: drop it
+  const keep = ax.brands.map((b, k) => rows.some((r) => r.cells[k] !== null));
+  const brands = ax.brands.filter((b, k) => keep[k]);
+  rows = rows.map((r) => ({ a: r.a, cells: r.cells.filter((c, k) => keep[k]) }));
+  return { brands, rows };
 }
 $('#btnMap').addEventListener('click', () => {
   const m = mapTable();
@@ -2093,7 +2184,16 @@ $('#btnMap').addEventListener('click', () => {
   }
   $('#mapOut').innerHTML = `<table><tr><th>Attribute</th>${m.brands.map((b) => `<th class="num">${esc(b)}</th>`).join('')}</tr>`
     + m.rows.map((r) => `<tr><td>${esc(r.a)}</td>${r.cells.map((c) => `<td class="num">${c === null ? '-' : fmt(c)}</td>`).join('')}</tr>`).join('')
-    + '</table><p class="hint">Scores are the average answer, 1 to 5, from the people who answered. Put this map next to the one you drew in Pitch 1 and say what moved.</p>';
+    + '</table>'
+    + (m.rows.length === 1
+      ? `<div class="note"><b>One attribute is a ranking, not a map</b>Your file scores
+         <b>${esc(m.rows[0].a)}</b> for ${m.brands.length === 1 ? 'your own idea only' : m.brands.length + ' brands'},
+         and nothing else, so there is no second axis to plot. Report it as a ranking - who is seen as best
+         on it and by how much - and if you want a map, one more attribute is all it takes${m.brands.length === 1 ? ', plus at least one competitor' : ''}.</div>`
+      : '<p class="hint">Scores are the average answer, 1 to 5, from the people who answered. Put this map next to the one you drew in Pitch 1 and say what moved.</p>')
+    + (m.brands.length === 1
+      ? '<p class="hint">Only your own scores are in the file: the positioning tool needs at least one competitor to put you against.</p>'
+      : '');
   ST.analysis.map = m;
   $('#mapAi').style.display = 'block';
   sources(); save();
