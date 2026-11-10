@@ -79,7 +79,11 @@ th{font:600 11.5px "IBM Plex Mono",monospace;letter-spacing:.05em;text-transform
 .picks{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 @media(max-width:900px){.picks{grid-template-columns:1fr 1fr}}
 .hint{font-size:13.5px;color:var(--muted)}
-.right{text-align:right} .num{text-align:right;font-variant-numeric:tabular-nums}
+.right{text-align:right}
+.aibox{background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:11px 14px;margin-top:12px}
+.aibox b{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:4px}
+.btn.ai{border-style:dashed} .num{text-align:right;font-variant-numeric:tabular-nums}
 img.shot{width:100%;border:1px solid var(--line);border-radius:8px;display:block}
 .ok-cell{color:var(--ok);font-weight:600}
 .no-cell{color:var(--bad);font-weight:600}
@@ -171,6 +175,9 @@ ol.steps li{margin-bottom:4px}
       <li>Map one single action onto the communication model - sender to noise - and say where the
         message could die.</li>
       <li>Press <b>Check my answers</b>, read what you got wrong, fix what you disagree with and write why.</li>
+      <li>Three prompts are waiting along the way - find the evidence, argue against us, the ten minutes -
+        and each one carries your own work inside it. The second one is the useful one: it attacks your
+        classification before the class does.</li>
       <li>Ten minutes in front of the class, from the summary this page builds for you.</li>
     </ol></div>
 
@@ -214,6 +221,12 @@ ol.steps li{margin-bottom:4px}
     even a company action.</p>
     <div id="acts"></div>
 
+    <div class="aibox"><b>Prompt &middot; find the evidence</b>
+      It carries the case, the six actions and the ones you have not documented yet, and it is told not
+      to invent links - it says where to look, you go and look.
+      <div class="row"><button class="btn ai" data-prompt="find">Copy the prompt</button>
+        <span class="hint" id="findState"></span></div></div>
+
     <h2>3 &middot; Put them in order</h2>
     <p class="sub">The order the campaign ran them in, and what each step was for. Use the arrows.</p>
     <div id="order"></div>
@@ -251,6 +264,12 @@ ol.steps li{margin-bottom:4px}
       <span class="hint">the key is a teaching device - if you disagree with one, say so in your write-up</span>
     </div>
     <div id="checkOut"></div>
+    <div class="aibox"><b>Prompt &middot; argue against us</b>
+      It carries every action with your answer and the key beside it, and asks the assistant to attack
+      the ones you got wrong <i>and</i> the reasons behind the ones you got right. Do this before the
+      class does it to you.
+      <div class="row"><button class="btn ai" data-prompt="argue">Copy the prompt</button>
+        <span class="hint" id="argueState"></span></div></div>
   </div>
 </div>
 
@@ -271,6 +290,11 @@ ol.steps li{margin-bottom:4px}
     This page saves itself into this browser after every change, which is enough between one class and the
     next on the same laptop. It is not enough for a group: press <b>Save a draft file</b> and pass that file
     around. A private window, a cleared history or another computer loses whatever is not in the file.</div>
+  <div class="aibox"><b>Prompt &middot; the ten minutes</b>
+    It carries the whole summary and comes back with a script for the group - who says what, in what
+    order - and the three questions the class is most likely to ask you.
+    <div class="row"><button class="btn ai" data-prompt="script">Copy the prompt</button>
+      <span class="hint" id="scriptState"></span></div></div>
   <div id="presentOut"></div>
 </div>
 
@@ -921,20 +945,11 @@ function renderActs() {
     return `<div class="act">
       <div class="no">ACTION ${i + 1}</div>
       <div class="txt">${esc(a.t)}</div>
-      <div class="picks">
-        <div><label class="f">Which P</label>${sel(i + '|p', PS, p.p)}</div>
-        <div><label class="f">Tool</label>${sel(i + '|tool', TOOLS, p.tool)}</div>
-        <div><label class="f">Media</label>${sel(i + '|media', MEDIA, p.media)}</div>
-        <div><label class="f">Appeal</label>${sel(i + '|appeal', APPEAL, p.appeal)}</div>
-        <div><label class="f">Stage</label>${sel(i + '|stage', STAGE, p.stage)}</div>
-      </div>
-      <div class="grid2" style="margin-top:10px">
-        <div><label class="f">A better link, if you find one</label>
-          <input type="text" data-link="${i}" value="${esc(ST.links[i] || '')}" placeholder="https://..."></div>
-        <div><label class="f">Why you classified it that way</label>
-          <input type="text" data-note="${i}" value="${esc(ST.notes[i] || '')}" placeholder="one line is enough"></div>
-      </div>
-      <div class="grid2" style="margin-top:10px">
+
+      <p class="hint" style="margin:10px 0 2px"><b>1. Look at it.</b> ${a.vid
+        ? 'The clip below is this action, not the campaign in general.'
+        : 'No clip exists of this one. The box below says where to go and what to photograph.'}</p>
+      <div class="grid2" style="margin-top:4px">
         <div>${a.vid
           ? `<a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">
                <img class="shot" src="https://img.youtube.com/vi/${a.vid}/hqdefault.jpg" alt=""></a>
@@ -948,6 +963,24 @@ function renderActs() {
           </div>
         </div>
         <div>${ST.shots[i] ? `<img class="shot" src="${ST.shots[i]}" alt="">` : ''}<div id="thumb${i}"></div></div>
+      </div>
+
+      <p class="hint" style="margin:14px 0 2px"><b>2. Classify it.</b> Five choices; the page checks
+        them against the key in step 6.</p>
+      <div class="picks">
+        <div><label class="f">Which P</label>${sel(i + '|p', PS, p.p)}</div>
+        <div><label class="f">Tool</label>${sel(i + '|tool', TOOLS, p.tool)}</div>
+        <div><label class="f">Media</label>${sel(i + '|media', MEDIA, p.media)}</div>
+        <div><label class="f">Appeal</label>${sel(i + '|appeal', APPEAL, p.appeal)}</div>
+        <div><label class="f">Stage</label>${sel(i + '|stage', STAGE, p.stage)}</div>
+      </div>
+      <p class="hint" style="margin:14px 0 2px"><b>3. Write it down.</b> One line on why you classified
+        it that way - that line is what you defend in front of the class.</p>
+      <div class="grid2" style="margin-top:4px">
+        <div><label class="f">A better link, if you find one</label>
+          <input type="text" data-link="${i}" value="${esc(ST.links[i] || '')}" placeholder="https://..."></div>
+        <div><label class="f">Why you classified it that way</label>
+          <input type="text" data-note="${i}" value="${esc(ST.notes[i] || '')}" placeholder="one line is enough"></div>
       </div>
     </div>`;
   }).join('');
@@ -1193,6 +1226,85 @@ $('#dl').addEventListener('click', () => {
   download((c ? c.brand : 'campaign') + ' - campaign sorter.md', summary(), 'text/markdown');
 });
 $('#print').addEventListener('click', () => { $('#build').click(); showView('present'); setTimeout(() => window.print(), 300); });
+
+/* ===================================================================== prompts */
+function promptFor(kind) {
+  const c = CASES[ST.case];
+  if (!c) return 'Pick a case first: the prompt is built from what you have done.';
+  const head = `You are helping a first-year marketing group take a real campaign apart for a ten-minute `
+    + `class presentation. Be strict, never invent facts, and say plainly when something is arguable.\n\n`
+    + `CAMPAIGN: ${c.brand} - ${c.name} (${c.year}).\n${c.brief}\nOur group: ${val('team') || '(not written)'}\n\n`;
+
+  if (kind === 'find') {
+    const missing = c.acts.map((a, i) => ({ a, i }))
+      .filter(({ i }) => !ST.shots[i] && !ST.links[i] && !c.acts[i].vid);
+    return head
+      + `THE SIX ACTIONS WE HAVE TO DOCUMENT:\n`
+      + c.acts.map((a, i) => `${i + 1}. ${a.t}${a.vid ? '  [we already have a clip of this one]' : ''}`).join('\n')
+      + `\n\nStill undocumented: ${missing.length ? missing.map(({ i }) => i + 1).join(', ') : 'none'}.\n\n`
+      + `For each undocumented action, tell us:\n`
+      + `- what exactly we should be looking at (the object, the page, the room, the shelf), in one line;\n`
+      + `- where to look for it: which kind of source, which words to search, which place to walk into;\n`
+      + `- what would make a bad piece of evidence for that action, so we do not bring back the wrong thing.\n\n`
+      + `Do NOT give us URLs. Links you produce from memory are usually dead or wrong, and finding the `
+      + `evidence is the part of the exercise that is ours. Finish with one sentence on which of the six `
+      + `actions will be hardest to prove, and why.`;
+  }
+
+  if (kind === 'argue') {
+    const L = [];
+    c.acts.forEach((a, i) => {
+      const p = ST.picks[i] || {};
+      const mine = [['which P', PS, p.p, a.p], ['tool', TOOLS, p.tool, a.tool],
+        ['media', MEDIA, p.media, a.media], ['appeal', APPEAL, p.appeal, a.appeal],
+        ['stage', STAGE, p.stage, a.stage]]
+        .map(([lab, list, m, k]) => `${lab}: we said ${m ? labelOf(list, m) : '(nothing)'}`
+          + (m === k ? '' : `, the key says ${labelOf(list, k)}`)).join('; ');
+      L.push(`${i + 1}. ${a.t}\n   ${mine}${ST.notes[i] ? `\n   our reason: ${ST.notes[i]}` : ''}`);
+    });
+    return head
+      + `HOW WE CLASSIFIED THE SIX ACTIONS, with the teaching key where we differ:\n\n` + L.join('\n\n')
+      + `\n\nThe order we put them in: ${ST.order.map((x) => x + 1).join(' → ')}.\n`
+      + `Why: ${val('why') || '(not written yet)'}\n`
+      + `The one sentence we say the whole campaign carries: ${val('imc') || '(not written yet)'}\n\n`
+      + `Now argue against us:\n`
+      + `1. Where we differ from the key, make the strongest case for the key - and then say honestly `
+      + `whether our answer is defensible anyway, because some of these sit on a border.\n`
+      + `2. Where we agree with the key, attack the REASON we gave. A right answer for a wrong reason is `
+      + `what the class will find.\n`
+      + `3. Tell us which single classification we would lose an argument about, and what we should say `
+      + `instead.\n`
+      + `Do not be polite about it. Use only the campaign facts above; if you need a fact we have not `
+      + `given you, say which one.`;
+  }
+
+  if (kind === 'script') {
+    return head + `THE WORK:\n\n` + summary()
+      + `\n\nTurn this into a ten-minute presentation for ${(val('team') || 'four people').split('-').length > 1
+        ? 'the members listed above' : 'four people'}:\n`
+      + `- six beats, with roughly how long each one should take and who says it;\n`
+      + `- the one sentence each beat has to land, written the way somebody would say it out loud;\n`
+      + `- the slide behind each beat in one line (what is ON it, not what is said over it);\n`
+      + `- and the three questions the class is most likely to ask us, with a two-line answer for each.\n\n`
+      + `Keep every number and every classification exactly as we wrote them - if you think one is wrong, `
+      + `say so at the end instead of quietly changing it.`;
+  }
+  return '';
+}
+
+function copyPrompt(kind, stateId) {
+  const t = promptFor(kind);
+  const say = (msg) => { const el = $('#' + stateId); if (el) { el.textContent = msg; setTimeout(() => { el.textContent = ''; }, 4000); } };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(() => say('copied - paste it into your assistant'),
+      () => { download('prompt.txt', t); say('clipboard refused: downloaded as a file'); });
+  } else {
+    download('prompt.txt', t);
+    say('downloaded as a file');
+  }
+}
+$$('[data-prompt]').forEach((b) => b.addEventListener('click', () =>
+  copyPrompt(b.dataset.prompt, b.dataset.prompt + 'State')));
 
 /* ===================================================================== saving */
 function state() {
