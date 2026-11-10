@@ -147,13 +147,28 @@ ol.steps li{margin-bottom:4px}
       <b>advocate</b>. A campaign that is all "aware" never gets anybody to act.</p></div>
   </div>
 
+  <h2>When paid looks earned</h2>
+  <p class="sub">Three posts from the same account. The session asks one question about them:
+  <b>which of these is paid advertising and which is not?</b> Look before you read the answer.</p>
+  <div class="grid3" id="paidEarned">
+    <div class="card"><img class="shot" src="img/pe_guess.jpg" alt="">
+      <p class="hint" style="margin-top:6px">1. A post signed by the account and the brand together.</p></div>
+    <div class="card"><img class="shot" src="img/pe_milano.jpg" alt="">
+      <p class="hint" style="margin-top:6px">2. An evening in Milan. A bag is in the photograph.</p></div>
+    <div class="card"><img class="shot" src="img/pe_lime.jpg" alt="">
+      <p class="hint" style="margin-top:6px">3. A night in Rome, on a rented bike.</p></div>
+  </div>
+  <div class="row"><button class="btn solid" id="peShow">Show me the answer</button></div>
+  <div id="peOut"></div>
+
   <div class="note"><b>What you hand in</b>
     <ol class="steps">
       <li>Pick one case. One case per group - agree in class so that no two groups take the same one.</li>
       <li>Classify every action on the four scales, and find the link and a screenshot for each one.</li>
       <li>Put the actions in the order the campaign ran them, and say what the sequence was trying to do.</li>
-      <li>Map one single action onto the communication model: sender, encoding, message, media, decoding,
-        receiver, response, feedback, noise.</li>
+      <li>Write the one sentence the whole campaign carries, and tick the actions that really carry it.</li>
+      <li>Map one single action onto the communication model - sender to noise - and say where the
+        message could die.</li>
       <li>Press <b>Check my answers</b>, read what you got wrong, fix what you disagree with and write why.</li>
       <li>Ten minutes in front of the class, from the summary this page builds for you.</li>
     </ol></div>
@@ -203,11 +218,31 @@ ol.steps li{margin-bottom:4px}
     <label class="f" for="why">What the sequence was trying to do</label>
     <textarea id="why" data-k rows="3" placeholder="e.g. buy the awareness first, then give people something to do with it..."></textarea>
 
-    <h2>4 &middot; One action through the communication model</h2>
+    <h2>4 &middot; Is it integrated?</h2>
+    <p class="sub">Integrated marketing communication means the whole campaign says one thing. Write the
+    sentence every action has to carry - in the words a customer would use, not the brand's - and then
+    tick the actions that really carry it.</p>
+    <label class="f" for="imc">The one sentence</label>
+    <input type="text" id="imc" data-k placeholder="e.g. the people you love are further away than you think">
+    <div id="imcList"></div>
+    <div id="imcOut"></div>
+
+    <h2>5 &middot; One action through the communication model</h2>
     <p class="sub">Pick the action you think did the most work and take it through the model of the session.</p>
     <div class="grid2" id="comm"></div>
 
-    <h2>5 &middot; Check your answers</h2>
+    <h3>Where could this message die?</h3>
+    <p class="sub">The three ways a message dies, from the session. Answer them about your own campaign.</p>
+    <div class="grid3">
+      <div><label class="f" for="d_enc">Encoding is not decoding</label>
+        <textarea id="d_enc" data-k rows="3" placeholder="you write from your world, they read from theirs - where does that gap open here?"></textarea></div>
+      <div><label class="f" for="d_fb">No feedback loop</label>
+        <textarea id="d_fb" data-k rows="3" placeholder="what comes back to the brand, and how would it know which part failed?"></textarea></div>
+      <div><label class="f" for="d_noise">Noise</label>
+        <textarea id="d_noise" data-k rows="3" placeholder="what is competing for the same two seconds?"></textarea></div>
+    </div>
+
+    <h2>6 &middot; Check your answers</h2>
     <div class="row">
       <button class="btn solid" id="check">Check my answers</button>
       <button class="btn ghost" id="clear">Clear this case</button>
@@ -266,143 +301,486 @@ const DEMO = [
 ];
 
 const CASES = {
- ruavieja:{brand:"Ruavieja",name:"Tenemos que vernos más",year:"Spain, 2018",
-  brief:"A Christmas campaign built on one number: how many hours you have left with the people you love if you keep seeing them as often as you do now. Real pairs of friends and relatives were told the figure on camera.",
-  find:"https://www.youtube.com/watch?v=4iBc47UtPa0",
-  acts:[
-   {t:"A three-minute film, released online, in which real pairs are told how many hours they have left together.",
-    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"appeal",
-    why:"Paid distribution of a non-personal message from an identified sponsor: advertising. Its job is not to make you buy, it is to make you feel something about the idea."},
-   {t:"A microsite where anyone can calculate the time they have left with a particular person.",
-    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"ask",
-    why:"The brand's own channel, one person at a time: direct and digital. It is the ask - it turns a feeling into a question you type into a box."},
-   {t:"Television news programmes and the press report on the experiment.",
-    p:"promotion",tool:"pr",media:"earned",appeal:"emotional",stage:"aware",
-    why:"Not bought. Coverage given because the story was worth covering: public relations, earned media."},
-   {t:"Thousands of people post their own result and tag the friend they should see more often.",
-    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
-    why:"The audience did this, not the brand. Shared media, and the clearest sign of advocacy there is: they put their own name next to the idea."},
-   {t:"A limited Christmas edition of the bottle, with a different label.",
-    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
-    why:"Packaging and design are product decisions, not promotion. It supports the campaign, but it would still exist if nobody advertised it."},
-   {t:"A forty-second cut of the film on television in prime time in December.",
-    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"aware",
-    why:"The same message, paid for again in the medium that still buys the most reach in Spain at Christmas."}]},
-
- dove:{brand:"Dove",name:"Real Beauty Sketches",year:"2013",
-  brief:"A forensic artist draws women twice: once from their own description of themselves and once from a stranger's. The two portraits are not the same person.",
-  find:"https://www.youtube.com/results?search_query=dove+real+beauty+sketches",
-  acts:[
-   {t:"The film with the forensic artist, pushed with paid media on video platforms.",
-    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"appeal",
-    why:"Paid, non-personal, identified sponsor. The film does not mention a product benefit once: the appeal is entirely emotional."},
-   {t:"The brand's own YouTube channel hosting the film, the long cut and the behind-the-scenes.",
-    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"aware",
-    why:"A channel the brand owns and programmes itself."},
-   {t:"Newspapers and talk shows debate whether the film is honest or hypocritical.",
-    p:"promotion",tool:"pr",media:"earned",appeal:"moral",stage:"aware",
-    why:"Earned: nobody paid for the debate. And the argument was about what is right, which is a moral appeal whether the brand wanted it or not."},
-   {t:"Users publish parodies and reaction videos, some of them mocking the campaign.",
-    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
-    why:"Shared media is not always flattering. It is still the audience carrying the message, and it still counts."},
-   {t:"Self-esteem workshops run in schools and funded by the brand.",
-    p:"promotion",tool:"pr",media:"owned",appeal:"moral",stage:"act",
-    why:"Building relations with a public rather than selling to it: public relations, in a channel the brand controls."},
-   {t:"Dove is sold in supermarkets and chemists, never in beauty salons.",
-    p:"place",tool:"na",media:"na",appeal:"na",stage:"act",
-    why:"Where the product is available is a place decision. It is also what makes the positioning credible, which is why it is in the list."}]},
-
- patagonia:{brand:"Patagonia",name:"Don't Buy This Jacket",year:"2011",
-  brief:"On Black Friday, the brand took a full page in a newspaper with a photograph of its best-selling jacket and a headline telling people not to buy it.",
-  find:"https://www.youtube.com/results?search_query=patagonia+don%27t+buy+this+jacket",
-  acts:[
-   {t:"A full-page advertisement in a national newspaper on Black Friday showing the jacket and the headline.",
-    p:"promotion",tool:"ad",media:"paid",appeal:"moral",stage:"appeal",
-    why:"Bought space, and the appeal is about what is right rather than about performance or price."},
-   {t:"The Common Threads pledge on the brand's website, where customers promise to repair and reuse.",
-    p:"promotion",tool:"dd",media:"owned",appeal:"moral",stage:"ask",
-    why:"The brand's own channel asking for one specific commitment: this is the ask of the whole campaign."},
-   {t:"Press all over the world writes about a brand telling people not to buy its product.",
-    p:"promotion",tool:"pr",media:"earned",appeal:"moral",stage:"aware",
-    why:"Earned. The paradox was the story, and the story bought far more attention than the page did."},
-   {t:"Customers post photographs of their repaired, twenty-year-old jackets.",
-    p:"promotion",tool:"aud",media:"shared",appeal:"moral",stage:"advocate",
-    why:"The audience, unpaid, providing the proof the brand could not provide about itself."},
-   {t:"A van tours the country repairing customers' clothes for free.",
-    p:"promotion",tool:"pr",media:"owned",appeal:"moral",stage:"act",
-    why:"An event the brand owns, built to create relations and coverage rather than to sell on the spot."},
-   {t:"Every jacket carries a lifetime repair guarantee.",
-    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
-    why:"The guarantee is the augmented product. Without it the advertisement would be a slogan."}]},
-
- spotify:{brand:"Spotify",name:"Wrapped",year:"every December",
-  brief:"Once a year the service turns each user's listening data into a personal story they can post, and buys outdoor space to joke about the strangest data it has.",
-  find:"https://www.youtube.com/results?search_query=spotify+wrapped+campaign",
-  acts:[
-   {t:"The personalised in-app story each user receives, with their own minutes, artists and genres.",
-    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"act",
-    why:"One message per person in a channel the brand owns: direct and digital. And the act is opening it."},
-   {t:"Users post their Wrapped cards on Instagram and compare them with their friends.",
-    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
-    why:"The whole mechanic exists to be shared. The brand built the card; the audience did the distribution."},
-   {t:"Billboards in big cities with odd listening statistics and a joke about them.",
-    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"aware",
-    why:"Paid outdoor space. The appeal is humour, which is emotional, not a product argument."},
-   {t:"Technology and music press write about the figures published with the campaign.",
-    p:"promotion",tool:"pr",media:"earned",appeal:"rational",stage:"aware",
-    why:"Earned coverage, and here the appeal really is rational: the story is the data."},
-   {t:"A Wrapped for Artists page where musicians see their own numbers.",
-    p:"promotion",tool:"dd",media:"owned",appeal:"rational",stage:"ask",
-    why:"A second audience - the artists - addressed directly in an owned channel, with numbers as the argument."},
-   {t:"The free tier, paid for by advertising, which is what produces the listening data in the first place.",
-    p:"price",tool:"na",media:"na",appeal:"na",stage:"act",
-    why:"Freemium is a price decision. No free tier, no scale, no data, no Wrapped."}]},
-
- damm:{brand:"Estrella Damm",name:"Mediterráneamente",year:"Spain, every summer",
-  brief:"A short film released at the start of every summer, with a song, a Mediterranean location and almost no product on screen.",
-  find:"https://www.youtube.com/results?search_query=estrella+damm+mediterraneamente",
-  acts:[
-   {t:"The summer short film, launched in cinemas and on television.",
-    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"appeal",
-    why:"Paid, non-personal, identified sponsor - and the appeal is a feeling about summer, not an argument about beer."},
-   {t:"The song of the film released as a single on the streaming platforms.",
-    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"aware",
-    why:"Content the brand publishes in its own name. It keeps the campaign alive in a place where nobody is watching advertising."},
-   {t:"Parasols, coasters and branded glasses in thousands of bars.",
-    p:"promotion",tool:"sp",media:"owned",appeal:"rational",stage:"act",
-    why:"Point-of-sale material is sales promotion: it works at the moment of choosing, where the act happens."},
-   {t:"Local press and television report on where the film was shot and the town fills with visitors.",
-    p:"promotion",tool:"pr",media:"earned",appeal:"emotional",stage:"ask",
-    why:"Earned coverage, and it answers the question the film provokes: where is that?"},
-   {t:"People recreate the locations and the summer on their own accounts.",
-    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
-    why:"The audience taking the message on holiday with them."},
-   {t:"The beer is brewed in Barcelona and the label says so.",
-    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
-    why:"Origin on the label is a product decision, and it is what gives the Mediterranean story a right to exist."}]},
-
- bk:{brand:"Burger King",name:"The Moldy Whopper",year:"2020",
-  brief:"The brand filmed its own burger going mouldy over 34 days to announce that it had removed the artificial preservatives.",
-  find:"https://www.youtube.com/results?search_query=burger+king+moldy+whopper",
-  acts:[
-   {t:"A time-lapse film of the burger going mouldy, bought on television and online.",
-    p:"promotion",tool:"ad",media:"paid",appeal:"rational",stage:"appeal",
-    why:"Paid and non-personal. However disgusting it looks, the appeal is an argument about the ingredients: rational."},
-   {t:"A press release announcing that the artificial preservatives are gone from the recipe.",
-    p:"promotion",tool:"pr",media:"earned",appeal:"rational",stage:"aware",
-    why:"Written to be picked up by the media rather than paid for: public relations, earned."},
-   {t:"Posters inside the restaurants showing the same mouldy burger.",
-    p:"promotion",tool:"ad",media:"owned",appeal:"rational",stage:"act",
-    why:"Advertising in a space the brand owns, at the moment of ordering."},
-   {t:"The argument on social media, including thousands of people saying it is revolting.",
-    p:"promotion",tool:"aud",media:"shared",appeal:"na",stage:"advocate",
-    why:"Shared media that the brand provoked and could not control. Advocacy is not always positive, and here the brand counted on that."},
-   {t:"A coupon in the app for a Whopper at a reduced price that week.",
-    p:"promotion",tool:"sp",media:"owned",appeal:"rational",stage:"act",
-    why:"A short-term incentive to buy now: sales promotion, in the brand's own channel."},
-   {t:"Taking the artificial preservatives out of the recipe.",
-    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
-    why:"The only action on the list that changes what the customer eats. Without it the campaign would be a lie."}]}
+ "ruavieja": {
+  "brand": "Ruavieja",
+  "name": "Tenemos que vernos más",
+  "year": "Spain, 2018",
+  "brief": "A Christmas campaign built on one number: how many hours you have left with the people you love if you keep seeing them as often as you do now. Real pairs of friends and relatives were told the figure on camera.",
+  "acts": [
+   {
+    "t": "A three-minute film, released online, in which real pairs are told how many hours they have left together.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "paid",
+    "appeal": "emotional",
+    "stage": "appeal",
+    "why": "Paid distribution of a non-personal message from an identified sponsor: advertising. Its job is not to make you buy, it is to make you feel something about the idea.",
+    "vid": "4iBc47UtPa0",
+    "ch": "Ruavieja",
+    "shows": "the film itself, on the brand's own channel"
+   },
+   {
+    "t": "A microsite where anyone can calculate the time they have left with a particular person.",
+    "p": "promotion",
+    "tool": "dd",
+    "media": "owned",
+    "appeal": "emotional",
+    "stage": "ask",
+    "why": "The brand's own channel, one person at a time: direct and digital. It is the ask - it turns a feeling into a question you type into a box.",
+    "vid": "O20rbINZhSU",
+    "ch": "Contagious",
+    "shows": "the case film: the calculator and the numbers behind it"
+   },
+   {
+    "t": "Television news programmes and the trade press report on the experiment.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "earned",
+    "appeal": "emotional",
+    "stage": "aware",
+    "why": "Not bought. Coverage given because the story was worth covering: public relations, earned media.",
+    "vid": "87z_rl9EqJc",
+    "ch": "El Publicista",
+    "shows": "the trade press covering it - earned media, literally"
+   },
+   {
+    "t": "Thousands of people post their own result and tag the friend they should see more often.",
+    "p": "promotion",
+    "tool": "aud",
+    "media": "shared",
+    "appeal": "emotional",
+    "stage": "advocate",
+    "why": "The audience did this, not the brand. Shared media, and the clearest sign of advocacy there is: they put their own name next to the idea.",
+    "vid": "O20rbINZhSU",
+    "ch": "Contagious",
+    "shows": "the case film shows the reactions it provoked"
+   },
+   {
+    "t": "A limited Christmas edition of the bottle, with a different label.",
+    "p": "product",
+    "tool": "na",
+    "media": "na",
+    "appeal": "na",
+    "stage": "act",
+    "why": "Packaging and design are product decisions, not promotion. It supports the campaign, but it would still exist if nobody advertised it.",
+    "vid": "4iBc47UtPa0",
+    "ch": "Ruavieja",
+    "shows": "the brand's channel, where the product lives"
+   },
+   {
+    "t": "A forty-second cut of the film on television in prime time in December.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "paid",
+    "appeal": "emotional",
+    "stage": "aware",
+    "why": "The same message, paid for again in the medium that still buys the most reach in Spain at Christmas.",
+    "vid": "OBB3jNCPMCY",
+    "ch": "DIGIOLAB",
+    "shows": "a subtitled cut of the same film"
+   }
+  ]
+ },
+ "dove": {
+  "brand": "Dove",
+  "name": "Real Beauty Sketches",
+  "year": "2013",
+  "brief": "A forensic artist draws women twice: once from their own description of themselves and once from a stranger's. The two portraits are not the same person.",
+  "acts": [
+   {
+    "t": "The film with the forensic artist, pushed with paid media on video platforms.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "paid",
+    "appeal": "emotional",
+    "stage": "appeal",
+    "why": "Paid, non-personal, identified sponsor. The film does not mention a product benefit once: the appeal is entirely emotional.",
+    "vid": "rrHoDJinMQI",
+    "ch": "FLHeadlines",
+    "shows": "the film with the forensic artist"
+   },
+   {
+    "t": "The brand's own YouTube channel hosting the film, the long cut and the behind-the-scenes.",
+    "p": "promotion",
+    "tool": "dd",
+    "media": "owned",
+    "appeal": "emotional",
+    "stage": "aware",
+    "why": "A channel the brand owns and programmes itself.",
+    "vid": "r79Q6gAQhao",
+    "ch": "YouTube For Business",
+    "shows": "the case study: how it was programmed on the channel"
+   },
+   {
+    "t": "Newspapers and talk shows debate whether the film is honest or hypocritical.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "earned",
+    "appeal": "moral",
+    "stage": "aware",
+    "why": "Earned: nobody paid for the debate. And the argument was about what is right, which is a moral appeal whether the brand wanted it or not.",
+    "vid": "r79Q6gAQhao",
+    "ch": "YouTube For Business",
+    "shows": "the case study covers the press reaction"
+   },
+   {
+    "t": "Users publish parodies and reaction videos, some of them mocking the campaign.",
+    "p": "promotion",
+    "tool": "aud",
+    "media": "shared",
+    "appeal": "emotional",
+    "stage": "advocate",
+    "why": "Shared media is not always flattering. It is still the audience carrying the message, and it still counts.",
+    "vid": "r79Q6gAQhao",
+    "ch": "YouTube For Business",
+    "shows": "the case study shows the parodies and the shares"
+   },
+   {
+    "t": "Self-esteem workshops run in schools and funded by the brand.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "owned",
+    "appeal": "moral",
+    "stage": "act",
+    "why": "Building relations with a public rather than selling to it: public relations, in a channel the brand controls.",
+    "vid": "rrHoDJinMQI",
+    "ch": "FLHeadlines",
+    "shows": "the film the workshops are built on"
+   },
+   {
+    "t": "Dove is sold in supermarkets and chemists, never in beauty salons.",
+    "p": "place",
+    "tool": "na",
+    "media": "na",
+    "appeal": "na",
+    "stage": "act",
+    "why": "Where the product is available is a place decision. It is also what makes the positioning credible, which is why it is in the list.",
+    "vid": "r79Q6gAQhao",
+    "ch": "YouTube For Business",
+    "shows": "the case study, for where the brand is sold"
+   }
+  ]
+ },
+ "patagonia": {
+  "brand": "Patagonia",
+  "name": "Don't Buy This Jacket",
+  "year": "2011",
+  "brief": "On Black Friday, the brand took a full page in a newspaper with a photograph of its best-selling jacket and a headline telling people not to buy it.",
+  "acts": [
+   {
+    "t": "A full-page advertisement in a national newspaper on Black Friday showing the jacket and the headline.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "paid",
+    "appeal": "moral",
+    "stage": "appeal",
+    "why": "Bought space, and the appeal is about what is right rather than about performance or price.",
+    "vid": "gtvqMBH0wS8",
+    "ch": "Ecosystem Member Podcast",
+    "shows": "the advertisement and the story behind it"
+   },
+   {
+    "t": "The Common Threads pledge on the brand's website, where customers promise to repair and reuse.",
+    "p": "promotion",
+    "tool": "dd",
+    "media": "owned",
+    "appeal": "moral",
+    "stage": "ask",
+    "why": "The brand's own channel asking for one specific commitment: this is the ask of the whole campaign.",
+    "vid": "E1e01CikuwA",
+    "ch": "JP Kuehlwein",
+    "shows": "un-selling the Patagonia way: the pledge and the logic"
+   },
+   {
+    "t": "Press all over the world writes about a brand telling people not to buy its product.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "earned",
+    "appeal": "moral",
+    "stage": "aware",
+    "why": "Earned. The paradox was the story, and the story bought far more attention than the page did.",
+    "vid": "E1e01CikuwA",
+    "ch": "JP Kuehlwein",
+    "shows": "the coverage the paradox earned"
+   },
+   {
+    "t": "Customers post photographs of their repaired, twenty-year-old jackets.",
+    "p": "promotion",
+    "tool": "aud",
+    "media": "shared",
+    "appeal": "moral",
+    "stage": "advocate",
+    "why": "The audience, unpaid, providing the proof the brand could not provide about itself.",
+    "vid": "E1e01CikuwA",
+    "ch": "JP Kuehlwein",
+    "shows": "what customers do with the idea"
+   },
+   {
+    "t": "A van tours the country repairing customers' clothes for free.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "owned",
+    "appeal": "moral",
+    "stage": "act",
+    "why": "An event the brand owns, built to create relations and coverage rather than to sell on the spot.",
+    "vid": "E1e01CikuwA",
+    "ch": "JP Kuehlwein",
+    "shows": "the repair programme"
+   },
+   {
+    "t": "Every jacket carries a lifetime repair guarantee.",
+    "p": "product",
+    "tool": "na",
+    "media": "na",
+    "appeal": "na",
+    "stage": "act",
+    "why": "The guarantee is the augmented product. Without it the advertisement would be a slogan.",
+    "vid": "gtvqMBH0wS8",
+    "ch": "Ecosystem Member Podcast",
+    "shows": "the jacket, and the guarantee that holds the claim up"
+   }
+  ]
+ },
+ "spotify": {
+  "brand": "Spotify",
+  "name": "Wrapped",
+  "year": "every December",
+  "brief": "Once a year the service turns each user's listening data into a personal story they can post, and buys outdoor space to joke about the strangest data it has.",
+  "acts": [
+   {
+    "t": "The personalised in-app story each user receives, with their own minutes, artists and genres.",
+    "p": "promotion",
+    "tool": "dd",
+    "media": "owned",
+    "appeal": "emotional",
+    "stage": "act",
+    "why": "One message per person in a channel the brand owns: direct and digital. And the act is opening it.",
+    "vid": "U0KA-rBWAU4",
+    "ch": "Campaign Unpacked",
+    "shows": "the on-platform experience, built in-house"
+   },
+   {
+    "t": "Users post their Wrapped cards on Instagram and compare them with their friends.",
+    "p": "promotion",
+    "tool": "aud",
+    "media": "shared",
+    "appeal": "emotional",
+    "stage": "advocate",
+    "why": "The whole mechanic exists to be shared. The brand built the card; the audience did the distribution.",
+    "vid": "UR9KUwrdoIs",
+    "ch": "Campaign Unpacked",
+    "shows": "ten years of Wrapped: what gets shared, and why"
+   },
+   {
+    "t": "Billboards in big cities with odd listening statistics and a joke about them.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "paid",
+    "appeal": "emotional",
+    "stage": "aware",
+    "why": "Paid outdoor space. The appeal is humour, which is emotional, not a product argument.",
+    "vid": "xSk5hBxUvrE",
+    "ch": "Grand Visual",
+    "shows": "the out-of-home campaign with the listening data"
+   },
+   {
+    "t": "Technology and music press write about the figures published with the campaign.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "earned",
+    "appeal": "rational",
+    "stage": "aware",
+    "why": "Earned coverage, and here the appeal really is rational: the story is the data.",
+    "vid": "UR9KUwrdoIs",
+    "ch": "Campaign Unpacked",
+    "shows": "the case study covers the press the data earns"
+   },
+   {
+    "t": "A Wrapped for Artists page where musicians see their own numbers.",
+    "p": "promotion",
+    "tool": "dd",
+    "media": "owned",
+    "appeal": "rational",
+    "stage": "ask",
+    "why": "A second audience - the artists - addressed directly in an owned channel, with numbers as the argument.",
+    "vid": "U0KA-rBWAU4",
+    "ch": "Campaign Unpacked",
+    "shows": "the same system, built for the artists"
+   },
+   {
+    "t": "The free tier, paid for by advertising, which is what produces the listening data in the first place.",
+    "p": "price",
+    "tool": "na",
+    "media": "na",
+    "appeal": "na",
+    "stage": "act",
+    "why": "Freemium is a price decision. No free tier, no scale, no data, no Wrapped.",
+    "vid": "UR9KUwrdoIs",
+    "ch": "Campaign Unpacked",
+    "shows": "what the free tier makes possible"
+   }
+  ]
+ },
+ "damm": {
+  "brand": "Estrella Damm",
+  "name": "Mediterráneamente",
+  "year": "Spain, every summer",
+  "brief": "A short film released at the start of every summer, with a song, a Mediterranean location and almost no product on screen.",
+  "acts": [
+   {
+    "t": "The summer short film, launched in cinemas and on television.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "paid",
+    "appeal": "emotional",
+    "stage": "appeal",
+    "why": "Paid, non-personal, identified sponsor - and the appeal is a feeling about summer, not an argument about beer.",
+    "vid": "UPn4NiwdfhU",
+    "ch": "Estrella Damm",
+    "shows": "the 2025 film, on the brand's own channel"
+   },
+   {
+    "t": "The song of the film released as a single on the streaming platforms.",
+    "p": "promotion",
+    "tool": "dd",
+    "media": "owned",
+    "appeal": "emotional",
+    "stage": "aware",
+    "why": "Content the brand publishes in its own name. It keeps the campaign alive in a place where nobody is watching advertising.",
+    "vid": "SPZ7nEnHEyo",
+    "ch": "Estrella Damm",
+    "shows": "the 2024 film and its song"
+   },
+   {
+    "t": "Parasols, coasters and branded glasses in thousands of bars.",
+    "p": "promotion",
+    "tool": "sp",
+    "media": "owned",
+    "appeal": "rational",
+    "stage": "act",
+    "why": "Point-of-sale material is sales promotion: it works at the moment of choosing, where the act happens.",
+    "vid": "UPn4NiwdfhU",
+    "ch": "Estrella Damm",
+    "shows": "the world the bar materials extend"
+   },
+   {
+    "t": "Local press and television report on where the film was shot and the town fills with visitors.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "earned",
+    "appeal": "emotional",
+    "stage": "ask",
+    "why": "Earned coverage, and it answers the question the film provokes: where is that?",
+    "vid": "SPZ7nEnHEyo",
+    "ch": "Estrella Damm",
+    "shows": "the locations the press goes looking for"
+   },
+   {
+    "t": "People recreate the locations and the summer on their own accounts.",
+    "p": "promotion",
+    "tool": "aud",
+    "media": "shared",
+    "appeal": "emotional",
+    "stage": "advocate",
+    "why": "The audience taking the message on holiday with them.",
+    "vid": "UPn4NiwdfhU",
+    "ch": "Estrella Damm",
+    "shows": "what people recreate on their own accounts"
+   },
+   {
+    "t": "The beer is brewed in Barcelona and the label says so.",
+    "p": "product",
+    "tool": "na",
+    "media": "na",
+    "appeal": "na",
+    "stage": "act",
+    "why": "Origin on the label is a product decision, and it is what gives the Mediterranean story a right to exist.",
+    "vid": "SPZ7nEnHEyo",
+    "ch": "Estrella Damm",
+    "shows": "the brand, and where it is brewed"
+   }
+  ]
+ },
+ "bk": {
+  "brand": "Burger King",
+  "name": "The Moldy Whopper",
+  "year": "2020",
+  "brief": "The brand filmed its own burger going mouldy over 34 days to announce that it had removed the artificial preservatives.",
+  "acts": [
+   {
+    "t": "A time-lapse film of the burger going mouldy, bought on television and online.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "paid",
+    "appeal": "rational",
+    "stage": "appeal",
+    "why": "Paid and non-personal. However disgusting it looks, the appeal is an argument about the ingredients: rational.",
+    "vid": "Aubn2Oh6Stg",
+    "ch": "Southside Advertising",
+    "shows": "the 34-day time lapse"
+   },
+   {
+    "t": "A press release announcing that the artificial preservatives are gone from the recipe.",
+    "p": "promotion",
+    "tool": "pr",
+    "media": "earned",
+    "appeal": "rational",
+    "stage": "aware",
+    "why": "Written to be picked up by the media rather than paid for: public relations, earned.",
+    "vid": "LzKX-_PiJ5Q",
+    "ch": "Campaign Unpacked",
+    "shows": "the case study: the announcement and the coverage"
+   },
+   {
+    "t": "Posters inside the restaurants showing the same mouldy burger.",
+    "p": "promotion",
+    "tool": "ad",
+    "media": "owned",
+    "appeal": "rational",
+    "stage": "act",
+    "why": "Advertising in a space the brand owns, at the moment of ordering.",
+    "vid": "LzKX-_PiJ5Q",
+    "ch": "Campaign Unpacked",
+    "shows": "the case study shows the in-restaurant work"
+   },
+   {
+    "t": "The argument on social media, including thousands of people saying it is revolting.",
+    "p": "promotion",
+    "tool": "aud",
+    "media": "shared",
+    "appeal": "na",
+    "stage": "advocate",
+    "why": "Shared media that the brand provoked and could not control. Advocacy is not always positive, and here the brand counted on that.",
+    "vid": "LzKX-_PiJ5Q",
+    "ch": "Campaign Unpacked",
+    "shows": "the argument it provoked online"
+   },
+   {
+    "t": "A coupon in the app for a Whopper at a reduced price that week.",
+    "p": "promotion",
+    "tool": "sp",
+    "media": "owned",
+    "appeal": "rational",
+    "stage": "act",
+    "why": "A short-term incentive to buy now: sales promotion, in the brand's own channel.",
+    "vid": "LzKX-_PiJ5Q",
+    "ch": "Campaign Unpacked",
+    "shows": "the offer that followed"
+   },
+   {
+    "t": "Taking the artificial preservatives out of the recipe.",
+    "p": "product",
+    "tool": "na",
+    "media": "na",
+    "appeal": "na",
+    "stage": "act",
+    "why": "The only action on the list that changes what the customer eats. Without it the campaign would be a lie.",
+    "vid": "Aubn2Oh6Stg",
+    "ch": "Southside Advertising",
+    "shows": "the burger itself, without preservatives"
+   }
+  ]
+ }
 };
 
 const COMMBOX = [
@@ -422,7 +800,7 @@ const $$ = (s) => Array.from(document.querySelectorAll(s));
 const KEY = 'mf26_campaign_sorter_v1';
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
-const ST = { case: '', picks: {}, links: {}, notes: {}, order: [], comm: {} };
+const ST = { case: '', picks: {}, links: {}, notes: {}, order: [], comm: {}, imc: {} };
 let lastSaved = null, exportedAt = null;
 
 /* ===================================================================== views */
@@ -439,6 +817,20 @@ $('#theme').addEventListener('click', () => {
 
 const labelOf = (list, k) => (list.find((x) => x[0] === k) || ['', k])[1];
 const pill = (m) => `<span class="pill ${m}">${esc(labelOf(MEDIA, m))}</span>`;
+
+/* ------------------------------------------------- when paid looks earned (slide 8) */
+$('#peShow').addEventListener('click', () => {
+  $('#peOut').innerHTML = `<div class="score"><b>Only the first one is declared.</b>
+    It carries the two names at the top - the account and the brand - which is the format a platform
+    uses for a paid partnership. The other two carry no disclosure at all: a bag worth more than a car
+    in one, a rented bike in the other. One of them may be a placement somebody paid for and the other
+    may be a Tuesday evening, and from the outside <b>you cannot tell</b>.</div>
+    <div class="note"><b>Why this matters for your case</b>
+      The tell is the disclosure, not the content. Which means that when you classify an action as
+      <i>earned</i>, you are making a claim you have to be able to defend: somebody chose to talk about
+      the brand, and nobody paid them to. If you cannot tell, say so in the presentation - that is the
+      honest answer, and it is the one the regulator is also asking.</div>`;
+});
 
 /* ===================================================================== demo */
 function renderDemo() {
@@ -473,7 +865,7 @@ function renderCases() {
       && !confirm('Changing the case clears what you have classified. Continue?')) return;
     if (ST.case !== el.dataset.case) { ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; }
     ST.case = el.dataset.case;
-    renderCases(); renderActs(); renderOrder(); save();
+    renderCases(); renderActs(); renderOrder(); renderIMC(); save();
   }));
 }
 
@@ -499,12 +891,17 @@ function renderActs() {
         <div><label class="f">Stage</label>${sel(i + '|stage', STAGE, p.stage)}</div>
       </div>
       <div class="grid2" style="margin-top:10px">
-        <div><label class="f">The link you found</label>
+        <div><label class="f">A better link, if you find one</label>
           <input type="text" data-link="${i}" value="${esc(ST.links[i] || '')}" placeholder="https://..."></div>
         <div><label class="f">Why you classified it that way</label>
           <input type="text" data-note="${i}" value="${esc(ST.notes[i] || '')}" placeholder="one line is enough"></div>
       </div>
-      <div id="thumb${i}"></div>
+      <div class="grid2" style="margin-top:10px">
+        <div><a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">
+          <img class="shot" src="https://img.youtube.com/vi/${a.vid}/hqdefault.jpg" alt=""></a>
+          <p class="hint" style="margin-top:4px">&#9654; ${esc(a.shows)} &middot; YouTube, ${esc(a.ch)}</p></div>
+        <div id="thumb${i}"></div>
+      </div>
     </div>`;
   }).join('');
   $$('#acts [data-pick]').forEach((s) => s.addEventListener('change', () => {
@@ -523,6 +920,7 @@ function renderActs() {
   }));
   c.acts.forEach((a, i) => thumb(i));
   if (!ST.order.length) ST.order = c.acts.map((a, i) => i);
+  renderIMC();
 }
 
 function youtubeId(url) {
@@ -568,6 +966,36 @@ function renderOrder() {
   }));
 }
 
+function renderIMC() {
+  const c = CASES[ST.case];
+  const el = $('#imcList');
+  if (!el) return;
+  if (!c) { el.innerHTML = ''; return; }
+  el.innerHTML = '<table><tr><th>action</th><th>carries the sentence?</th></tr>'
+    + c.acts.map((a, i) => `<tr><td>${esc(a.t.slice(0, 95))}</td>
+        <td><label class="hint"><input type="checkbox" data-imc="${i}"${ST.imc && ST.imc[i] ? ' checked' : ''}>
+        yes, a customer would get the same idea from this one</label></td></tr>`).join('')
+    + '</table>';
+  $$('#imcList [data-imc]').forEach((b) => b.addEventListener('change', () => {
+    ST.imc = ST.imc || {};
+    ST.imc[b.dataset.imc] = b.checked;
+    imcScore(); save();
+  }));
+  imcScore();
+}
+function imcScore() {
+  const c = CASES[ST.case];
+  const el = $('#imcOut');
+  if (!el || !c) return;
+  const yes = c.acts.filter((a, i) => ST.imc && ST.imc[i]).length;
+  const n = c.acts.length;
+  el.innerHTML = !val('imc')
+    ? '<p class="hint">Write the sentence first - the ticks mean nothing without it.</p>'
+    : `<div class="${yes >= n - 1 ? 'score' : 'note'}"><b>${yes} of ${n} actions carry it.</b>
+       ${yes >= n - 1 ? 'That is an integrated campaign: whichever one a person meets first, they get the same idea.'
+         : 'The ones you did not tick are either doing a different job on purpose - say which - or they are the leak. A campaign that says six things says nothing.'}</div>`;
+}
+
 function renderComm() {
   $('#comm').innerHTML = COMMBOX.map(([id, lab, hint]) =>
     `<div><label class="f" for="${id}">${esc(lab)}</label>
@@ -610,8 +1038,8 @@ $('#check').addEventListener('click', () => {
 });
 $('#clear').addEventListener('click', () => {
   if (!confirm('Clear the classification of this case?')) return;
-  ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = [];
-  renderActs(); renderOrder(); $('#checkOut').innerHTML = ''; save();
+  ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.imc = {};
+  renderActs(); renderOrder(); renderIMC(); $('#checkOut').innerHTML = ''; save();
 });
 
 /* ===================================================================== present */
@@ -641,15 +1069,26 @@ function summary() {
   L.push('## 3. Why that order');
   L.push(val('why') || '(write it)');
   L.push('');
-  L.push('## 4. One action through the communication model');
+  L.push('## 4. Is it integrated?');
+  L.push('The one sentence: ' + (val('imc') || '(write it)'));
+  const yes = c.acts.filter((a, i) => ST.imc && ST.imc[i]).length;
+  L.push('Actions that carry it: ' + yes + ' of ' + c.acts.length + '.');
+  L.push('');
+  L.push('## 5. One action through the communication model');
   COMMBOX.forEach(([id, lab]) => L.push('- **' + lab + ':** ' + (ST.comm[id] || '(write it)')));
   L.push('');
-  L.push('## 5. Where we disagree with the key');
+  L.push('');
+  L.push('### Where this message could die');
+  L.push('- **Encoding is not decoding:** ' + (val('d_enc') || '(write it)'));
+  L.push('- **Feedback loop:** ' + (val('d_fb') || '(write it)'));
+  L.push('- **Noise:** ' + (val('d_noise') || '(write it)'));
+  L.push('');
+  L.push('## 6. Where we disagree with the key');
   ST.order.forEach((idx, pos) => {
     if (ST.notes[idx]) L.push('- Action ' + (pos + 1) + ': ' + ST.notes[idx]);
   });
   L.push('');
-  L.push('## 6. The one thing this campaign would lose');
+  L.push('## 7. The one thing this campaign would lose');
   L.push('(pick the action you would not remove, and say what breaks without it)');
   return L.join('\n');
 }
@@ -682,13 +1121,14 @@ function restore(o) {
   if (o._st) {
     ST.case = o._st.case || ''; ST.picks = o._st.picks || {}; ST.links = o._st.links || {};
     ST.notes = o._st.notes || {}; ST.order = o._st.order || []; ST.comm = o._st.comm || {};
+    ST.imc = o._st.imc || {};
   }
   Object.keys(o).forEach((id) => {
     if (id.charAt(0) === '_') return;
     const el = $('#' + id);
     if (el) el.value = o[id];
   });
-  renderCases(); renderActs(); renderOrder(); renderComm();
+  renderCases(); renderActs(); renderOrder(); renderComm(); renderIMC();
 }
 let timer = null;
 function save() {
@@ -727,7 +1167,7 @@ $('#imp').addEventListener('change', async (e) => {
 });
 
 /* ===================================================================== boot */
-renderDemo(); renderCases(); renderComm(); draftState();
+renderDemo(); renderCases(); renderComm(); renderIMC(); draftState();
 try {
   const raw = localStorage.getItem(KEY);
   if (raw) { const o = JSON.parse(raw); restore(o); lastSaved = o._when ? new Date(o._when) : new Date(); draftState('recovered'); }
