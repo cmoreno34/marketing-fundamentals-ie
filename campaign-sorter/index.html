@@ -168,8 +168,9 @@ ol.steps li{margin-bottom:4px}
   <div class="note"><b>What you hand in</b>
     <ol class="steps">
       <li>Pick one case. One case per group - agree in class so that no two groups take the same one.</li>
-      <li>Classify every action on the four scales. Four of them come with the clip that documents
-        them; for the rest the card tells you what photograph to go and take, and you attach it.</li>
+      <li>Classify every action on the four scales. Most of them come with the clip that documents
+        them; the rest carry a prompt written around that single action - copy it, paste the answer in,
+        and keep the part you could defend. Going to see the thing yourself is better, and optional.</li>
       <li>Put the actions in the order the campaign ran them, and say what the sequence was trying to do.</li>
       <li>Write the one sentence the whole campaign carries, and tick the actions that really carry it.</li>
       <li>Map one single action onto the communication model - sender to noise - and say where the
@@ -215,10 +216,11 @@ ol.steps li{margin-bottom:4px}
 
   <div id="workBody" class="hide">
     <h2>2 &middot; Sort the actions</h2>
-    <p class="sub">Six actions. Where a clip of that exact action exists, it is on the card - a different
-    one for each. Where none exists, the card tells you what to photograph: the parasol in the bar, the
-    label, the shelf, the offer in the app. One of the six is not promotion at all, and one of them is not
-    even a company action.</p>
+    <p class="sub">Six actions, and three jobs on each card: <b>look at it</b>, <b>classify it</b>,
+    <b>write down why</b>. Where a clip of that exact action exists it is already there, a different one
+    for each; where none exists there is a prompt written around that action alone - and, if you want the
+    real thing, what to go and photograph. Watch out: one of the six is not promotion at all, and one of
+    them is not even a company action.</p>
     <div id="acts"></div>
 
     <div class="aibox"><b>Prompt &middot; find the evidence</b>
@@ -948,16 +950,23 @@ function renderActs() {
 
       <p class="hint" style="margin:10px 0 2px"><b>1. Look at it.</b> ${a.vid
         ? 'The clip below is this action, not the campaign in general.'
-        : 'No clip exists of this one. The box below says where to go and what to photograph.'}</p>
+        : 'No clip exists of this one, so ask about it: the prompt below is written around this single action.'}</p>
       <div class="grid2" style="margin-top:4px">
         <div>${a.vid
           ? `<a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">
                <img class="shot" src="https://img.youtube.com/vi/${a.vid}/hqdefault.jpg" alt=""></a>
              <p class="hint" style="margin-top:4px">&#9654; ${esc(a.shows)} &middot; YouTube, ${esc(a.ch)}</p>`
-          : `<div class="note" style="margin-top:0"><b>YOUR EVIDENCE FOR THIS ACTION - a photograph you take</b>
-               ${esc(a.look)}</div>`}
+          : `<div class="aibox" style="margin-top:0"><b>No clip of this one - ask about it</b>
+               The prompt is built around this action alone. Paste the answer into the line at the bottom
+               of the card, and keep the part you could defend.
+               <div class="row" style="margin-top:6px">
+                 <button class="btn ai sm" data-ask="${i}">Copy the prompt about this action</button>
+                 <span class="hint" id="askState${i}"></span>
+               </div>
+               <p class="hint" style="margin:8px 0 0"><b>Or go and see it for yourself:</b> ${esc(a.look)}</p>
+             </div>`}
           <div class="row" style="margin-top:8px">
-            <label class="btn sm ghost" for="shot${i}" style="cursor:pointer">${ST.shots[i] ? 'Change the photo' : 'Attach your photo'}</label>
+            <label class="btn sm ghost" for="shot${i}" style="cursor:pointer">${ST.shots[i] ? 'Change the photo' : 'Attach a photo (optional)'}</label>
             <input type="file" id="shot${i}" data-shot="${i}" accept="image/*" style="display:none">
             ${ST.shots[i] ? `<button class="btn sm ghost" data-unshot="${i}">Remove</button>` : ''}
           </div>
@@ -1009,6 +1018,7 @@ function renderActs() {
   $$('#acts [data-unshot]').forEach((b) => b.addEventListener('click', () => {
     delete ST.shots[b.dataset.unshot]; renderActs(); save();
   }));
+  wireAsk();
   c.acts.forEach((a, i) => thumb(i));
   if (!ST.order.length) ST.order = c.acts.map((a, i) => i);
   renderIMC();
@@ -1292,6 +1302,25 @@ function promptFor(kind) {
   return '';
 }
 
+function askAbout(i) {
+  const c = CASES[ST.case];
+  const a = c.acts[i];
+  return `I am a first-year marketing student taking a real campaign apart for class.\n\n`
+    + `CAMPAIGN: ${c.brand} - ${c.name} (${c.year}).\n${c.brief}\n\n`
+    + `THE ONE ACTION I AM ASKING ABOUT:\n"${a.t}"\n\n`
+    + `Tell me, in short paragraphs:\n`
+    + `1. What this actually is, concretely - the object, the page, the room, the piece of material.\n`
+    + `2. How it reaches a customer, and at what moment of their day or their purchase.\n`
+    + `3. Where somebody would find it or see it, so I could check it myself.\n`
+    + `4. What would count as proof that it happened, and what would be weak evidence.\n`
+    + `5. Anything you are NOT sure about for this campaign in particular - say so plainly, because I `
+    + `have to defend this in front of a class and an invented detail is worse than a gap.\n\n`
+    + `Two things not to do. Do NOT tell me which P it belongs to, which promotion tool it is, whether `
+    + `the media is paid, owned, earned or shared, what it appeals to or where it sits on the five A's: `
+    + `those five decisions are the exercise and they are mine. And do NOT give me URLs from memory - `
+    + `tell me what to search for instead.`;
+}
+
 function copyPrompt(kind, stateId) {
   const t = promptFor(kind);
   const say = (msg) => { const el = $('#' + stateId); if (el) { el.textContent = msg; setTimeout(() => { el.textContent = ''; }, 4000); } };
@@ -1305,6 +1334,18 @@ function copyPrompt(kind, stateId) {
 }
 $$('[data-prompt]').forEach((b) => b.addEventListener('click', () =>
   copyPrompt(b.dataset.prompt, b.dataset.prompt + 'State')));
+
+function wireAsk() {
+  $$('#acts [data-ask]').forEach((b) => b.addEventListener('click', () => {
+    const i = b.dataset.ask;
+    const t = askAbout(i);
+    const say = (m) => { const el = $('#askState' + i); if (el) { el.textContent = m; setTimeout(() => { el.textContent = ''; }, 4000); } };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(() => say('copied - paste it into your assistant'),
+        () => { download('prompt.txt', t); say('downloaded as a file'); });
+    } else { download('prompt.txt', t); say('downloaded as a file'); }
+  }));
+}
 
 /* ===================================================================== saving */
 function state() {
