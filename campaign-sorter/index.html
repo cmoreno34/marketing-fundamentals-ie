@@ -164,7 +164,8 @@ ol.steps li{margin-bottom:4px}
   <div class="note"><b>What you hand in</b>
     <ol class="steps">
       <li>Pick one case. One case per group - agree in class so that no two groups take the same one.</li>
-      <li>Classify every action on the four scales, and find the link and a screenshot for each one.</li>
+      <li>Classify every action on the four scales. Four of them come with the clip that documents
+        them; for the rest the card tells you what photograph to go and take, and you attach it.</li>
       <li>Put the actions in the order the campaign ran them, and say what the sequence was trying to do.</li>
       <li>Write the one sentence the whole campaign carries, and tick the actions that really carry it.</li>
       <li>Map one single action onto the communication model - sender to noise - and say where the
@@ -207,9 +208,10 @@ ol.steps li{margin-bottom:4px}
 
   <div id="workBody" class="hide">
     <h2>2 &middot; Sort the actions</h2>
-    <p class="sub">Six actions, each with the video that documents it. For each one: which P, which tool,
-    which media, which appeal, which stage - and a better link if you find one. One of the six is not
-    promotion at all, and one of them is not even a company action.</p>
+    <p class="sub">Six actions. Where a clip of that exact action exists, it is on the card - a different
+    one for each. Where none exists, the card tells you what to photograph: the parasol in the bar, the
+    label, the shelf, the offer in the app. One of the six is not promotion at all, and one of them is not
+    even a company action.</p>
     <div id="acts"></div>
 
     <h2>3 &middot; Put them in order</h2>
@@ -317,7 +319,8 @@ const CASES = {
     "why": "Paid distribution of a non-personal message from an identified sponsor: advertising. Its job is not to make you buy, it is to make you feel something about the idea.",
     "vid": "4iBc47UtPa0",
     "ch": "Ruavieja",
-    "shows": "the film itself, on the brand's own channel"
+    "shows": "the film itself, on the brand's own channel",
+    "look": ""
    },
    {
     "t": "A microsite where anyone can calculate the time they have left with a particular person.",
@@ -329,7 +332,8 @@ const CASES = {
     "why": "The brand's own channel, one person at a time: direct and digital. It is the ask - it turns a feeling into a question you type into a box.",
     "vid": "O20rbINZhSU",
     "ch": "Contagious",
-    "shows": "the case film: the calculator and the numbers behind it"
+    "shows": "the case film, where the calculator and its numbers are shown",
+    "look": ""
    },
    {
     "t": "Television news programmes and the trade press report on the experiment.",
@@ -341,7 +345,8 @@ const CASES = {
     "why": "Not bought. Coverage given because the story was worth covering: public relations, earned media.",
     "vid": "87z_rl9EqJc",
     "ch": "El Publicista",
-    "shows": "the trade press covering it - earned media, literally"
+    "shows": "a trade magazine covering it - the link is itself the earned media",
+    "look": ""
    },
    {
     "t": "Thousands of people post their own result and tag the friend they should see more often.",
@@ -351,9 +356,10 @@ const CASES = {
     "appeal": "emotional",
     "stage": "advocate",
     "why": "The audience did this, not the brand. Shared media, and the clearest sign of advocacy there is: they put their own name next to the idea.",
-    "vid": "O20rbINZhSU",
-    "ch": "Contagious",
-    "shows": "the case film shows the reactions it provoked"
+    "vid": "td2XglKwKrg",
+    "ch": "a private account",
+    "shows": "somebody re-uploading the film to their own channel: this is what shared looks like",
+    "look": ""
    },
    {
     "t": "A limited Christmas edition of the bottle, with a different label.",
@@ -363,9 +369,10 @@ const CASES = {
     "appeal": "na",
     "stage": "act",
     "why": "Packaging and design are product decisions, not promotion. It supports the campaign, but it would still exist if nobody advertised it.",
-    "vid": "4iBc47UtPa0",
-    "ch": "Ruavieja",
-    "shows": "the brand's channel, where the product lives"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Photograph the bottle on a supermarket shelf in December. The special edition is the evidence - and look at what is next to it."
    },
    {
     "t": "A forty-second cut of the film on television in prime time in December.",
@@ -377,7 +384,8 @@ const CASES = {
     "why": "The same message, paid for again in the medium that still buys the most reach in Spain at Christmas.",
     "vid": "OBB3jNCPMCY",
     "ch": "DIGIOLAB",
-    "shows": "a subtitled cut of the same film"
+    "shows": "a short, subtitled cut of the same film",
+    "look": ""
    }
   ]
  },
@@ -397,19 +405,21 @@ const CASES = {
     "why": "Paid, non-personal, identified sponsor. The film does not mention a product benefit once: the appeal is entirely emotional.",
     "vid": "rrHoDJinMQI",
     "ch": "FLHeadlines",
-    "shows": "the film with the forensic artist"
+    "shows": "the film with the forensic artist",
+    "look": ""
    },
    {
-    "t": "The brand's own YouTube channel hosting the film, the long cut and the behind-the-scenes.",
+    "t": "The brand's own channel hosting the film, the long cut and the behind-the-scenes.",
     "p": "promotion",
     "tool": "dd",
     "media": "owned",
     "appeal": "emotional",
     "stage": "aware",
     "why": "A channel the brand owns and programmes itself.",
-    "vid": "r79Q6gAQhao",
-    "ch": "YouTube For Business",
-    "shows": "the case study: how it was programmed on the channel"
+    "vid": "GljB0zDx8mA",
+    "ch": "Unilever",
+    "shows": "the owner's own channel publishing the project: owned media, by definition",
+    "look": ""
    },
    {
     "t": "Newspapers and talk shows debate whether the film is honest or hypocritical.",
@@ -421,7 +431,8 @@ const CASES = {
     "why": "Earned: nobody paid for the debate. And the argument was about what is right, which is a moral appeal whether the brand wanted it or not.",
     "vid": "r79Q6gAQhao",
     "ch": "YouTube For Business",
-    "shows": "the case study covers the press reaction"
+    "shows": "the case study, with the scale of the reaction it got",
+    "look": ""
    },
    {
     "t": "Users publish parodies and reaction videos, some of them mocking the campaign.",
@@ -431,9 +442,10 @@ const CASES = {
     "appeal": "emotional",
     "stage": "advocate",
     "why": "Shared media is not always flattering. It is still the audience carrying the message, and it still counts.",
-    "vid": "r79Q6gAQhao",
-    "ch": "YouTube For Business",
-    "shows": "the case study shows the parodies and the shares"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Search “Real Beauty Sketches parody” and screenshot the first three titles. What exactly are they mocking - the film, the brand, or the idea?"
    },
    {
     "t": "Self-esteem workshops run in schools and funded by the brand.",
@@ -443,9 +455,10 @@ const CASES = {
     "appeal": "moral",
     "stage": "act",
     "why": "Building relations with a public rather than selling to it: public relations, in a channel the brand controls.",
-    "vid": "rrHoDJinMQI",
-    "ch": "FLHeadlines",
-    "shows": "the film the workshops are built on"
+    "vid": "sQS9pymkLiU",
+    "ch": "Dove Self-Esteem Project",
+    "shows": "a classroom film, published by the project's own channel",
+    "look": ""
    },
    {
     "t": "Dove is sold in supermarkets and chemists, never in beauty salons.",
@@ -455,9 +468,10 @@ const CASES = {
     "appeal": "na",
     "stage": "act",
     "why": "Where the product is available is a place decision. It is also what makes the positioning credible, which is why it is in the list.",
-    "vid": "r79Q6gAQhao",
-    "ch": "YouTube For Business",
-    "shows": "the case study, for where the brand is sold"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Photograph the Dove shelf in a supermarket and in a chemist - and note the kind of shop where you did not find it."
    }
   ]
  },
@@ -477,7 +491,8 @@ const CASES = {
     "why": "Bought space, and the appeal is about what is right rather than about performance or price.",
     "vid": "gtvqMBH0wS8",
     "ch": "Ecosystem Member Podcast",
-    "shows": "the advertisement and the story behind it"
+    "shows": "the advertisement and the thinking behind it",
+    "look": ""
    },
    {
     "t": "The Common Threads pledge on the brand's website, where customers promise to repair and reuse.",
@@ -489,7 +504,8 @@ const CASES = {
     "why": "The brand's own channel asking for one specific commitment: this is the ask of the whole campaign.",
     "vid": "E1e01CikuwA",
     "ch": "JP Kuehlwein",
-    "shows": "un-selling the Patagonia way: the pledge and the logic"
+    "shows": "un-selling the Patagonia way: the pledge and the logic of it",
+    "look": ""
    },
    {
     "t": "Press all over the world writes about a brand telling people not to buy its product.",
@@ -499,9 +515,10 @@ const CASES = {
     "appeal": "moral",
     "stage": "aware",
     "why": "Earned. The paradox was the story, and the story bought far more attention than the page did.",
-    "vid": "E1e01CikuwA",
-    "ch": "JP Kuehlwein",
-    "shows": "the coverage the paradox earned"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Search the 2011 coverage and screenshot two headlines. Count how many are about the jacket and how many are about the brand - that difference is what the page bought."
    },
    {
     "t": "Customers post photographs of their repaired, twenty-year-old jackets.",
@@ -511,9 +528,10 @@ const CASES = {
     "appeal": "moral",
     "stage": "advocate",
     "why": "The audience, unpaid, providing the proof the brand could not provide about itself.",
-    "vid": "E1e01CikuwA",
-    "ch": "JP Kuehlwein",
-    "shows": "what customers do with the idea"
+    "vid": "QjSFCeJLz1E",
+    "ch": "Kletterszene.com",
+    "shows": "the Worn Wear teaser: other people's worn garments, not the brand's",
+    "look": ""
    },
    {
     "t": "A van tours the country repairing customers' clothes for free.",
@@ -523,9 +541,10 @@ const CASES = {
     "appeal": "moral",
     "stage": "act",
     "why": "An event the brand owns, built to create relations and coverage rather than to sell on the spot.",
-    "vid": "E1e01CikuwA",
-    "ch": "JP Kuehlwein",
-    "shows": "the repair programme"
+    "vid": "CoWj-aVZzzE",
+    "ch": "Patagonia",
+    "shows": "the repair truck on a college tour, filmed by the brand itself",
+    "look": ""
    },
    {
     "t": "Every jacket carries a lifetime repair guarantee.",
@@ -535,9 +554,10 @@ const CASES = {
     "appeal": "na",
     "stage": "act",
     "why": "The guarantee is the augmented product. Without it the advertisement would be a slogan.",
-    "vid": "gtvqMBH0wS8",
-    "ch": "Ecosystem Member Podcast",
-    "shows": "the jacket, and the guarantee that holds the claim up"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Find the guarantee on the brand's site and screenshot the exact wording. How long does it last, and what does it not cover?"
    }
   ]
  },
@@ -557,10 +577,11 @@ const CASES = {
     "why": "One message per person in a channel the brand owns: direct and digital. And the act is opening it.",
     "vid": "U0KA-rBWAU4",
     "ch": "Campaign Unpacked",
-    "shows": "the on-platform experience, built in-house"
+    "shows": "the on-platform experience, built by the in-house team",
+    "look": ""
    },
    {
-    "t": "Users post their Wrapped cards on Instagram and compare them with their friends.",
+    "t": "Users post their Wrapped cards and compare them with their friends.",
     "p": "promotion",
     "tool": "aud",
     "media": "shared",
@@ -569,7 +590,8 @@ const CASES = {
     "why": "The whole mechanic exists to be shared. The brand built the card; the audience did the distribution.",
     "vid": "UR9KUwrdoIs",
     "ch": "Campaign Unpacked",
-    "shows": "ten years of Wrapped: what gets shared, and why"
+    "shows": "ten years of Wrapped: what gets shared, and why it does",
+    "look": ""
    },
    {
     "t": "Billboards in big cities with odd listening statistics and a joke about them.",
@@ -581,7 +603,8 @@ const CASES = {
     "why": "Paid outdoor space. The appeal is humour, which is emotional, not a product argument.",
     "vid": "xSk5hBxUvrE",
     "ch": "Grand Visual",
-    "shows": "the out-of-home campaign with the listening data"
+    "shows": "the out-of-home campaign, filmed by the company that built it",
+    "look": ""
    },
    {
     "t": "Technology and music press write about the figures published with the campaign.",
@@ -591,9 +614,10 @@ const CASES = {
     "appeal": "rational",
     "stage": "aware",
     "why": "Earned coverage, and here the appeal really is rational: the story is the data.",
-    "vid": "UR9KUwrdoIs",
-    "ch": "Campaign Unpacked",
-    "shows": "the case study covers the press the data earns"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Screenshot two headlines about this year's Wrapped figures. Who published them, and what number did they lead with?"
    },
    {
     "t": "A Wrapped for Artists page where musicians see their own numbers.",
@@ -603,9 +627,10 @@ const CASES = {
     "appeal": "rational",
     "stage": "ask",
     "why": "A second audience - the artists - addressed directly in an owned channel, with numbers as the argument.",
-    "vid": "U0KA-rBWAU4",
-    "ch": "Campaign Unpacked",
-    "shows": "the same system, built for the artists"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Screenshot the page the platform publishes for artists. What is it asking them to do with those numbers?"
    },
    {
     "t": "The free tier, paid for by advertising, which is what produces the listening data in the first place.",
@@ -615,9 +640,10 @@ const CASES = {
     "appeal": "na",
     "stage": "act",
     "why": "Freemium is a price decision. No free tier, no scale, no data, no Wrapped.",
-    "vid": "UR9KUwrdoIs",
-    "ch": "Campaign Unpacked",
-    "shows": "what the free tier makes possible"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Screenshot the pricing page, free next to premium. The campaign only exists because of the left-hand column."
    }
   ]
  },
@@ -637,7 +663,8 @@ const CASES = {
     "why": "Paid, non-personal, identified sponsor - and the appeal is a feeling about summer, not an argument about beer.",
     "vid": "UPn4NiwdfhU",
     "ch": "Estrella Damm",
-    "shows": "the 2025 film, on the brand's own channel"
+    "shows": "the 2025 film, on the brand's own channel",
+    "look": ""
    },
    {
     "t": "The song of the film released as a single on the streaming platforms.",
@@ -649,7 +676,8 @@ const CASES = {
     "why": "Content the brand publishes in its own name. It keeps the campaign alive in a place where nobody is watching advertising.",
     "vid": "SPZ7nEnHEyo",
     "ch": "Estrella Damm",
-    "shows": "the 2024 film and its song"
+    "shows": "the 2024 film, and the song that was released with it",
+    "look": ""
    },
    {
     "t": "Parasols, coasters and branded glasses in thousands of bars.",
@@ -659,9 +687,10 @@ const CASES = {
     "appeal": "rational",
     "stage": "act",
     "why": "Point-of-sale material is sales promotion: it works at the moment of choosing, where the act happens.",
-    "vid": "UPn4NiwdfhU",
-    "ch": "Estrella Damm",
-    "shows": "the world the bar materials extend"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Go to a bar and photograph the parasol, the coaster and the glass. That parasol is a medium, and it is the only one of the six you can touch."
    },
    {
     "t": "Local press and television report on where the film was shot and the town fills with visitors.",
@@ -671,9 +700,10 @@ const CASES = {
     "appeal": "emotional",
     "stage": "ask",
     "why": "Earned coverage, and it answers the question the film provokes: where is that?",
-    "vid": "SPZ7nEnHEyo",
-    "ch": "Estrella Damm",
-    "shows": "the locations the press goes looking for"
+    "vid": "4acL07JtnUE",
+    "ch": "Anuncios de cervezas",
+    "shows": "the 2012 film, shot in the Tramuntana - the location the press went looking for",
+    "look": ""
    },
    {
     "t": "People recreate the locations and the summer on their own accounts.",
@@ -683,9 +713,10 @@ const CASES = {
     "appeal": "emotional",
     "stage": "advocate",
     "why": "The audience taking the message on holiday with them.",
-    "vid": "UPn4NiwdfhU",
-    "ch": "Estrella Damm",
-    "shows": "what people recreate on their own accounts"
+    "vid": "6-dCafrkq8g",
+    "ch": "Musica de la tele",
+    "shows": "a private account keeping the 2011 film alive, years later",
+    "look": ""
    },
    {
     "t": "The beer is brewed in Barcelona and the label says so.",
@@ -695,9 +726,10 @@ const CASES = {
     "appeal": "na",
     "stage": "act",
     "why": "Origin on the label is a product decision, and it is what gives the Mediterranean story a right to exist.",
-    "vid": "SPZ7nEnHEyo",
-    "ch": "Estrella Damm",
-    "shows": "the brand, and where it is brewed"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Photograph the label and find the line about where it is brewed. Without it the film is a postcard."
    }
   ]
  },
@@ -717,7 +749,8 @@ const CASES = {
     "why": "Paid and non-personal. However disgusting it looks, the appeal is an argument about the ingredients: rational.",
     "vid": "Aubn2Oh6Stg",
     "ch": "Southside Advertising",
-    "shows": "the 34-day time lapse"
+    "shows": "the 34-day time lapse",
+    "look": ""
    },
    {
     "t": "A press release announcing that the artificial preservatives are gone from the recipe.",
@@ -729,7 +762,8 @@ const CASES = {
     "why": "Written to be picked up by the media rather than paid for: public relations, earned.",
     "vid": "LzKX-_PiJ5Q",
     "ch": "Campaign Unpacked",
-    "shows": "the case study: the announcement and the coverage"
+    "shows": "the case study: the announcement and the coverage it got",
+    "look": ""
    },
    {
     "t": "Posters inside the restaurants showing the same mouldy burger.",
@@ -739,9 +773,10 @@ const CASES = {
     "appeal": "rational",
     "stage": "act",
     "why": "Advertising in a space the brand owns, at the moment of ordering.",
-    "vid": "LzKX-_PiJ5Q",
-    "ch": "Campaign Unpacked",
-    "shows": "the case study shows the in-restaurant work"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Photograph the posters, the tray liners or the menu board in a restaurant. The brand owns every centimetre of that room."
    },
    {
     "t": "The argument on social media, including thousands of people saying it is revolting.",
@@ -751,9 +786,10 @@ const CASES = {
     "appeal": "na",
     "stage": "advocate",
     "why": "Shared media that the brand provoked and could not control. Advocacy is not always positive, and here the brand counted on that.",
-    "vid": "LzKX-_PiJ5Q",
-    "ch": "Campaign Unpacked",
-    "shows": "the argument it provoked online"
+    "vid": "P4x2EK-Zi5E",
+    "ch": "BC Productions",
+    "shows": "a commentary channel arguing about it: the argument is the medium",
+    "look": ""
    },
    {
     "t": "A coupon in the app for a Whopper at a reduced price that week.",
@@ -763,9 +799,10 @@ const CASES = {
     "appeal": "rational",
     "stage": "act",
     "why": "A short-term incentive to buy now: sales promotion, in the brand's own channel.",
-    "vid": "LzKX-_PiJ5Q",
-    "ch": "Campaign Unpacked",
-    "shows": "the offer that followed"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Screenshot the offers in the app this week. How many are time-limited, and what is the shortest one?"
    },
    {
     "t": "Taking the artificial preservatives out of the recipe.",
@@ -775,9 +812,10 @@ const CASES = {
     "appeal": "na",
     "stage": "act",
     "why": "The only action on the list that changes what the customer eats. Without it the campaign would be a lie.",
-    "vid": "Aubn2Oh6Stg",
-    "ch": "Southside Advertising",
-    "shows": "the burger itself, without preservatives"
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Screenshot the ingredients page on the brand's website. The campaign is only true if this page says so."
    }
   ]
  }
@@ -800,7 +838,7 @@ const $$ = (s) => Array.from(document.querySelectorAll(s));
 const KEY = 'mf26_campaign_sorter_v1';
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
-const ST = { case: '', picks: {}, links: {}, notes: {}, order: [], comm: {}, imc: {} };
+const ST = { case: '', picks: {}, links: {}, notes: {}, order: [], comm: {}, imc: {}, shots: {} };
 let lastSaved = null, exportedAt = null;
 
 /* ===================================================================== views */
@@ -863,7 +901,7 @@ function renderCases() {
   $$('#caseList [data-case]').forEach((el) => el.addEventListener('click', () => {
     if (ST.case && ST.case !== el.dataset.case
       && !confirm('Changing the case clears what you have classified. Continue?')) return;
-    if (ST.case !== el.dataset.case) { ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; }
+    if (ST.case !== el.dataset.case) { ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.shots = {}; ST.imc = {}; }
     ST.case = el.dataset.case;
     renderCases(); renderActs(); renderOrder(); renderIMC(); save();
   }));
@@ -897,10 +935,19 @@ function renderActs() {
           <input type="text" data-note="${i}" value="${esc(ST.notes[i] || '')}" placeholder="one line is enough"></div>
       </div>
       <div class="grid2" style="margin-top:10px">
-        <div><a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">
-          <img class="shot" src="https://img.youtube.com/vi/${a.vid}/hqdefault.jpg" alt=""></a>
-          <p class="hint" style="margin-top:4px">&#9654; ${esc(a.shows)} &middot; YouTube, ${esc(a.ch)}</p></div>
-        <div id="thumb${i}"></div>
+        <div>${a.vid
+          ? `<a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">
+               <img class="shot" src="https://img.youtube.com/vi/${a.vid}/hqdefault.jpg" alt=""></a>
+             <p class="hint" style="margin-top:4px">&#9654; ${esc(a.shows)} &middot; YouTube, ${esc(a.ch)}</p>`
+          : `<div class="note" style="margin-top:0"><b>No clip for this one - go and get the picture</b>
+               ${esc(a.look)}</div>`}
+          <div class="row" style="margin-top:8px">
+            <label class="btn sm ghost" for="shot${i}" style="cursor:pointer">${ST.shots[i] ? 'Change the photo' : 'Attach your photo'}</label>
+            <input type="file" id="shot${i}" data-shot="${i}" accept="image/*" style="display:none">
+            ${ST.shots[i] ? `<button class="btn sm ghost" data-unshot="${i}">Remove</button>` : ''}
+          </div>
+        </div>
+        <div>${ST.shots[i] ? `<img class="shot" src="${ST.shots[i]}" alt="">` : ''}<div id="thumb${i}"></div></div>
       </div>
     </div>`;
   }).join('');
@@ -918,9 +965,43 @@ function renderActs() {
   $$('#acts [data-note]').forEach((inp) => inp.addEventListener('input', () => {
     ST.notes[inp.dataset.note] = inp.value.trim(); save();
   }));
+  $$('#acts [data-shot]').forEach((inp) => inp.addEventListener('change', async () => {
+    const f = inp.files[0];
+    if (!f) return;
+    try {
+      ST.shots[inp.dataset.shot] = await shrink(f);
+      renderActs(); save();
+    } catch (e) { alert('That image could not be read.'); }
+  }));
+  $$('#acts [data-unshot]').forEach((b) => b.addEventListener('click', () => {
+    delete ST.shots[b.dataset.unshot]; renderActs(); save();
+  }));
   c.acts.forEach((a, i) => thumb(i));
   if (!ST.order.length) ST.order = c.acts.map((a, i) => i);
   renderIMC();
+}
+
+/* a photograph taken with a phone is four megabytes; the draft has to stay small */
+function shrink(file) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onerror = rej;
+    fr.onload = () => {
+      const im = new Image();
+      im.onerror = rej;
+      im.onload = () => {
+        const max = 900;
+        const s = Math.min(1, max / Math.max(im.width, im.height));
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(im.width * s);
+        cv.height = Math.round(im.height * s);
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+        res(cv.toDataURL('image/jpeg', 0.72));
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
 }
 
 function youtubeId(url) {
@@ -1038,7 +1119,7 @@ $('#check').addEventListener('click', () => {
 });
 $('#clear').addEventListener('click', () => {
   if (!confirm('Clear the classification of this case?')) return;
-  ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.imc = {};
+  ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.imc = {}; ST.shots = {};
   renderActs(); renderOrder(); renderIMC(); $('#checkOut').innerHTML = ''; save();
 });
 
@@ -1065,6 +1146,9 @@ function summary() {
       + labelOf(APPEAL, p.appeal || '-') + ' | ' + labelOf(STAGE, p.stage || '-') + ' | '
       + (ST.links[idx] || '') + ' |');
   });
+  L.push('');
+  L.push('');
+  L.push('Photographs taken by the group: ' + Object.keys(ST.shots).length + ' of ' + c.acts.length + '.');
   L.push('');
   L.push('## 3. Why that order');
   L.push(val('why') || '(write it)');
@@ -1121,7 +1205,7 @@ function restore(o) {
   if (o._st) {
     ST.case = o._st.case || ''; ST.picks = o._st.picks || {}; ST.links = o._st.links || {};
     ST.notes = o._st.notes || {}; ST.order = o._st.order || []; ST.comm = o._st.comm || {};
-    ST.imc = o._st.imc || {};
+    ST.imc = o._st.imc || {}; ST.shots = o._st.shots || {};
   }
   Object.keys(o).forEach((id) => {
     if (id.charAt(0) === '_') return;
