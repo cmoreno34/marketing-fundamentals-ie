@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campaign Sorter</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%A3%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBFAF8; --surface:#FFFFFF; --ink:#15151B; --muted:#5A5A66; --line:#E2E0DC;
+  --accent:#1F3864; --accent-soft:#E7ECF5;
+  --ok:#2E7D5B; --ok-soft:#DEEFE7; --warn:#9A6B12; --warn-soft:#F6EBD6;
+  --bad:#A3402A; --bad-soft:#F6E2DC;
+  --paid:#A4501E; --owned:#1F6F6B; --earned:#6B3D7A; --shared:#9A6B12;
+}
+:root[data-theme="dark"]{
+  --bg:#14141A; --surface:#1C1C24; --ink:#F2F1EE; --muted:#A3A2AC; --line:#2E2E38;
+  --accent:#9BB7E8; --accent-soft:#1B2436;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+  --bad:#E08C76; --bad-soft:#2C1A15;
+  --paid:#E0A273; --owned:#63BE95; --earned:#C79BD6; --shared:#D9A649;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14141A; --surface:#1C1C24; --ink:#F2F1EE; --muted:#A3A2AC; --line:#2E2E38;
+  --accent:#9BB7E8; --accent-soft:#1B2436;
+  --ok:#63BE95; --ok-soft:#13291F; --warn:#D9A649; --warn-soft:#2A2213;
+  --bad:#E08C76; --bad-soft:#2C1A15;
+  --paid:#E0A273; --owned:#63BE95; --earned:#C79BD6; --shared:#D9A649;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 80px}
+header{border-bottom:1px solid var(--line);background:var(--surface)}
+header .wrap{padding:22px 16px 16px}
+h1{font-family:"Archivo Narrow",sans-serif;font-size:34px;margin:0 0 4px;letter-spacing:.01em}
+h2{font-family:"Archivo Narrow",sans-serif;font-size:25px;margin:34px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--accent)}
+h3{font-size:17px;margin:22px 0 6px}
+p{margin:0 0 10px}
+.sub{color:var(--muted);font-size:15.5px;max-width:78ch}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.tab{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;
+  padding:7px 15px;font:600 13.5px "IBM Plex Sans";cursor:pointer}
+.tab.on{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.hide{display:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:12px}
+.note{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:11px 14px;margin-top:12px;font-size:15.5px}
+.note b{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--warn);display:block;margin-bottom:3px}
+.score{background:var(--ok-soft);border:1px solid var(--ok);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:15.5px}
+.bad{background:var(--bad-soft);border-color:var(--bad)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:7px;
+  padding:8px 14px;font:600 14px "IBM Plex Sans";cursor:pointer}
+.btn.solid{background:var(--accent);color:var(--surface)}
+.btn.ghost{border-color:var(--line);color:var(--muted)}
+.btn.sm{padding:4px 10px;font-size:13px}
+label.f{display:block;font:600 12px "IBM Plex Mono",monospace;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--muted);margin:10px 0 3px}
+input[type=text],textarea,select{width:100%;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:7px;padding:8px 10px;font:15px "IBM Plex Sans"}
+textarea{resize:vertical}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11.5px "IBM Plex Mono",monospace;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;font:600 11.5px "IBM Plex Mono",monospace;
+  letter-spacing:.04em;text-transform:uppercase;border:1px solid currentColor}
+.paid{color:var(--paid)} .owned{color:var(--owned)} .earned{color:var(--earned)} .shared{color:var(--shared)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+.casecard{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface)}
+.casecard.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.casecard h4{margin:0 0 3px;font-size:16px}
+.casecard .hint{font-size:13.5px;color:var(--muted)}
+.act{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:12px;background:var(--surface)}
+.act .no{font:600 12px "IBM Plex Mono",monospace;color:var(--accent)}
+.act .txt{font-size:16px;margin:2px 0 8px}
+.picks{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media(max-width:900px){.picks{grid-template-columns:1fr 1fr}}
+.hint{font-size:13.5px;color:var(--muted)}
+.right{text-align:right} .num{text-align:right;font-variant-numeric:tabular-nums}
+img.shot{width:100%;border:1px solid var(--line);border-radius:8px;display:block}
+.ok-cell{color:var(--ok);font-weight:600}
+.no-cell{color:var(--bad);font-weight:600}
+.save{position:fixed;right:12px;bottom:12px;z-index:20;font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 13px}
+.themebtn{position:fixed;right:12px;top:12px;z-index:21;border:1px solid var(--line);background:var(--surface);
+  color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12.5px;cursor:pointer}
+ol.steps{margin:6px 0 0;padding-left:20px}
+ol.steps li{margin-bottom:4px}
+@media print{
+  .tabs,.themebtn,.save,.btn,header{display:none!important}
+  body{background:#fff;color:#000}
+  .card,.act{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themebtn" id="theme">&#9689; Theme</button>
+<div class="save" id="saveState">nothing saved yet</div>
+
+<header><div class="wrap">
+  <h1>Campaign Sorter</h1>
+  <p class="sub">Session 23 &middot; Marketing Fundamentals 26-27. Take a real campaign apart: which P each
+  action belongs to, which promotion tool it is, whether the media is paid, owned, earned or shared, what it
+  appeals to, and where it sits on the path from awareness to advocacy.</p>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-view="how">How it works</button>
+    <button class="tab" data-view="demo">Worked example: Tide</button>
+    <button class="tab" data-view="work">Your case</button>
+    <button class="tab" data-view="present">Present it</button>
+  </div>
+</div></header>
+
+<!-- ===================================================================== HOW -->
+<div class="wrap" id="view-how">
+  <h2>Four questions about every action</h2>
+  <p class="sub">A campaign is not one thing. It is a list of actions, and each action can be placed on four
+  scales. Most of the argument in a marketing meeting is really a disagreement about one of these four.</p>
+
+  <div class="grid2">
+    <div class="card"><h3>1 &middot; Which P is it?</h3>
+      <p>Not everything a brand does in a campaign is <b>promotion</b>. Changing the recipe is product.
+      Removing the preservatives is product. A coupon is promotion, a permanent price cut is price, and
+      deciding to sell only in chemists is place.</p>
+      <p class="hint">The trap: a campaign is <i>announced</i> through promotion, so everything inside it looks
+      like promotion. Ask what would still be true if the advertising stopped.</p></div>
+    <div class="card"><h3>2 &middot; Which promotion tool?</h3>
+      <p><b>Advertising</b> - paid, non-personal, identified sponsor. <b>Sales promotion</b> - a short-term
+      incentive to buy now. <b>Public relations</b> - building relations and getting favourable publicity.
+      <b>Personal selling</b> - a person selling. <b>Direct and digital</b> - engaging directly with chosen
+      people: the site, the app, the e-mail, the social account.</p>
+      <p class="hint">And one more answer that is often the right one: <b>it is not a company action at all</b>
+      - it is what the audience did.</p></div>
+    <div class="card"><h3>3 &middot; Paid, owned, earned or shared?</h3>
+      <p><span class="pill paid">paid</span> you bought the space.
+         <span class="pill owned">owned</span> the channel is yours.
+         <span class="pill earned">earned</span> somebody else published it because it was worth publishing.
+         <span class="pill shared">shared</span> the audience passed it on.</p>
+      <p class="hint">Earned and shared cannot be bought, only provoked - which is why the brief has to
+      give people a reason to talk.</p></div>
+    <div class="card"><h3>4 &middot; What does it appeal to, and where does it sit?</h3>
+      <p><b>Rational</b> - self-interest: quality, economy, performance. <b>Emotional</b> - love, joy, humour,
+      fear. <b>Moral</b> - what is right and proper.</p>
+      <p>And the five A's: <b>aware</b> &rarr; <b>appeal</b> &rarr; <b>ask</b> &rarr; <b>act</b> &rarr;
+      <b>advocate</b>. A campaign that is all "aware" never gets anybody to act.</p></div>
+  </div>
+
+  <div class="note"><b>What you hand in</b>
+    <ol class="steps">
+      <li>Pick one case. One case per group - agree in class so that no two groups take the same one.</li>
+      <li>Classify every action on the four scales, and find the link and a screenshot for each one.</li>
+      <li>Put the actions in the order the campaign ran them, and say what the sequence was trying to do.</li>
+      <li>Map one single action onto the communication model: sender, encoding, message, media, decoding,
+        receiver, response, feedback, noise.</li>
+      <li>Press <b>Check my answers</b>, read what you got wrong, fix what you disagree with and write why.</li>
+      <li>Ten minutes in front of the class, from the summary this page builds for you.</li>
+    </ol></div>
+
+  <div class="card"><h3>What the grade is for</h3>
+    <p>Not for matching the key. The key is a teaching device and it can be argued with - some actions really
+    do sit on a border. The grade is for the argument: a classification you can defend, a sequence that makes
+    sense, and the one thing the campaign would lose if that action were removed.</p></div>
+</div>
+
+<!-- ===================================================================== DEMO -->
+<div class="wrap hide" id="view-demo">
+  <h2>Tide, #TurnToCold</h2>
+  <p class="sub">The campaign from the session slides, sorted. Objective: three of every four American
+  laundry loads washed in cold water by 2030, because 90% of the energy in a wash goes into heating the
+  water. Four mechanics, four kinds of media.
+  <a href="https://www.youtube.com/watch?v=E1JetcvcFWI" target="_blank" rel="noopener">The campaign film</a>.</p>
+  <div id="demoBody"></div>
+  <div class="note"><b>Read the sequence, not the list</b>
+    The paid film bought the <b>awareness</b> that the brand could not get for free. The microsite turned
+    interest into a measurable <b>act</b> - a pledge and a number. The NFL partnership bought nothing: it
+    earned 220 press placements. And the shared videos are the only part nobody can order: they are the
+    evidence that the first three worked.</div>
+</div>
+
+<!-- ===================================================================== WORK -->
+<div class="wrap hide" id="view-work">
+  <h2>1 &middot; Your group and your case</h2>
+  <div class="grid2">
+    <div><label class="f" for="team">Group and members</label>
+      <input type="text" id="team" data-k placeholder="e.g. Group 4 - Ana, Marco, Lucia, Tom"></div>
+    <div><label class="f" for="when">Session and date</label>
+      <input type="text" id="when" data-k placeholder="Session 23"></div>
+  </div>
+  <div class="grid3" id="caseList" style="margin-top:14px"></div>
+
+  <div id="workBody" class="hide">
+    <h2>2 &middot; Sort the actions</h2>
+    <p class="sub">Six actions. For each one: which P, which tool, which media, which appeal, which stage -
+    and the link and the screenshot you found. One of the six is not promotion at all, and one of them is not
+    even a company action.</p>
+    <div id="acts"></div>
+
+    <h2>3 &middot; Put them in order</h2>
+    <p class="sub">The order the campaign ran them in, and what each step was for. Use the arrows.</p>
+    <div id="order"></div>
+    <label class="f" for="why">What the sequence was trying to do</label>
+    <textarea id="why" data-k rows="3" placeholder="e.g. buy the awareness first, then give people something to do with it..."></textarea>
+
+    <h2>4 &middot; One action through the communication model</h2>
+    <p class="sub">Pick the action you think did the most work and take it through the model of the session.</p>
+    <div class="grid2" id="comm"></div>
+
+    <h2>5 &middot; Check your answers</h2>
+    <div class="row">
+      <button class="btn solid" id="check">Check my answers</button>
+      <button class="btn ghost" id="clear">Clear this case</button>
+      <span class="hint">the key is a teaching device - if you disagree with one, say so in your write-up</span>
+    </div>
+    <div id="checkOut"></div>
+  </div>
+</div>
+
+<!-- ===================================================================== PRESENT -->
+<div class="wrap hide" id="view-present">
+  <h2>Present it</h2>
+  <p class="sub">Ten minutes, six slides. This page writes the skeleton from what you entered; you write the
+  argument.</p>
+  <div class="row">
+    <button class="btn solid" id="build">Build my summary</button>
+    <button class="btn" id="dl">Download it (.md)</button>
+    <button class="btn" id="print">Print / save as PDF</button>
+    <button class="btn" id="exp">Save a draft file</button>
+    <label class="btn" for="imp" style="cursor:pointer">Load a draft file</label>
+    <input type="file" id="imp" accept=".json" style="display:none">
+  </div>
+  <div class="note"><b>Keep your work</b>
+    This page saves itself into this browser after every change, which is enough between one class and the
+    next on the same laptop. It is not enough for a group: press <b>Save a draft file</b> and pass that file
+    around. A private window, a cleared history or another computer loses whatever is not in the file.</div>
+  <div id="presentOut"></div>
+</div>
+
+<script>
+/* ===================================================================== data */
+const TOOLS = [["ad","Advertising"],["sp","Sales promotion"],["pr","Public relations"],
+               ["ps","Personal selling"],["dd","Direct and digital"],
+               ["aud","Not a company action - the audience"],["na","Not applicable - not promotion"]];
+const PS = [["promotion","Promotion"],["product","Product"],["price","Price"],["place","Place"]];
+const MEDIA = [["paid","Paid"],["owned","Owned"],["earned","Earned"],["shared","Shared"],["na","Not applicable"]];
+const APPEAL = [["rational","Rational"],["emotional","Emotional"],["moral","Moral"],["na","None of them"]];
+const STAGE = [["aware","Aware"],["appeal","Appeal"],["ask","Ask"],["act","Act"],["advocate","Advocate"]];
+
+const DEMO = [
+ {t:"TV and social ads in which people with “cold” names cold-called celebrities.",
+  p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"aware",img:"img/tide_paid.jpg",
+  why:"Paid space, non-personal, identified sponsor: advertising. The joke is the appeal, and its job is to put the idea in front of people who were not looking for it."},
+ {t:"A microsite with an energy calculator, a pledge button and a live savings dashboard.",
+  p:"promotion",tool:"dd",media:"owned",appeal:"rational",stage:"act",img:"img/tide_owned_1.jpg",
+  why:"The brand's own channel, engaging directly with the people who came: direct and digital. The calculator argues with numbers, and the pledge is the first thing the campaign asks anybody to do."},
+ {t:"The live dashboard showing the energy the pledges had already saved.",
+  p:"promotion",tool:"dd",media:"owned",appeal:"rational",stage:"advocate",img:"img/tide_owned_2.jpg",
+  why:"Still the brand's own channel. Showing people what the group has achieved is what turns an act into advocacy."},
+ {t:"An NFL partnership that generated 220 press placements and a national media blitz.",
+  p:"promotion",tool:"pr",media:"earned",appeal:"emotional",stage:"aware",img:"img/tide_earned.jpg",
+  why:"The press placements were not bought: they were earned by giving the media something worth covering. That is public relations."},
+ {t:"Viral videos shared and reproduced on social media by the public.",
+  p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",img:"",
+  why:"Nobody at Tide did this. Shared media is the audience passing the message on, and it is the only proof that the other three worked."}
+];
+
+const CASES = {
+ ruavieja:{brand:"Ruavieja",name:"Tenemos que vernos más",year:"Spain, 2018",
+  brief:"A Christmas campaign built on one number: how many hours you have left with the people you love if you keep seeing them as often as you do now. Real pairs of friends and relatives were told the figure on camera.",
+  find:"https://www.youtube.com/watch?v=4iBc47UtPa0",
+  acts:[
+   {t:"A three-minute film, released online, in which real pairs are told how many hours they have left together.",
+    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"appeal",
+    why:"Paid distribution of a non-personal message from an identified sponsor: advertising. Its job is not to make you buy, it is to make you feel something about the idea."},
+   {t:"A microsite where anyone can calculate the time they have left with a particular person.",
+    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"ask",
+    why:"The brand's own channel, one person at a time: direct and digital. It is the ask - it turns a feeling into a question you type into a box."},
+   {t:"Television news programmes and the press report on the experiment.",
+    p:"promotion",tool:"pr",media:"earned",appeal:"emotional",stage:"aware",
+    why:"Not bought. Coverage given because the story was worth covering: public relations, earned media."},
+   {t:"Thousands of people post their own result and tag the friend they should see more often.",
+    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
+    why:"The audience did this, not the brand. Shared media, and the clearest sign of advocacy there is: they put their own name next to the idea."},
+   {t:"A limited Christmas edition of the bottle, with a different label.",
+    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
+    why:"Packaging and design are product decisions, not promotion. It supports the campaign, but it would still exist if nobody advertised it."},
+   {t:"A forty-second cut of the film on television in prime time in December.",
+    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"aware",
+    why:"The same message, paid for again in the medium that still buys the most reach in Spain at Christmas."}]},
+
+ dove:{brand:"Dove",name:"Real Beauty Sketches",year:"2013",
+  brief:"A forensic artist draws women twice: once from their own description of themselves and once from a stranger's. The two portraits are not the same person.",
+  find:"https://www.youtube.com/results?search_query=dove+real+beauty+sketches",
+  acts:[
+   {t:"The film with the forensic artist, pushed with paid media on video platforms.",
+    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"appeal",
+    why:"Paid, non-personal, identified sponsor. The film does not mention a product benefit once: the appeal is entirely emotional."},
+   {t:"The brand's own YouTube channel hosting the film, the long cut and the behind-the-scenes.",
+    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"aware",
+    why:"A channel the brand owns and programmes itself."},
+   {t:"Newspapers and talk shows debate whether the film is honest or hypocritical.",
+    p:"promotion",tool:"pr",media:"earned",appeal:"moral",stage:"aware",
+    why:"Earned: nobody paid for the debate. And the argument was about what is right, which is a moral appeal whether the brand wanted it or not."},
+   {t:"Users publish parodies and reaction videos, some of them mocking the campaign.",
+    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
+    why:"Shared media is not always flattering. It is still the audience carrying the message, and it still counts."},
+   {t:"Self-esteem workshops run in schools and funded by the brand.",
+    p:"promotion",tool:"pr",media:"owned",appeal:"moral",stage:"act",
+    why:"Building relations with a public rather than selling to it: public relations, in a channel the brand controls."},
+   {t:"Dove is sold in supermarkets and chemists, never in beauty salons.",
+    p:"place",tool:"na",media:"na",appeal:"na",stage:"act",
+    why:"Where the product is available is a place decision. It is also what makes the positioning credible, which is why it is in the list."}]},
+
+ patagonia:{brand:"Patagonia",name:"Don't Buy This Jacket",year:"2011",
+  brief:"On Black Friday, the brand took a full page in a newspaper with a photograph of its best-selling jacket and a headline telling people not to buy it.",
+  find:"https://www.youtube.com/results?search_query=patagonia+don%27t+buy+this+jacket",
+  acts:[
+   {t:"A full-page advertisement in a national newspaper on Black Friday showing the jacket and the headline.",
+    p:"promotion",tool:"ad",media:"paid",appeal:"moral",stage:"appeal",
+    why:"Bought space, and the appeal is about what is right rather than about performance or price."},
+   {t:"The Common Threads pledge on the brand's website, where customers promise to repair and reuse.",
+    p:"promotion",tool:"dd",media:"owned",appeal:"moral",stage:"ask",
+    why:"The brand's own channel asking for one specific commitment: this is the ask of the whole campaign."},
+   {t:"Press all over the world writes about a brand telling people not to buy its product.",
+    p:"promotion",tool:"pr",media:"earned",appeal:"moral",stage:"aware",
+    why:"Earned. The paradox was the story, and the story bought far more attention than the page did."},
+   {t:"Customers post photographs of their repaired, twenty-year-old jackets.",
+    p:"promotion",tool:"aud",media:"shared",appeal:"moral",stage:"advocate",
+    why:"The audience, unpaid, providing the proof the brand could not provide about itself."},
+   {t:"A van tours the country repairing customers' clothes for free.",
+    p:"promotion",tool:"pr",media:"owned",appeal:"moral",stage:"act",
+    why:"An event the brand owns, built to create relations and coverage rather than to sell on the spot."},
+   {t:"Every jacket carries a lifetime repair guarantee.",
+    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
+    why:"The guarantee is the augmented product. Without it the advertisement would be a slogan."}]},
+
+ spotify:{brand:"Spotify",name:"Wrapped",year:"every December",
+  brief:"Once a year the service turns each user's listening data into a personal story they can post, and buys outdoor space to joke about the strangest data it has.",
+  find:"https://www.youtube.com/results?search_query=spotify+wrapped+campaign",
+  acts:[
+   {t:"The personalised in-app story each user receives, with their own minutes, artists and genres.",
+    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"act",
+    why:"One message per person in a channel the brand owns: direct and digital. And the act is opening it."},
+   {t:"Users post their Wrapped cards on Instagram and compare them with their friends.",
+    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
+    why:"The whole mechanic exists to be shared. The brand built the card; the audience did the distribution."},
+   {t:"Billboards in big cities with odd listening statistics and a joke about them.",
+    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"aware",
+    why:"Paid outdoor space. The appeal is humour, which is emotional, not a product argument."},
+   {t:"Technology and music press write about the figures published with the campaign.",
+    p:"promotion",tool:"pr",media:"earned",appeal:"rational",stage:"aware",
+    why:"Earned coverage, and here the appeal really is rational: the story is the data."},
+   {t:"A Wrapped for Artists page where musicians see their own numbers.",
+    p:"promotion",tool:"dd",media:"owned",appeal:"rational",stage:"ask",
+    why:"A second audience - the artists - addressed directly in an owned channel, with numbers as the argument."},
+   {t:"The free tier, paid for by advertising, which is what produces the listening data in the first place.",
+    p:"price",tool:"na",media:"na",appeal:"na",stage:"act",
+    why:"Freemium is a price decision. No free tier, no scale, no data, no Wrapped."}]},
+
+ damm:{brand:"Estrella Damm",name:"Mediterráneamente",year:"Spain, every summer",
+  brief:"A short film released at the start of every summer, with a song, a Mediterranean location and almost no product on screen.",
+  find:"https://www.youtube.com/results?search_query=estrella+damm+mediterraneamente",
+  acts:[
+   {t:"The summer short film, launched in cinemas and on television.",
+    p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"appeal",
+    why:"Paid, non-personal, identified sponsor - and the appeal is a feeling about summer, not an argument about beer."},
+   {t:"The song of the film released as a single on the streaming platforms.",
+    p:"promotion",tool:"dd",media:"owned",appeal:"emotional",stage:"aware",
+    why:"Content the brand publishes in its own name. It keeps the campaign alive in a place where nobody is watching advertising."},
+   {t:"Parasols, coasters and branded glasses in thousands of bars.",
+    p:"promotion",tool:"sp",media:"owned",appeal:"rational",stage:"act",
+    why:"Point-of-sale material is sales promotion: it works at the moment of choosing, where the act happens."},
+   {t:"Local press and television report on where the film was shot and the town fills with visitors.",
+    p:"promotion",tool:"pr",media:"earned",appeal:"emotional",stage:"ask",
+    why:"Earned coverage, and it answers the question the film provokes: where is that?"},
+   {t:"People recreate the locations and the summer on their own accounts.",
+    p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",
+    why:"The audience taking the message on holiday with them."},
+   {t:"The beer is brewed in Barcelona and the label says so.",
+    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
+    why:"Origin on the label is a product decision, and it is what gives the Mediterranean story a right to exist."}]},
+
+ bk:{brand:"Burger King",name:"The Moldy Whopper",year:"2020",
+  brief:"The brand filmed its own burger going mouldy over 34 days to announce that it had removed the artificial preservatives.",
+  find:"https://www.youtube.com/results?search_query=burger+king+moldy+whopper",
+  acts:[
+   {t:"A time-lapse film of the burger going mouldy, bought on television and online.",
+    p:"promotion",tool:"ad",media:"paid",appeal:"rational",stage:"appeal",
+    why:"Paid and non-personal. However disgusting it looks, the appeal is an argument about the ingredients: rational."},
+   {t:"A press release announcing that the artificial preservatives are gone from the recipe.",
+    p:"promotion",tool:"pr",media:"earned",appeal:"rational",stage:"aware",
+    why:"Written to be picked up by the media rather than paid for: public relations, earned."},
+   {t:"Posters inside the restaurants showing the same mouldy burger.",
+    p:"promotion",tool:"ad",media:"owned",appeal:"rational",stage:"act",
+    why:"Advertising in a space the brand owns, at the moment of ordering."},
+   {t:"The argument on social media, including thousands of people saying it is revolting.",
+    p:"promotion",tool:"aud",media:"shared",appeal:"na",stage:"advocate",
+    why:"Shared media that the brand provoked and could not control. Advocacy is not always positive, and here the brand counted on that."},
+   {t:"A coupon in the app for a Whopper at a reduced price that week.",
+    p:"promotion",tool:"sp",media:"owned",appeal:"rational",stage:"act",
+    why:"A short-term incentive to buy now: sales promotion, in the brand's own channel."},
+   {t:"Taking the artificial preservatives out of the recipe.",
+    p:"product",tool:"na",media:"na",appeal:"na",stage:"act",
+    why:"The only action on the list that changes what the customer eats. Without it the campaign would be a lie."}]}
+};
+
+const COMMBOX = [
+ ["c_sender","Sender","who is really speaking - the brand, a person, a customer?"],
+ ["c_encoding","Encoding","what was turned into words, images and sound, and how"],
+ ["c_message","Message","the message that actually travelled, in one sentence"],
+ ["c_media","Media","the channel it travelled through"],
+ ["c_decoding","Decoding","what the audience understood - the same thing?"],
+ ["c_receiver","Receiver","who received it, and who received it by accident"],
+ ["c_response","Response","what they did, if anything"],
+ ["c_feedback","Feedback","what came back to the brand, and how it was measured"],
+ ["c_noise","Noise","what got in the way: a rival, a news story, a bad week"]];
+
+/* ===================================================================== state */
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const KEY = 'mf26_campaign_sorter_v1';
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
+const ST = { case: '', picks: {}, links: {}, notes: {}, order: [], comm: {} };
+let lastSaved = null, exportedAt = null;
+
+/* ===================================================================== views */
+function showView(which) {
+  ['how', 'demo', 'work', 'present'].forEach((v) => $('#view-' + v).classList.toggle('hide', v !== which));
+  $$('#tabs .tab').forEach((b) => b.classList.toggle('on', b.dataset.view === which));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$$('#tabs .tab').forEach((b) => b.addEventListener('click', () => showView(b.dataset.view)));
+$('#theme').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+});
+
+const labelOf = (list, k) => (list.find((x) => x[0] === k) || ['', k])[1];
+const pill = (m) => `<span class="pill ${m}">${esc(labelOf(MEDIA, m))}</span>`;
+
+/* ===================================================================== demo */
+function renderDemo() {
+  $('#demoBody').innerHTML = DEMO.map((a, i) => `
+    <div class="act">
+      <div class="grid2">
+        <div>
+          <div class="no">ACTION ${i + 1}</div>
+          <div class="txt">${esc(a.t)}</div>
+          <p><b>${esc(labelOf(PS, a.p))}</b> &middot; ${esc(labelOf(TOOLS, a.tool))} &middot; ${pill(a.media)}
+             &middot; ${esc(labelOf(APPEAL, a.appeal))} &middot; <b>${esc(labelOf(STAGE, a.stage))}</b></p>
+          <p class="hint">${esc(a.why)}</p>
+        </div>
+        <div>${a.img ? `<img class="shot" src="${a.img}" alt="">`
+          : '<p class="hint">No screenshot: this one belongs to the audience, not to the brand.</p>'}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ===================================================================== cases */
+function renderCases() {
+  $('#caseList').innerHTML = Object.keys(CASES).map((k) => {
+    const c = CASES[k];
+    return `<div class="casecard${ST.case === k ? ' on' : ''}" data-case="${k}">
+      <h4>${esc(c.brand)}</h4>
+      <div class="hint"><b>${esc(c.name)}</b> &middot; ${esc(c.year)}</div>
+      <p class="hint" style="margin-top:6px">${esc(c.brief)}</p>
+    </div>`;
+  }).join('');
+  $$('#caseList [data-case]').forEach((el) => el.addEventListener('click', () => {
+    if (ST.case && ST.case !== el.dataset.case
+      && !confirm('Changing the case clears what you have classified. Continue?')) return;
+    if (ST.case !== el.dataset.case) { ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; }
+    ST.case = el.dataset.case;
+    renderCases(); renderActs(); renderOrder(); save();
+  }));
+}
+
+function sel(id, list, cur) {
+  return `<select data-pick="${id}">${list.map(([k, v]) =>
+    `<option value="${k}"${cur === k ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`;
+}
+
+function renderActs() {
+  const c = CASES[ST.case];
+  $('#workBody').classList.toggle('hide', !c);
+  if (!c) return;
+  $('#acts').innerHTML = c.acts.map((a, i) => {
+    const p = ST.picks[i] || {};
+    return `<div class="act">
+      <div class="no">ACTION ${i + 1}</div>
+      <div class="txt">${esc(a.t)}</div>
+      <div class="picks">
+        <div><label class="f">Which P</label>${sel(i + '|p', PS, p.p)}</div>
+        <div><label class="f">Tool</label>${sel(i + '|tool', TOOLS, p.tool)}</div>
+        <div><label class="f">Media</label>${sel(i + '|media', MEDIA, p.media)}</div>
+        <div><label class="f">Appeal</label>${sel(i + '|appeal', APPEAL, p.appeal)}</div>
+        <div><label class="f">Stage</label>${sel(i + '|stage', STAGE, p.stage)}</div>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="f">The link you found</label>
+          <input type="text" data-link="${i}" value="${esc(ST.links[i] || '')}" placeholder="https://..."></div>
+        <div><label class="f">Why you classified it that way</label>
+          <input type="text" data-note="${i}" value="${esc(ST.notes[i] || '')}" placeholder="one line is enough"></div>
+      </div>
+      <div id="thumb${i}"></div>
+    </div>`;
+  }).join('');
+  $$('#acts [data-pick]').forEach((s) => s.addEventListener('change', () => {
+    const [i, f] = s.dataset.pick.split('|');
+    ST.picks[i] = ST.picks[i] || {};
+    ST.picks[i][f] = s.value;
+    save();
+  }));
+  $$('#acts [data-link]').forEach((inp) => inp.addEventListener('input', () => {
+    ST.links[inp.dataset.link] = inp.value.trim();
+    thumb(inp.dataset.link);
+    save();
+  }));
+  $$('#acts [data-note]').forEach((inp) => inp.addEventListener('input', () => {
+    ST.notes[inp.dataset.note] = inp.value.trim(); save();
+  }));
+  c.acts.forEach((a, i) => thumb(i));
+  if (!ST.order.length) ST.order = c.acts.map((a, i) => i);
+}
+
+function youtubeId(url) {
+  const m = String(url || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+function thumb(i) {
+  const el = $('#thumb' + i);
+  if (!el) return;
+  const id = youtubeId(ST.links[i]);
+  el.innerHTML = id
+    ? `<a href="${esc(ST.links[i])}" target="_blank" rel="noopener">
+         <img class="shot" style="max-width:360px;margin-top:10px" src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt=""></a>`
+    : (ST.links[i] ? `<p class="hint" style="margin-top:8px">&#8627;
+         <a href="${esc(ST.links[i])}" target="_blank" rel="noopener">${esc(ST.links[i]).slice(0, 80)}</a>
+         - take a screenshot of this one for your slides.</p>` : '');
+}
+
+/* ===================================================================== order */
+function renderOrder() {
+  const c = CASES[ST.case];
+  if (!c) return;
+  if (!ST.order.length) ST.order = c.acts.map((a, i) => i);
+  $('#order').innerHTML = '<table><tr><th>#</th><th>action</th><th>stage you gave it</th><th></th></tr>'
+    + ST.order.map((idx, pos) => {
+      const st = (ST.picks[idx] || {}).stage;
+      return `<tr><td class="num">${pos + 1}</td>
+        <td>${esc(c.acts[idx].t.slice(0, 90))}</td>
+        <td>${st ? esc(labelOf(STAGE, st)) : '<span class="hint">not set</span>'}</td>
+        <td class="right">
+          <button class="btn sm ghost" data-mv="${pos}|-1"${pos === 0 ? ' disabled' : ''}>&uarr;</button>
+          <button class="btn sm ghost" data-mv="${pos}|1"${pos === ST.order.length - 1 ? ' disabled' : ''}>&darr;</button>
+        </td></tr>`;
+    }).join('') + '</table>';
+  $$('#order [data-mv]').forEach((b) => b.addEventListener('click', () => {
+    const [pos, d] = b.dataset.mv.split('|').map(Number);
+    const to = pos + d;
+    if (to < 0 || to >= ST.order.length) return;
+    const o = ST.order.slice();
+    [o[pos], o[to]] = [o[to], o[pos]];
+    ST.order = o;
+    renderOrder(); save();
+  }));
+}
+
+function renderComm() {
+  $('#comm').innerHTML = COMMBOX.map(([id, lab, hint]) =>
+    `<div><label class="f" for="${id}">${esc(lab)}</label>
+       <input type="text" id="${id}" data-c="${id}" value="${esc(ST.comm[id] || '')}" placeholder="${esc(hint)}"></div>`).join('');
+  $$('#comm [data-c]').forEach((inp) => inp.addEventListener('input', () => {
+    ST.comm[inp.dataset.c] = inp.value.trim(); save();
+  }));
+}
+
+/* ===================================================================== check */
+const FIELDS = [["p", PS, "Which P"], ["tool", TOOLS, "Tool"], ["media", MEDIA, "Media"],
+                ["appeal", APPEAL, "Appeal"], ["stage", STAGE, "Stage"]];
+$('#check').addEventListener('click', () => {
+  const c = CASES[ST.case];
+  if (!c) return;
+  let right = 0, total = 0, rows = '';
+  c.acts.forEach((a, i) => {
+    const p = ST.picks[i] || {};
+    const cells = FIELDS.map(([f, list]) => {
+      total++;
+      const ok = p[f] === a[f];
+      if (ok) right++;
+      return `<td class="${ok ? 'ok-cell' : 'no-cell'}">${p[f] ? esc(labelOf(list, p[f])) : '-'}
+        ${ok ? '' : '<br><span class="hint">' + esc(labelOf(list, a[f])) + '</span>'}</td>`;
+    }).join('');
+    rows += `<tr><td>${i + 1}. ${esc(a.t.slice(0, 70))}</td>${cells}</tr>`
+      + `<tr><td colspan="6" class="hint" style="border-bottom:1px solid var(--line)">${esc(a.why)}</td></tr>`;
+  });
+  const seq = ST.order.map((i) => STAGE.findIndex((s) => s[0] === (ST.picks[i] || {}).stage));
+  const monotone = seq.every((v, i) => i === 0 || v < 0 || seq[i - 1] < 0 || v >= seq[i - 1]);
+  $('#checkOut').innerHTML =
+    `<div class="score${right / total < 0.6 ? ' bad' : ''}"><b>${right} of ${total} cells match the key.</b>
+      The grey line under each row is the reason. Where you disagree, keep your answer and write the argument -
+      that is what the ten minutes in front of the class are for.</div>
+     <table><tr><th>action</th>${FIELDS.map(([, , l]) => `<th>${l}</th>`).join('')}</tr>${rows}</table>
+     <div class="note"><b>The sequence</b>${monotone
+       ? 'Your order never goes backwards through the five A’s. That is what a campaign should look like.'
+       : 'Your order jumps backwards through the five A’s at least once. Sometimes that is deliberate - say why in the presentation, or move it.'}</div>`;
+  save();
+});
+$('#clear').addEventListener('click', () => {
+  if (!confirm('Clear the classification of this case?')) return;
+  ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = [];
+  renderActs(); renderOrder(); $('#checkOut').innerHTML = ''; save();
+});
+
+/* ===================================================================== present */
+function summary() {
+  const c = CASES[ST.case];
+  if (!c) return 'Pick a case first.';
+  const L = [];
+  L.push('# ' + c.brand + ' - ' + c.name + ' (' + c.year + ')');
+  L.push('');
+  L.push(val('team') || '(group)');
+  L.push('');
+  L.push('## 1. The campaign in one line');
+  L.push(c.brief);
+  L.push('');
+  L.push('## 2. The actions, sorted');
+  L.push('');
+  L.push('| # | action | P | tool | media | appeal | stage | link |');
+  L.push('|---|--------|---|------|-------|--------|-------|------|');
+  ST.order.forEach((idx, pos) => {
+    const a = c.acts[idx], p = ST.picks[idx] || {};
+    L.push('| ' + (pos + 1) + ' | ' + a.t.replace(/\|/g, '/') + ' | ' + labelOf(PS, p.p || '-') + ' | '
+      + labelOf(TOOLS, p.tool || '-') + ' | ' + labelOf(MEDIA, p.media || '-') + ' | '
+      + labelOf(APPEAL, p.appeal || '-') + ' | ' + labelOf(STAGE, p.stage || '-') + ' | '
+      + (ST.links[idx] || '') + ' |');
+  });
+  L.push('');
+  L.push('## 3. Why that order');
+  L.push(val('why') || '(write it)');
+  L.push('');
+  L.push('## 4. One action through the communication model');
+  COMMBOX.forEach(([id, lab]) => L.push('- **' + lab + ':** ' + (ST.comm[id] || '(write it)')));
+  L.push('');
+  L.push('## 5. Where we disagree with the key');
+  ST.order.forEach((idx, pos) => {
+    if (ST.notes[idx]) L.push('- Action ' + (pos + 1) + ': ' + ST.notes[idx]);
+  });
+  L.push('');
+  L.push('## 6. The one thing this campaign would lose');
+  L.push('(pick the action you would not remove, and say what breaks without it)');
+  return L.join('\n');
+}
+$('#build').addEventListener('click', () => {
+  const md = summary();
+  $('#presentOut').innerHTML = '<div class="card"><pre style="white-space:pre-wrap;font:14px/1.5 \'IBM Plex Mono\',monospace">'
+    + esc(md) + '</pre></div>';
+});
+function download(name, text, mime) {
+  const b = new Blob([text], { type: mime || 'text/plain;charset=utf-8' });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(u), 1500);
+}
+$('#dl').addEventListener('click', () => {
+  const c = CASES[ST.case];
+  download((c ? c.brand : 'campaign') + ' - campaign sorter.md', summary(), 'text/markdown');
+});
+$('#print').addEventListener('click', () => { $('#build').click(); showView('present'); setTimeout(() => window.print(), 300); });
+
+/* ===================================================================== saving */
+function state() {
+  const o = { _v: 1, _when: new Date().toISOString(), _st: ST };
+  $$('[data-k]').forEach((el) => { o[el.id] = el.value; });
+  return o;
+}
+function restore(o) {
+  if (!o) return;
+  if (o._st) {
+    ST.case = o._st.case || ''; ST.picks = o._st.picks || {}; ST.links = o._st.links || {};
+    ST.notes = o._st.notes || {}; ST.order = o._st.order || []; ST.comm = o._st.comm || {};
+  }
+  Object.keys(o).forEach((id) => {
+    if (id.charAt(0) === '_') return;
+    const el = $('#' + id);
+    if (el) el.value = o[id];
+  });
+  renderCases(); renderActs(); renderOrder(); renderComm();
+}
+let timer = null;
+function save() {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state()));
+      lastSaved = new Date();
+      draftState();
+    } catch (e) { $('#saveState').innerHTML = '<b style="color:var(--warn)">this browser will not save it</b>'; }
+  }, 350);
+}
+function draftState(how) {
+  const t = (d) => d.toLocaleTimeString().slice(0, 5);
+  $('#saveState').innerHTML = 'in this browser: '
+    + (how === 'recovered' ? 'recovered your work, last change ' : 'saved ')
+    + (lastSaved ? t(lastSaved) : '-')
+    + ' &nbsp;|&nbsp; file: ' + (exportedAt ? 'saved ' + t(exportedAt)
+      : '<b style="color:var(--warn)">not saved yet</b>');
+}
+document.addEventListener('input', save);
+document.addEventListener('change', save);
+$('#exp').addEventListener('click', () => {
+  const c = CASES[ST.case];
+  download(((val('team') || 'group') + ' - ' + (c ? c.brand : 'campaign') + '.json').replace(/[^\w\-. ]+/g, ''),
+    JSON.stringify(state(), null, 1), 'application/json');
+  exportedAt = new Date();
+  draftState();
+});
+$('#imp').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try { restore(JSON.parse(await f.text())); alert('Draft loaded: ' + f.name); }
+  catch (err) { alert('That file is not a draft of this page.'); }
+  e.target.value = '';
+});
+
+/* ===================================================================== boot */
+renderDemo(); renderCases(); renderComm(); draftState();
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw) { const o = JSON.parse(raw); restore(o); lastSaved = o._when ? new Date(o._when) : new Date(); draftState('recovered'); }
+} catch (e) {}
+</script>
+</body></html>
