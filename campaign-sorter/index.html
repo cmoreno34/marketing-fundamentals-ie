@@ -167,7 +167,9 @@ ol.steps li{margin-bottom:4px}
 
   <div class="note"><b>What you hand in</b>
     <ol class="steps">
-      <li>Pick one case. One case per group - agree in class so that no two groups take the same one.</li>
+      <li>Pick one of the four cases. One per group, agreed in class; if there are more than four
+        groups, two can take the same case and compare at the end - two readings of one campaign is a
+        better argument than two unrelated ones. Four actions each: this is a forty-minute exercise.</li>
       <li>Classify every action on the four scales. Most of them come with the clip that documents
         them; the rest carry a prompt written around that single action - copy it, paste the answer in,
         and keep the part you could defend. Going to see the thing yourself is better, and optional.</li>
@@ -216,11 +218,11 @@ ol.steps li{margin-bottom:4px}
 
   <div id="workBody" class="hide">
     <h2>2 &middot; Sort the actions</h2>
-    <p class="sub">Six actions, and three jobs on each card: <b>look at it</b>, <b>classify it</b>,
-    <b>write down why</b>. Where a clip of that exact action exists it is already there, a different one
-    for each; where none exists there is a prompt written around that action alone - and, if you want the
-    real thing, what to go and photograph. Watch out: one of the six is not promotion at all, and one of
-    them is not even a company action.</p>
+    <p class="sub">Four actions, and three jobs on each card: <b>look at it</b>, <b>classify it</b>,
+    <b>write down why</b>. Where a clip of that exact action exists it is already there; where none does
+    there is a prompt written around that action alone - and, if you want the real thing, what to go and
+    photograph. Watch out: one of the four is not promotion at all, and one of them is not even a company
+    action.</p>
     <div id="acts"></div>
 
     <div class="aibox"><b>Prompt &middot; find the evidence</b>
@@ -329,89 +331,63 @@ const DEMO = [
 ];
 
 const CASES = {
- "ruavieja": {
-  "brand": "Ruavieja",
-  "name": "Tenemos que vernos más",
-  "year": "Spain, 2018",
-  "brief": "A Christmas campaign built on one number: how many hours you have left with the people you love if you keep seeing them as often as you do now. Real pairs of friends and relatives were told the figure on camera.",
+ "damm": {
+  "brand": "Estrella Damm",
+  "name": "Mediterráneamente",
+  "year": "Spain, every summer",
+  "brief": "A short film released at the start of every summer, with a song, a Mediterranean location and almost no product on screen.",
   "acts": [
    {
-    "t": "A three-minute film, released online, in which real pairs are told how many hours they have left together.",
+    "t": "The summer short film, launched in cinemas and on television.",
     "p": "promotion",
     "tool": "ad",
     "media": "paid",
     "appeal": "emotional",
     "stage": "appeal",
-    "why": "Paid distribution of a non-personal message from an identified sponsor: advertising. Its job is not to make you buy, it is to make you feel something about the idea.",
-    "vid": "4iBc47UtPa0",
-    "ch": "Ruavieja",
-    "shows": "the film itself, on the brand's own channel",
+    "why": "Paid, non-personal, identified sponsor - and the appeal is a feeling about summer, not an argument about beer.",
+    "vid": "UPn4NiwdfhU",
+    "ch": "Estrella Damm",
+    "shows": "the 2025 film, on the brand's own channel",
     "look": ""
    },
    {
-    "t": "A microsite where anyone can calculate the time they have left with a particular person.",
+    "t": "Parasols, coasters and branded glasses in thousands of bars.",
     "p": "promotion",
-    "tool": "dd",
+    "tool": "sp",
     "media": "owned",
-    "appeal": "emotional",
-    "stage": "ask",
-    "why": "The brand's own channel, one person at a time: direct and digital. It is the ask - it turns a feeling into a question you type into a box.",
-    "vid": "O20rbINZhSU",
-    "ch": "Contagious",
-    "shows": "the case film, where the calculator and its numbers are shown",
-    "look": ""
+    "appeal": "rational",
+    "stage": "act",
+    "why": "Point-of-sale material is sales promotion: it works at the moment of choosing, where the act happens.",
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "This action is the campaign inside the bar. The same summer that is on the screen is printed on the parasol of the terrace, on the coaster and on the glass the beer arrives in. Go into a bar that serves Estrella Damm and photograph one of the three. Then look for the campaign line on it: this is the only medium of the four that reaches the customer at the moment of ordering - and the only one you can pick up with your hand."
    },
    {
-    "t": "Television news programmes and the trade press report on the experiment.",
-    "p": "promotion",
-    "tool": "pr",
-    "media": "earned",
-    "appeal": "emotional",
-    "stage": "aware",
-    "why": "Not bought. Coverage given because the story was worth covering: public relations, earned media.",
-    "vid": "87z_rl9EqJc",
-    "ch": "El Publicista",
-    "shows": "a trade magazine covering it - the link is itself the earned media",
-    "look": ""
-   },
-   {
-    "t": "Thousands of people post their own result and tag the friend they should see more often.",
+    "t": "People recreate the locations and the summer on their own accounts.",
     "p": "promotion",
     "tool": "aud",
     "media": "shared",
     "appeal": "emotional",
     "stage": "advocate",
-    "why": "The audience did this, not the brand. Shared media, and the clearest sign of advocacy there is: they put their own name next to the idea.",
-    "vid": "td2XglKwKrg",
-    "ch": "a private account",
-    "shows": "somebody re-uploading the film to their own channel: this is what shared looks like",
+    "why": "The audience taking the message on holiday with them.",
+    "vid": "6-dCafrkq8g",
+    "ch": "Musica de la tele",
+    "shows": "a private account keeping the 2011 film alive, years later",
     "look": ""
    },
    {
-    "t": "A limited Christmas edition of the bottle, with a different label.",
+    "t": "The beer is brewed in Barcelona and the label says so.",
     "p": "product",
     "tool": "na",
     "media": "na",
     "appeal": "na",
     "stage": "act",
-    "why": "Packaging and design are product decisions, not promotion. It supports the campaign, but it would still exist if nobody advertised it.",
+    "why": "Origin on the label is a product decision, and it is what gives the Mediterranean story a right to exist.",
     "vid": "",
     "ch": "",
     "shows": "",
-    "look": "This action is the bottle itself, not the film. Go into a supermarket in December and photograph the Ruavieja shelf: the Christmas edition is the same drink with a different label. If the standard bottle is beside it, get both in the frame, and note which of the two is at eye level."
-   },
-   {
-    "t": "A forty-second cut of the film on television in prime time in December.",
-    "p": "promotion",
-    "tool": "ad",
-    "media": "paid",
-    "appeal": "emotional",
-    "stage": "aware",
-    "why": "The same message, paid for again in the medium that still buys the most reach in Spain at Christmas.",
-    "vid": "OBB3jNCPMCY",
-    "ch": "DIGIOLAB",
-    "shows": "a short, subtitled cut of the same film",
-    "look": ""
+    "look": "This action is the label, not the film. Photograph the back of the bottle and find the line that says where the beer is brewed. The whole Mediterranean story leans on that sentence: without it the film is a postcard that any brand could have shot."
    }
   ]
  },
@@ -432,19 +408,6 @@ const CASES = {
     "vid": "rrHoDJinMQI",
     "ch": "FLHeadlines",
     "shows": "the film with the forensic artist",
-    "look": ""
-   },
-   {
-    "t": "The brand's own channel hosting the film, the long cut and the behind-the-scenes.",
-    "p": "promotion",
-    "tool": "dd",
-    "media": "owned",
-    "appeal": "emotional",
-    "stage": "aware",
-    "why": "A channel the brand owns and programmes itself.",
-    "vid": "GljB0zDx8mA",
-    "ch": "Unilever",
-    "shows": "the owner's own channel publishing the project: owned media, by definition",
     "look": ""
    },
    {
@@ -474,19 +437,6 @@ const CASES = {
     "look": "This action belongs to the audience, so the evidence is theirs too. Search YouTube for “Real Beauty Sketches parody” and screenshot the first three results with their view counts. Nobody at Dove made those videos. Look at what they are mocking: the film, the brand, or the idea."
    },
    {
-    "t": "Self-esteem workshops run in schools and funded by the brand.",
-    "p": "promotion",
-    "tool": "pr",
-    "media": "owned",
-    "appeal": "moral",
-    "stage": "act",
-    "why": "Building relations with a public rather than selling to it: public relations, in a channel the brand controls.",
-    "vid": "sQS9pymkLiU",
-    "ch": "Dove Self-Esteem Project",
-    "shows": "a classroom film, published by the project's own channel",
-    "look": ""
-   },
-   {
     "t": "Dove is sold in supermarkets and chemists, never in beauty salons.",
     "p": "place",
     "tool": "na",
@@ -498,92 +448,6 @@ const CASES = {
     "ch": "",
     "shows": "",
     "look": "This action is where the brand chose to be sold. Photograph the Dove shelf in a supermarket and then the Dove shelf in a chemist. Note the price in each, and the kind of shop where you did not find it at all - that absence is the decision."
-   }
-  ]
- },
- "patagonia": {
-  "brand": "Patagonia",
-  "name": "Don't Buy This Jacket",
-  "year": "2011",
-  "brief": "On Black Friday, the brand took a full page in a newspaper with a photograph of its best-selling jacket and a headline telling people not to buy it.",
-  "acts": [
-   {
-    "t": "A full-page advertisement in a national newspaper on Black Friday showing the jacket and the headline.",
-    "p": "promotion",
-    "tool": "ad",
-    "media": "paid",
-    "appeal": "moral",
-    "stage": "appeal",
-    "why": "Bought space, and the appeal is about what is right rather than about performance or price.",
-    "vid": "gtvqMBH0wS8",
-    "ch": "Ecosystem Member Podcast",
-    "shows": "the advertisement and the thinking behind it",
-    "look": ""
-   },
-   {
-    "t": "The Common Threads pledge on the brand's website, where customers promise to repair and reuse.",
-    "p": "promotion",
-    "tool": "dd",
-    "media": "owned",
-    "appeal": "moral",
-    "stage": "ask",
-    "why": "The brand's own channel asking for one specific commitment: this is the ask of the whole campaign.",
-    "vid": "E1e01CikuwA",
-    "ch": "JP Kuehlwein",
-    "shows": "un-selling the Patagonia way: the pledge and the logic of it",
-    "look": ""
-   },
-   {
-    "t": "Press all over the world writes about a brand telling people not to buy its product.",
-    "p": "promotion",
-    "tool": "pr",
-    "media": "earned",
-    "appeal": "moral",
-    "stage": "aware",
-    "why": "Earned. The paradox was the story, and the story bought far more attention than the page did.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action is the coverage, not the advertisement. Search for “Patagonia Don't Buy This Jacket 2011” and screenshot two headlines with the name of the newspaper visible. Then count: how many of them are about the jacket, and how many are about the brand? The difference is what one page bought."
-   },
-   {
-    "t": "Customers post photographs of their repaired, twenty-year-old jackets.",
-    "p": "promotion",
-    "tool": "aud",
-    "media": "shared",
-    "appeal": "moral",
-    "stage": "advocate",
-    "why": "The audience, unpaid, providing the proof the brand could not provide about itself.",
-    "vid": "QjSFCeJLz1E",
-    "ch": "Kletterszene.com",
-    "shows": "the Worn Wear teaser: other people's worn garments, not the brand's",
-    "look": ""
-   },
-   {
-    "t": "A van tours the country repairing customers' clothes for free.",
-    "p": "promotion",
-    "tool": "pr",
-    "media": "owned",
-    "appeal": "moral",
-    "stage": "act",
-    "why": "An event the brand owns, built to create relations and coverage rather than to sell on the spot.",
-    "vid": "CoWj-aVZzzE",
-    "ch": "Patagonia",
-    "shows": "the repair truck on a college tour, filmed by the brand itself",
-    "look": ""
-   },
-   {
-    "t": "Every jacket carries a lifetime repair guarantee.",
-    "p": "product",
-    "tool": "na",
-    "media": "na",
-    "appeal": "na",
-    "stage": "act",
-    "why": "The guarantee is the augmented product. Without it the advertisement would be a slogan.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action is the guarantee printed on the garment. Find the repair guarantee on patagonia.com and screenshot the exact wording. How long does it last and what does it not cover? Without it, the advertisement on Black Friday is only a slogan."
    }
   ]
  },
@@ -633,32 +497,6 @@ const CASES = {
     "look": ""
    },
    {
-    "t": "Technology and music press write about the figures published with the campaign.",
-    "p": "promotion",
-    "tool": "pr",
-    "media": "earned",
-    "appeal": "rational",
-    "stage": "aware",
-    "why": "Earned coverage, and here the appeal really is rational: the story is the data.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action is the press, not the campaign. Search for the coverage of the most recent Wrapped and screenshot two headlines with the publication's name visible. Which figure did each one lead with? That is the part of the data the brand did not choose."
-   },
-   {
-    "t": "A Wrapped for Artists page where musicians see their own numbers.",
-    "p": "promotion",
-    "tool": "dd",
-    "media": "owned",
-    "appeal": "rational",
-    "stage": "ask",
-    "why": "A second audience - the artists - addressed directly in an owned channel, with numbers as the argument.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action is a second campaign for a second audience. Open the Wrapped for Artists page on Spotify's site and screenshot it. It is talking to musicians rather than listeners, and it is asking them for something: work out what."
-   },
-   {
     "t": "The free tier, paid for by advertising, which is what produces the listening data in the first place.",
     "p": "price",
     "tool": "na",
@@ -670,92 +508,6 @@ const CASES = {
     "ch": "",
     "shows": "",
     "look": "This action is the price of the service, which is why it is on the list. Screenshot the pricing page with the free plan next to premium. The campaign only exists because of the left-hand column: no free tier, no scale, no listening data, no Wrapped."
-   }
-  ]
- },
- "damm": {
-  "brand": "Estrella Damm",
-  "name": "Mediterráneamente",
-  "year": "Spain, every summer",
-  "brief": "A short film released at the start of every summer, with a song, a Mediterranean location and almost no product on screen.",
-  "acts": [
-   {
-    "t": "The summer short film, launched in cinemas and on television.",
-    "p": "promotion",
-    "tool": "ad",
-    "media": "paid",
-    "appeal": "emotional",
-    "stage": "appeal",
-    "why": "Paid, non-personal, identified sponsor - and the appeal is a feeling about summer, not an argument about beer.",
-    "vid": "UPn4NiwdfhU",
-    "ch": "Estrella Damm",
-    "shows": "the 2025 film, on the brand's own channel",
-    "look": ""
-   },
-   {
-    "t": "The song of the film released as a single on the streaming platforms.",
-    "p": "promotion",
-    "tool": "dd",
-    "media": "owned",
-    "appeal": "emotional",
-    "stage": "aware",
-    "why": "Content the brand publishes in its own name. It keeps the campaign alive in a place where nobody is watching advertising.",
-    "vid": "SPZ7nEnHEyo",
-    "ch": "Estrella Damm",
-    "shows": "the 2024 film, and the song that was released with it",
-    "look": ""
-   },
-   {
-    "t": "Parasols, coasters and branded glasses in thousands of bars.",
-    "p": "promotion",
-    "tool": "sp",
-    "media": "owned",
-    "appeal": "rational",
-    "stage": "act",
-    "why": "Point-of-sale material is sales promotion: it works at the moment of choosing, where the act happens.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action is the campaign inside the bar. The same summer that is on the screen is printed on the parasol of the terrace, on the coaster and on the glass the beer arrives in. Go into a bar that serves Estrella Damm and photograph one of the three. Then look for the campaign line on it: this is the only medium of the six that reaches the customer at the moment of ordering - and the only one you can pick up with your hand."
-   },
-   {
-    "t": "Local press and television report on where the film was shot and the town fills with visitors.",
-    "p": "promotion",
-    "tool": "pr",
-    "media": "earned",
-    "appeal": "emotional",
-    "stage": "ask",
-    "why": "Earned coverage, and it answers the question the film provokes: where is that?",
-    "vid": "4acL07JtnUE",
-    "ch": "Anuncios de cervezas",
-    "shows": "the 2012 film, shot in the Tramuntana - the location the press went looking for",
-    "look": ""
-   },
-   {
-    "t": "People recreate the locations and the summer on their own accounts.",
-    "p": "promotion",
-    "tool": "aud",
-    "media": "shared",
-    "appeal": "emotional",
-    "stage": "advocate",
-    "why": "The audience taking the message on holiday with them.",
-    "vid": "6-dCafrkq8g",
-    "ch": "Musica de la tele",
-    "shows": "a private account keeping the 2011 film alive, years later",
-    "look": ""
-   },
-   {
-    "t": "The beer is brewed in Barcelona and the label says so.",
-    "p": "product",
-    "tool": "na",
-    "media": "na",
-    "appeal": "na",
-    "stage": "act",
-    "why": "Origin on the label is a product decision, and it is what gives the Mediterranean story a right to exist.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action is the label, not the film. Photograph the back of the bottle and find the line that says where the beer is brewed. The whole Mediterranean story leans on that sentence: without it the film is a postcard that any brand could have shot."
    }
   ]
  },
@@ -792,19 +544,6 @@ const CASES = {
     "look": ""
    },
    {
-    "t": "Posters inside the restaurants showing the same mouldy burger.",
-    "p": "promotion",
-    "tool": "ad",
-    "media": "owned",
-    "appeal": "rational",
-    "stage": "act",
-    "why": "Advertising in a space the brand owns, at the moment of ordering.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action happens inside the restaurant. Walk into a Burger King and photograph the posters, the tray liner or the menu board. The brand owns every centimetre of that room: count how many different messages are competing for your attention while you queue."
-   },
-   {
     "t": "The argument on social media, including thousands of people saying it is revolting.",
     "p": "promotion",
     "tool": "aud",
@@ -816,19 +555,6 @@ const CASES = {
     "ch": "BC Productions",
     "shows": "a commentary channel arguing about it: the argument is the medium",
     "look": ""
-   },
-   {
-    "t": "A coupon in the app for a Whopper at a reduced price that week.",
-    "p": "promotion",
-    "tool": "sp",
-    "media": "owned",
-    "appeal": "rational",
-    "stage": "act",
-    "why": "A short-term incentive to buy now: sales promotion, in the brand's own channel.",
-    "vid": "",
-    "ch": "",
-    "shows": "",
-    "look": "This action is the offer, not the film. Open the Burger King app and screenshot this week's promotions. At least one of them has a deadline: how short is it, and what is the deadline there for?"
    },
    {
     "t": "Taking the artificial preservatives out of the recipe.",
