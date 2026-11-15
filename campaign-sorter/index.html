@@ -300,10 +300,28 @@ ol.steps li{margin-bottom:4px}
 <!-- ===================================================================== PRESENT -->
 <div class="wrap hide" id="view-present">
   <h2>Present it</h2>
-  <p class="sub">Ten minutes, six slides. This page writes the skeleton from what you entered; you write the
-  argument.</p>
+  <p class="sub">Ten minutes in front of the class, six slides. Everything on them comes from what you
+  typed in steps 1 to 5 - this page does the assembling, you do the arguing.</p>
+  <div class="note"><b>How this step works</b>
+    <ol class="steps">
+      <li><b>Build the slides.</b> You get a PowerPoint with six slides: the cover, the campaign in one
+        line, your four actions with the five answers, your order and why, the communication model, and
+        what you would defend. It carries the ie logo and it opens in PowerPoint, Keynote or Google
+        Slides, where you change anything you like.</li>
+      <li><b>Rehearse with the prompt below.</b> It carries the whole of your work and comes back with a
+        script - who says what, in what order - and the three questions the class will ask you.</li>
+      <li><b>Hand in.</b> Export the deck to PDF from PowerPoint (File &rarr; Export), or use
+        <i>Print / save as PDF</i> here for the written summary. And save the draft file so the whole
+        group has it.</li>
+    </ol>
+    <p style="margin:6px 0 0">Nothing is uploaded anywhere: the file is built inside your browser and
+    saved to your downloads.</p></div>
   <div class="row">
-    <button class="btn solid" id="build">Build my summary</button>
+    <button class="btn solid" id="deck">Build the slides (.pptx)</button>
+    <span class="hint" id="deckState"></span>
+  </div>
+  <div class="row">
+    <button class="btn" id="build">Build my summary</button>
     <button class="btn" id="dl">Download it (.md)</button>
     <button class="btn" id="print">Print / save as PDF</button>
     <button class="btn" id="exp">Save a draft file</button>
@@ -1002,6 +1020,130 @@ $('#dl').addEventListener('click', () => {
   download((c ? c.brand : 'campaign') + ' - campaign sorter.md', summary(), 'text/markdown');
 });
 $('#print').addEventListener('click', () => { $('#build').click(); showView('present'); setTimeout(() => window.print(), 300); });
+
+/* ===================================================================== the deck */
+const NAVY = '1F3864', INK = '15151B', GREY = '5A5A66', SOFT = 'E7ECF5', LINE = 'CFCCC7';
+let pptxReady = null;
+function loadPptx() {
+  if (pptxReady) return pptxReady;
+  pptxReady = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js';
+    s.onload = () => res(window.PptxGenJS);
+    s.onerror = () => rej(new Error('the slide library would not load'));
+    document.head.appendChild(s);
+  });
+  return pptxReady;
+}
+
+function buildDeck() {
+  const c = CASES[ST.case];
+  if (!c) { alert('Pick a case first.'); return; }
+  const say = (m) => { const el = $('#deckState'); if (el) el.textContent = m; };
+  say('building...');
+  loadPptx().then((Pptx) => {
+    const p = new Pptx();
+    p.layout = 'LAYOUT_16x9';
+    p.author = val('team') || 'Marketing Fundamentals';
+    p.title = c.brand + ' - ' + c.name;
+
+    const logo = (s) => s.addImage({ path: 'img/ie_logo.png', x: 8.95, y: 4.72, w: 0.62, h: 0.58 });
+    const head = (s, t) => {
+      s.addText(t, { x: 0.5, y: 0.34, w: 8.3, h: 0.5, fontSize: 24, bold: true, color: NAVY, fontFace: 'Arial' });
+      s.addShape(p.ShapeType.line, { x: 0.5, y: 0.86, w: 9.0, h: 0, line: { color: NAVY, width: 1.5 } });
+      logo(s);
+    };
+    const note = (s, t, y) => s.addText(t, { x: 0.5, y: y, w: 9.0, h: 0.8, fontSize: 12, color: GREY,
+      fontFace: 'Arial', valign: 'top' });
+
+    /* 1 - cover */
+    let s = p.addSlide();
+    s.addShape(p.ShapeType.rect, { x: 0, y: 0, w: 10, h: 1.9, fill: { color: NAVY } });
+    s.addText(c.brand, { x: 0.6, y: 0.45, w: 8.6, h: 0.7, fontSize: 40, bold: true, color: 'FFFFFF', fontFace: 'Arial' });
+    s.addText(c.name + '  ·  ' + c.year, { x: 0.62, y: 1.18, w: 8.6, h: 0.45, fontSize: 16, color: 'D8E0EF', fontFace: 'Arial' });
+    s.addText(val('team') || '(your group)', { x: 0.6, y: 2.5, w: 8.8, h: 0.4, fontSize: 18, bold: true, color: INK, fontFace: 'Arial' });
+    s.addText('Taking a campaign apart: which P, which tool, which media, which appeal, which stage.',
+      { x: 0.6, y: 2.95, w: 8.8, h: 0.5, fontSize: 13, color: GREY, fontFace: 'Arial' });
+    s.addText('Marketing Fundamentals 26-27  ·  Session 23  ·  ' + (val('when') || ''),
+      { x: 0.6, y: 4.85, w: 7.5, h: 0.3, fontSize: 11, color: GREY, fontFace: 'Arial' });
+    logo(s);
+
+    /* 2 - the campaign */
+    s = p.addSlide();
+    head(s, 'The campaign in one line');
+    s.addText(c.brief, { x: 0.5, y: 1.1, w: 9.0, h: 1.1, fontSize: 15, color: INK, fontFace: 'Arial', valign: 'top' });
+    s.addShape(p.ShapeType.rect, { x: 0.5, y: 2.45, w: 9.0, h: 1.25, fill: { color: SOFT } });
+    s.addText('THE ONE SENTENCE EVERY ACTION CARRIES', { x: 0.7, y: 2.6, w: 8.6, h: 0.3, fontSize: 10, bold: true, color: NAVY, fontFace: 'Arial' });
+    s.addText('“' + (val('imc') || '(write it in step 4)') + '”',
+      { x: 0.7, y: 2.92, w: 8.6, h: 0.7, fontSize: 17, italic: true, color: INK, fontFace: 'Arial' });
+    const carried = c.acts.filter((a, i) => ST.imc && ST.imc[i]).length;
+    note(s, carried + ' of the ' + c.acts.length + ' actions carry it.', 3.85);
+
+    /* 3 - the four actions */
+    s = p.addSlide();
+    head(s, 'The ' + c.acts.length + ' actions, classified');
+    const rows = [[
+      { text: 'ACTION', options: { bold: true, color: GREY, fontSize: 9 } },
+      { text: 'WHICH P', options: { bold: true, color: GREY, fontSize: 9 } },
+      { text: 'TOOL', options: { bold: true, color: GREY, fontSize: 9 } },
+      { text: 'MEDIA', options: { bold: true, color: GREY, fontSize: 9 } },
+      { text: 'APPEAL', options: { bold: true, color: GREY, fontSize: 9 } },
+      { text: 'STAGE', options: { bold: true, color: GREY, fontSize: 9 } }]];
+    c.acts.forEach((a, i) => {
+      const k = ST.picks[i] || {};
+      rows.push([a.t, labelOf(PS, k.p || ''), (labelOf(TOOLS, k.tool || '') || '').split(' (')[0].split(' - ')[0],
+        labelOf(MEDIA, k.media || ''), labelOf(APPEAL, k.appeal || ''), labelOf(STAGE, k.stage || '')]);
+    });
+    s.addTable(rows, { x: 0.5, y: 1.05, w: 9.0, colW: [3.3, 1.15, 1.5, 1.0, 1.05, 1.0],
+      fontSize: 10, fontFace: 'Arial', color: INK, border: { type: 'solid', color: LINE, pt: 0.5 },
+      valign: 'top', autoPage: false });
+    note(s, 'The two we argued about most are marked in our notes.', 4.3);
+
+    /* 4 - the order */
+    s = p.addSlide();
+    head(s, 'The order they reach one person');
+    const line = ST.order.map((idx, pos) => (pos + 1) + '.  ' + c.acts[idx].t
+      + '   [' + (labelOf(STAGE, (ST.picks[idx] || {}).stage || '') || 'not set') + ']').join('\n');
+    s.addText(line, { x: 0.5, y: 1.1, w: 9.0, h: 1.9, fontSize: 13, color: INK, fontFace: 'Arial', valign: 'top', lineSpacingMultiple: 1.3 });
+    s.addShape(p.ShapeType.rect, { x: 0.5, y: 3.15, w: 9.0, h: 1.35, fill: { color: SOFT } });
+    s.addText('WHY THAT ORDER', { x: 0.7, y: 3.3, w: 8.6, h: 0.3, fontSize: 10, bold: true, color: NAVY, fontFace: 'Arial' });
+    s.addText(val('why') || '(write it in step 3)', { x: 0.7, y: 3.6, w: 8.6, h: 0.8, fontSize: 13, color: INK, fontFace: 'Arial', valign: 'top' });
+
+    /* 5 - the communication model */
+    s = p.addSlide();
+    head(s, 'One action through the model');
+    const g = COMMBOX.map(([id, lab]) => [lab, ST.comm[id] || '-']);
+    const grid = [];
+    for (let i = 0; i < g.length; i += 3) {
+      grid.push(g.slice(i, i + 3).map(([lab, v]) => ({
+        text: lab.toUpperCase() + '\n' + v,
+        options: { fontSize: 9.5, color: INK, fontFace: 'Arial', valign: 'top' } })));
+    }
+    s.addTable(grid, { x: 0.5, y: 1.05, w: 9.0, colW: [3, 3, 3], rowH: 0.95, fontFace: 'Arial',
+      border: { type: 'solid', color: LINE, pt: 0.5 }, valign: 'top' });
+    note(s, 'Where this message could die: ' + [val('d_enc'), val('d_fb'), val('d_noise')]
+      .filter(Boolean).join('  ·  ') || 'Where this message could die: (step 5)', 4.2);
+
+    /* 6 - what we would defend */
+    s = p.addSlide();
+    head(s, 'What we would defend');
+    const notes = ST.order.map((idx, pos) => ST.notes[idx]
+      ? (pos + 1) + '.  ' + ST.notes[idx] : null).filter(Boolean);
+    s.addText(notes.length ? notes.join('\n') : '(write one line per action in step 2)',
+      { x: 0.5, y: 1.1, w: 9.0, h: 2.2, fontSize: 13, color: INK, fontFace: 'Arial', valign: 'top', lineSpacingMultiple: 1.3 });
+    s.addShape(p.ShapeType.rect, { x: 0.5, y: 3.5, w: 9.0, h: 1.0, fill: { color: SOFT } });
+    s.addText('THE ONE ACTION THIS CAMPAIGN COULD NOT LOSE', { x: 0.7, y: 3.62, w: 8.6, h: 0.3, fontSize: 10, bold: true, color: NAVY, fontFace: 'Arial' });
+    s.addText('(say it out loud, and say what breaks without it)', { x: 0.7, y: 3.92, w: 8.6, h: 0.5, fontSize: 13, italic: true, color: GREY, fontFace: 'Arial' });
+
+    const name = ((val('team') || 'group') + ' - ' + c.brand).replace(/[^\w\- ]+/g, '').trim();
+    return p.writeFile({ fileName: name + '.pptx' }).then(() => say('six slides downloaded'));
+  }).catch((e) => {
+    say('');
+    alert('The slides could not be built: ' + (e && e.message ? e.message : e)
+      + '\nYou can still use "Build my summary" and print it.');
+  });
+}
+$('#deck').addEventListener('click', buildDeck);
 
 /* ===================================================================== prompts */
 function promptFor(kind) {
