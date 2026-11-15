@@ -386,10 +386,10 @@ const CASES = {
     "appeal": "emotional",
     "stage": "advocate",
     "why": "The audience taking the message on holiday with them.",
-    "vid": "6-dCafrkq8g",
-    "ch": "Musica de la tele",
-    "shows": "a private account re-uploading the 2011 film years later. It is in Spanish because the campaign is: what matters here is who posted it, not the brand",
-    "look": ""
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "This action is not the film: it is what people do with it afterwards. Open Instagram or TikTok and search the hashtag of the location, or the name of the cove or the town where a recent film was shot. Screenshot three posts that are <b>not</b> the brand's, and look at who made them and what they were trying to show about themselves."
    },
    {
     "t": "The beer is brewed in Barcelona and the label says so.",
@@ -493,10 +493,10 @@ const CASES = {
     "appeal": "emotional",
     "stage": "advocate",
     "why": "The whole mechanic exists to be shared. The brand built the card; the audience did the distribution.",
-    "vid": "UR9KUwrdoIs",
-    "ch": "Campaign Unpacked",
-    "shows": "ten years of Wrapped: what gets shared, and why it does",
-    "look": ""
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "Every December your own feed fills with these cards. Screenshot three of them, posted by people you follow - not by Spotify. Then ask what each person is actually showing off, because that, and not the design, is why the mechanic works."
    },
    {
     "t": "Billboards in big cities with odd listening statistics and a joke about them.",
@@ -568,7 +568,7 @@ const CASES = {
     "why": "Shared media that the brand provoked and could not control. Advocacy is not always positive, and here the brand counted on that.",
     "vid": "P4x2EK-Zi5E",
     "ch": "BC Productions",
-    "shows": "a commentary channel arguing about it: the argument is the medium",
+    "shows": "a channel that does not work for Burger King arguing about the campaign - the argument itself, not a film about it",
     "look": ""
    },
    {
@@ -717,7 +717,7 @@ function renderActs() {
                  <button class="btn ai sm" data-ask="${i}">Copy the prompt about this action</button>
                  <span class="hint" id="askState${i}"></span>
                </div>
-               <p class="hint" style="margin:8px 0 0"><b>Or go and see it for yourself:</b> ${esc(a.look)}</p>
+               <p class="hint" style="margin:8px 0 0"><b>Or go and see it for yourself:</b> ${a.look}</p>
                <div class="row" style="margin-top:8px">
                  <label class="btn sm ghost" for="shot${i}" style="cursor:pointer">${ST.shots[i] ? 'Change the photo' : 'Attach your photo'}</label>
                  <input type="file" id="shot${i}" data-shot="${i}" accept="image/*" style="display:none">
