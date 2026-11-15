@@ -718,12 +718,14 @@ function renderActs() {
                  <span class="hint" id="askState${i}"></span>
                </div>
                <p class="hint" style="margin:8px 0 0"><b>Or go and see it for yourself:</b> ${esc(a.look)}</p>
+               <div class="row" style="margin-top:8px">
+                 <label class="btn sm ghost" for="shot${i}" style="cursor:pointer">${ST.shots[i] ? 'Change the photo' : 'Attach your photo'}</label>
+                 <input type="file" id="shot${i}" data-shot="${i}" accept="image/*" style="display:none">
+                 ${ST.shots[i] ? `<button class="btn sm ghost" data-unshot="${i}">Remove</button>` : ''}
+                 <span class="hint">If you went to see it, put the photograph here - it is saved with your
+                   draft and it goes into the slides. If you did not, leave it.</span>
+               </div>
              </div>`}
-          <div class="row" style="margin-top:8px">
-            <label class="btn sm ghost" for="shot${i}" style="cursor:pointer">${ST.shots[i] ? 'Change the photo' : 'Attach a photo (optional)'}</label>
-            <input type="file" id="shot${i}" data-shot="${i}" accept="image/*" style="display:none">
-            ${ST.shots[i] ? `<button class="btn sm ghost" data-unshot="${i}">Remove</button>` : ''}
-          </div>
         </div>
         <div>${ST.shots[i] ? `<img class="shot" src="${ST.shots[i]}" alt="">` : ''}<div id="thumb${i}"></div></div>
       </div>
