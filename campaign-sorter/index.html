@@ -244,10 +244,18 @@ ol.steps li{margin-bottom:4px}
         <span class="hint" id="findState"></span></div></div>
 
     <h2>3 &middot; Put them in order</h2>
-    <p class="sub">The order the campaign ran them in, and what each step was for. Use the arrows.</p>
+    <p class="sub"><b>In order of what?</b> Of the customer, not of the company: <b>the order in which
+    they reach one person</b>. First the action that finds somebody who has never heard of this, last the
+    one that can only happen after they have already bought. Use the arrows.</p>
+    <div class="note" style="margin-top:6px"><b>Not the order they were produced in</b>
+      Several of these ran at the same time - the film was on television while the material was already
+      in the bars. You are not reconstructing a calendar, you are putting the actions on the path a
+      person walks: <b>aware &rarr; appeal &rarr; ask &rarr; act &rarr; advocate</b>. So the order should
+      follow the stage you gave each action in step 2, and it should never go backwards. Two actions at
+      the same stage can go in either order - then say why you chose that one.</div>
     <div id="order"></div>
     <label class="f" for="why">What the sequence was trying to do</label>
-    <textarea id="why" data-k rows="3" placeholder="e.g. buy the awareness first, then give people something to do with it..."></textarea>
+    <textarea id="why" data-k rows="3" placeholder="e.g. buy the awareness first, then put something in their hands at the moment they choose..."></textarea>
 
     <h2>4 &middot; Is it integrated?</h2>
     <p class="sub">Integrated marketing communication means the whole campaign says one thing. Write the
@@ -824,7 +832,8 @@ function renderOrder() {
   const c = CASES[ST.case];
   if (!c) return;
   if (!ST.order.length) ST.order = c.acts.map((a, i) => i);
-  $('#order').innerHTML = '<table><tr><th>#</th><th>action</th><th>stage you gave it</th><th></th></tr>'
+  $('#order').innerHTML = '<table><tr><th>#</th><th>action</th>'
+    + '<th>the stage you chose in step 2</th><th></th></tr>'
     + ST.order.map((idx, pos) => {
       const st = (ST.picks[idx] || {}).stage;
       return `<tr><td class="num">${pos + 1}</td>
@@ -911,9 +920,9 @@ $('#check').addEventListener('click', () => {
       The grey line under each row is the reason. Where you disagree, keep your answer and write the argument -
       that is what the ten minutes in front of the class are for.</div>
      <table><tr><th>action</th>${FIELDS.map(([, , l]) => `<th>${l}</th>`).join('')}</tr>${rows}</table>
-     <div class="note"><b>The sequence</b>${monotone
-       ? 'Your order never goes backwards through the five A’s. That is what a campaign should look like.'
-       : 'Your order jumps backwards through the five A’s at least once. Sometimes that is deliberate - say why in the presentation, or move it.'}</div>`;
+     <div class="note"><b>The order</b>${monotone
+       ? 'Your order never goes backwards along the path - aware, appeal, ask, act, advocate. That is what a campaign should look like from where the customer stands.'
+       : 'Your order goes backwards along the path at least once: an action you placed later is at an earlier stage than one before it. Either move it, or say in the presentation why it is deliberate.'}</div>`;
   save();
 });
 $('#clear').addEventListener('click', () => {
