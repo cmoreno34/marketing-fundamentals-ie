@@ -200,7 +200,7 @@ ol.steps li{margin-bottom:4px}
   <p class="sub">The campaign from the session slides, sorted. Objective: three of every four American
   laundry loads washed in cold water by 2030, because 90% of the energy in a wash goes into heating the
   water. Four mechanics, four kinds of media.
-  <a href="https://www.youtube.com/watch?v=E1JetcvcFWI" target="_blank" rel="noopener">The campaign film</a>.</p>
+  <a href="https://www.youtube.com/watch?v=KlEngttzcng" target="_blank" rel="noopener">The commercials</a>.</p>
   <div id="demoBody"></div>
   <div class="note"><b>Read the sequence, not the list</b>
     The paid film bought the <b>awareness</b> that the brand could not get for free. The microsite turned
@@ -320,6 +320,7 @@ const STAGE = [["aware","Aware"],["appeal","Appeal"],["ask","Ask"],["act","Act"]
 const DEMO = [
  {t:"TV and social ads in which people with “cold” names cold-called celebrities.",
   p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"aware",img:"img/tide_paid.jpg",
+  vid:"KlEngttzcng",ch:"Leisure Owl",shows:"the commercials themselves: the cold calls to Ice T, Steve Austin, Vanilla Ice",
   why:"Paid space, non-personal, identified sponsor: advertising. The joke is the appeal, and its job is to put the idea in front of people who were not looking for it."},
  {t:"A microsite with an energy calculator, a pledge button and a live savings dashboard.",
   p:"promotion",tool:"dd",media:"owned",appeal:"rational",stage:"act",img:"img/tide_owned_1.jpg",
@@ -332,6 +333,7 @@ const DEMO = [
   why:"The press placements were not bought: they were earned by giving the media something worth covering. That is public relations."},
  {t:"Viral videos shared and reproduced on social media by the public.",
   p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",img:"",
+  vid:"YPzr8M14jvY",ch:"Winter Walker",shows:"a music video about the campaign, made and posted by somebody who does not work for Tide",
   why:"Nobody at Tide did this. Shared media is the audience passing the message on, and it is the only proof that the other three worked."}
 ];
 
@@ -641,7 +643,12 @@ function renderDemo() {
           <p class="hint">${esc(a.why)}</p>
         </div>
         <div>${a.img ? `<img class="shot" src="${a.img}" alt="">`
-          : '<p class="hint">No screenshot: this one belongs to the audience, not to the brand.</p>'}</div>
+          : (a.vid ? `<a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">
+               <img class="shot" src="https://img.youtube.com/vi/${a.vid}/hqdefault.jpg" alt=""></a>`
+            : '<p class="hint">No screenshot: this one belongs to the audience, not to the brand.</p>')}
+          ${a.vid ? `<p class="hint" style="margin-top:4px">&#9654;
+            <a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">${esc(a.shows)}</a>
+            &middot; YouTube, ${esc(a.ch)}</p>` : ''}</div>
       </div>
     </div>`).join('');
 }
