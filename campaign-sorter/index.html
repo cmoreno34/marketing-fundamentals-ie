@@ -80,6 +80,11 @@ th{font:600 11.5px "IBM Plex Mono",monospace;letter-spacing:.05em;text-transform
 @media(max-width:900px){.picks{grid-template-columns:1fr 1fr}}
 .hint{font-size:13.5px;color:var(--muted)}
 .right{text-align:right}
+table.dem{margin-top:12px}
+table.dem td.dim{width:92px;font:600 11.5px "IBM Plex Mono",monospace;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--muted);white-space:nowrap}
+table.dem td.ans{width:220px}
+table.dem td.rz{color:var(--muted);font-size:14px}
 .aibox{background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:11px 14px;margin-top:12px}
 .aibox b{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
   color:var(--accent);display:block;margin-bottom:4px}
@@ -197,7 +202,10 @@ ol.steps li{margin-bottom:4px}
 <!-- ===================================================================== DEMO -->
 <div class="wrap hide" id="view-demo">
   <h2>Tide, #TurnToCold</h2>
-  <p class="sub">The campaign from the session slides, sorted. Objective: three of every four American
+  <p class="sub"><b>Read one action at a time, and read the third column.</b> The five questions below
+  are the same five you will answer on your own case, and what is worth copying is not the answers - it
+  is the kind of sentence in the <i>why that one</i> column.<br>
+  The campaign from the session slides, sorted. Objective: three of every four American
   laundry loads washed in cold water by 2030, because 90% of the energy in a wash goes into heating the
   water. Four mechanics, four kinds of media.
   <a href="https://www.youtube.com/watch?v=KlEngttzcng" target="_blank" rel="noopener">The commercials</a>.</p>
@@ -321,20 +329,20 @@ const DEMO = [
  {t:"TV and social ads in which people with “cold” names cold-called celebrities.",
   p:"promotion",tool:"ad",media:"paid",appeal:"emotional",stage:"aware",img:"img/tide_paid.jpg",
   vid:"KlEngttzcng",ch:"Leisure Owl",shows:"the commercials themselves: the cold calls to Ice T, Steve Austin, Vanilla Ice",
-  why:"Paid space, non-personal, identified sponsor: advertising. The joke is the appeal, and its job is to put the idea in front of people who were not looking for it."},
+  why:"Paid space, non-personal, identified sponsor: advertising. The joke is the appeal, and its job is to put the idea in front of people who were not looking for it.",r:["It communicates, and that is all it does: the detergent, its price and the shop it is sold in are exactly the same after the advertisement as before it.","Tide bought the slots, and the same film reaches everybody unchanged - nobody is addressed by name. That is the definition of advertising.","The airtime and the placements were bought. Stop paying and the film stops appearing: that is what makes it paid rather than owned.","The argument is a joke - a man called Ice-T telephoning you about cold water. Nothing here demonstrates that the detergent cleans.","It is talking to people who were not thinking about the temperature of their washing machine at all. That is the awareness job, and only paid media does it at this speed."]},
  {t:"A microsite with an energy calculator, a pledge button and a live savings dashboard.",
   p:"promotion",tool:"dd",media:"owned",appeal:"rational",stage:"act",img:"img/tide_owned_1.jpg",
-  why:"The brand's own channel, engaging directly with the people who came: direct and digital. The calculator argues with numbers, and the pledge is the first thing the campaign asks anybody to do."},
+  why:"The brand's own channel, engaging directly with the people who came: direct and digital. The calculator argues with numbers, and the pledge is the first thing the campaign asks anybody to do.",r:["Still communication. The calculator does not change the product, the price or the shelf.","It answers you, one person at a time, with your own numbers - that is direct and digital, not advertising: your version of the page is not my version.","Tide built the site and controls every word on it. Nothing is rented and nobody else decides what appears.","It argues with kilowatt-hours and euros. Whatever you think of it, it is an argument about self-interest.","The pledge is something you do. It is the first commitment the campaign asks anybody for, and it is measurable, which is why it exists."]},
  {t:"The live dashboard showing the energy the pledges had already saved.",
   p:"promotion",tool:"dd",media:"owned",appeal:"rational",stage:"advocate",img:"img/tide_owned_2.jpg",
-  why:"Still the brand's own channel. Showing people what the group has achieved is what turns an act into advocacy."},
+  why:"Still the brand's own channel. Showing people what the group has achieved is what turns an act into advocacy.",r:["Communication again: a number on a page the brand controls.","The same channel, continuing the conversation - and it shows you where your own pledge sits among everybody else's.","The brand's own site. It decides what the dashboard says and when it updates.","A number that grows is an argument, not a feeling.","It exists to be shown and repeated. It turns “I did it” into “look what we did”, which is the step after acting."]},
  {t:"An NFL partnership that generated 220 press placements and a national media blitz.",
   p:"promotion",tool:"pr",media:"earned",appeal:"emotional",stage:"aware",img:"img/tide_earned.jpg",
-  why:"The press placements were not bought: they were earned by giving the media something worth covering. That is public relations."},
+  why:"The press placements were not bought: they were earned by giving the media something worth covering. That is public relations.",r:["Communication: the partnership exists to be talked about.","Tide gave journalists and a sport a reason to carry the story. It did not buy the articles - that is public relations, not advertising.","220 press placements that nobody paid for, in outlets Tide does not control. You cannot order earned media; you can only deserve it.","The hook is the sport and the celebrity, not the energy saving. The argument comes later.","It buys attention at a scale paid media would charge a fortune for - and with a credibility that a paid advertisement cannot have."]},
  {t:"Viral videos shared and reproduced on social media by the public.",
   p:"promotion",tool:"aud",media:"shared",appeal:"emotional",stage:"advocate",img:"",
   vid:"YPzr8M14jvY",ch:"Winter Walker",shows:"a music video about the campaign, made and posted by somebody who does not work for Tide",
-  why:"Nobody at Tide did this. Shared media is the audience passing the message on, and it is the only proof that the other three worked."}
+  why:"Nobody at Tide did this. Shared media is the audience passing the message on, and it is the only proof that the other three worked.",r:["Communication, even though the company did not produce it: the message is about the brand.","Nobody at Tide made this. A creator filmed it, edited it and posted it - no employee, no agency, no fee. That is why none of the five tools fits.","The audience distributed it. Tide provoked it and then lost control of it, which is exactly what shared media is.","People share what amuses them. Nobody forwards a kilowatt-hour.","Putting your own name and your own face next to a brand's idea is the last step of the five, and the only one the brand cannot buy."]}
 ];
 
 const CASES = {
@@ -342,7 +350,7 @@ const CASES = {
   "brand": "Estrella Damm",
   "name": "Mediterráneamente",
   "year": "Spain, every summer",
-  "brief": "A short film released at the start of every summer, with a song, a Mediterranean location and almost no product on screen.",
+  "brief": "A short film released at the start of every summer, with a song, a Mediterranean location and almost no product on screen. The brand publishes English versions of the films on its UK channel, which is where the one on this card comes from.",
   "acts": [
    {
     "t": "The summer short film, launched in cinemas and on television.",
@@ -352,9 +360,9 @@ const CASES = {
     "appeal": "emotional",
     "stage": "appeal",
     "why": "Paid, non-personal, identified sponsor - and the appeal is a feeling about summer, not an argument about beer.",
-    "vid": "UPn4NiwdfhU",
-    "ch": "Estrella Damm",
-    "shows": "the 2025 film, on the brand's own channel",
+    "vid": "in7R8MHwkm0",
+    "ch": "Estrella Damm UK",
+    "shows": "“Vale”, with Dakota Johnson and Quim Gutiérrez, directed by Alejandro Amenábar - the brand's own English version, on its UK channel",
     "look": ""
    },
    {
@@ -380,7 +388,7 @@ const CASES = {
     "why": "The audience taking the message on holiday with them.",
     "vid": "6-dCafrkq8g",
     "ch": "Musica de la tele",
-    "shows": "a private account keeping the 2011 film alive, years later",
+    "shows": "a private account re-uploading the 2011 film years later. It is in Spanish because the campaign is: what matters here is who posted it, not the brand",
     "look": ""
    },
    {
@@ -631,6 +639,15 @@ $('#peShow').addEventListener('click', () => {
 });
 
 /* ===================================================================== demo */
+const DIMS = [["Which P", PS, "p"], ["Tool", TOOLS, "tool"], ["Media", MEDIA, "media"],
+              ["Appeal", APPEAL, "appeal"], ["Stage", STAGE, "stage"]];
+function demoRows(a) {
+  return '<table class="dem"><tr><th>question</th><th>answer</th><th>why that one</th></tr>'
+    + DIMS.map(([lab, list, f], k) => `<tr><td class="dim">${lab}</td>
+        <td class="ans">${f === 'media' ? pill(a[f]) : '<b>' + esc(labelOf(list, a[f])) + '</b>'}</td>
+        <td class="rz">${esc((a.r || [])[k] || '')}</td></tr>`).join('')
+    + '</table>';
+}
 function renderDemo() {
   $('#demoBody').innerHTML = DEMO.map((a, i) => `
     <div class="act">
@@ -638,9 +655,6 @@ function renderDemo() {
         <div>
           <div class="no">ACTION ${i + 1}</div>
           <div class="txt">${esc(a.t)}</div>
-          <p><b>${esc(labelOf(PS, a.p))}</b> &middot; ${esc(labelOf(TOOLS, a.tool))} &middot; ${pill(a.media)}
-             &middot; ${esc(labelOf(APPEAL, a.appeal))} &middot; <b>${esc(labelOf(STAGE, a.stage))}</b></p>
-          <p class="hint">${esc(a.why)}</p>
         </div>
         <div>${a.img ? `<img class="shot" src="${a.img}" alt="">`
           : (a.vid ? `<a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">
@@ -650,6 +664,7 @@ function renderDemo() {
             <a href="https://www.youtube.com/watch?v=${a.vid}" target="_blank" rel="noopener">${esc(a.shows)}</a>
             &middot; YouTube, ${esc(a.ch)}</p>` : ''}</div>
       </div>
+      ${demoRows(a)}
     </div>`).join('');
 }
 
