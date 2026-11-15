@@ -333,14 +333,27 @@ ol.steps li{margin-bottom:4px}
     </ol>
     <p style="margin:6px 0 0">Nothing is uploaded anywhere: the file is built inside your browser and
     saved to your downloads.</p></div>
+  <h3>The deck you present</h3>
   <div class="row">
     <button class="btn solid" id="deck">Build the slides (.pptx)</button>
     <span class="hint" id="deckState"></span>
   </div>
+  <div id="deckReady"></div>
+
+  <h3>The written summary <span class="hint">- optional, and a different thing from the deck</span></h3>
+  <p class="sub">The same work as text: everything you typed, in order, including the parts that do not
+  fit on a slide - what you found on each action, where you disagree with the key, where the message
+  could die. Useful to read through before you present, and to hand in if you are asked for a document.</p>
   <div class="row">
     <button class="btn" id="build">Build my summary</button>
     <button class="btn" id="dl">Download it (.md)</button>
     <button class="btn" id="print">Print / save as PDF</button>
+  </div>
+
+  <h3>Your work as a file <span class="hint">- this is how the group shares it</span></h3>
+  <p class="sub">Everything on this page, in one small file: the answers, the notes, the photographs you
+  attached. Whoever has it can carry on where the others left off, on any laptop.</p>
+  <div class="row">
     <button class="btn" id="exp">Save a draft file</button>
     <label class="btn" for="imp" style="cursor:pointer">Load a draft file</label>
     <input type="file" id="imp" accept=".json" style="display:none">
@@ -658,6 +671,7 @@ let lastSaved = null, exportedAt = null;
 /* ===================================================================== views */
 function showView(which) {
   ['how', 'demo', 'work', 'present'].forEach((v) => $('#view-' + v).classList.toggle('hide', v !== which));
+  if (which === 'present') deckReady();
   $$('#tabs .tab').forEach((b) => b.classList.toggle('on', b.dataset.view === which));
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1071,6 +1085,36 @@ function loadPptx() {
   return pptxReady;
 }
 
+function deckReady() {
+  const el = $('#deckReady');
+  if (!el) return;
+  const c = CASES[ST.case];
+  if (!c) { el.innerHTML = '<p class="hint">Pick a case first, in step 1.</p>'; return; }
+  const want = [];
+  want.push(['the group name', 'step 1', !!val('team')]);
+  c.acts.forEach((a, i) => {
+    const p = ST.picks[i] || {};
+    want.push(['action ' + (i + 1) + ': the five answers', 'step 2',
+      !!(p.p && p.tool && p.media && p.appeal && p.stage)]);
+    want.push(['action ' + (i + 1) + ': the line on why', 'step 2', !!ST.notes[i]]);
+  });
+  want.push(['why that order', 'step 3', !!val('why')]);
+  want.push(['the one sentence', 'step 4', !!val('imc')]);
+  want.push(['the communication model', 'step 5', COMMBOX.filter(([id]) => ST.comm[id]).length >= 5]);
+  want.push(['the running order for the ten minutes', 'this step', !!val('script')]);
+  const missing = want.filter((w) => !w[2]);
+  const done = want.length - missing.length;
+  el.innerHTML = missing.length === 0
+    ? `<div class="score"><b>All ${want.length} boxes that end up on a slide are filled.</b>
+       Press the button and the deck is done.</div>`
+    : `<div class="note"><b>${done} of ${want.length} boxes filled</b>
+       The deck builds whenever you press the button - but wherever a box is empty the slide will say
+       “(write it)”, which is not what you want in front of the class. Still open:
+       <ul style="margin:4px 0 0;padding-left:20px">${missing.slice(0, 4).map((m) =>
+         `<li>${esc(m[0])} <span class="hint">- ${esc(m[1])}</span></li>`).join('')}
+       ${missing.length > 4 ? `<li class="hint">and ${missing.length - 4} more</li>` : ''}</ul></div>`;
+}
+
 function buildDeck() {
   const c = CASES[ST.case];
   if (!c) { alert('Pick a case first.'); return; }
@@ -1180,6 +1224,7 @@ function buildDeck() {
   });
 }
 $('#deck').addEventListener('click', buildDeck);
+document.addEventListener('input', () => { if (!$('#view-present').classList.contains('hide')) deckReady(); });
 
 /* ===================================================================== prompts */
 function promptFor(kind) {
