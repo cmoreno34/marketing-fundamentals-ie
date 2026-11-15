@@ -219,6 +219,21 @@ ol.steps li{margin-bottom:4px}
 
 <!-- ===================================================================== WORK -->
 <div class="wrap hide" id="view-work">
+  <div class="note"><b>How the hour runs, and where everything goes</b>
+    <ol class="steps">
+      <li><b>You fill this page in</b> - about forty minutes. Three kinds of information arrive:
+        what is already on the card (the clip), what the prompt gives you back, and what you decide
+        between the four of you.</li>
+      <li><b>Everything has a box.</b> The assistant's answer goes in <i>What we found</i> on that
+        action. The sentence you will defend goes in <i>Why you classified it that way</i> - one line.
+        The arguments go in steps 3, 4 and 5.</li>
+      <li><b>Check your answers</b> and paste what the <i>argue against us</i> prompt throws back at
+        you, with whatever you decide to change.</li>
+      <li><b>Each group presents at the end, ten minutes</b>, from the deck this page builds. The
+        running order from the last prompt goes into the speaker notes of that deck.</li>
+    </ol>
+    <p style="margin:6px 0 0">Nothing leaves your browser, so save the draft file and pass it around.</p></div>
+
   <h2>1 &middot; Your group and your case</h2>
   <div class="grid2">
     <div><label class="f" for="team">Group and members</label>
@@ -288,6 +303,9 @@ ol.steps li{margin-bottom:4px}
       <span class="hint">the key is a teaching device - if you disagree with one, say so in your write-up</span>
     </div>
     <div id="checkOut"></div>
+    <label class="f" for="counter">What the counter-argument said, and what we are changing</label>
+    <textarea id="counter" data-k rows="3" placeholder="paste the part that landed, and write what you are changing because of it - or why you are not"></textarea>
+
     <div class="aibox"><b>Prompt &middot; argue against us</b>
       It carries every action with your answer and the key beside it, and asks the assistant to attack
       the ones you got wrong <i>and</i> the reasons behind the ones you got right. Do this before the
@@ -337,6 +355,10 @@ ol.steps li{margin-bottom:4px}
     order - and the three questions the class is most likely to ask you.
     <div class="row"><button class="btn ai" data-prompt="script">Copy the prompt</button>
       <span class="hint" id="scriptState"></span></div></div>
+  <label class="f" for="script">The running order for the ten minutes <span class="hint"
+    style="text-transform:none;letter-spacing:0">- paste what the prompt gives you back. It goes into the
+    speaker notes of the deck.</span></label>
+  <textarea id="script" data-k rows="4" placeholder="who says what, in what order, and the three questions the class will ask"></textarea>
   <div id="presentOut"></div>
 </div>
 
@@ -631,7 +653,7 @@ const $$ = (s) => Array.from(document.querySelectorAll(s));
 const KEY = 'mf26_campaign_sorter_v1';
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const val = (id) => ($('#' + id) ? String($('#' + id).value || '').trim() : '');
-const ST = { case: '', picks: {}, links: {}, notes: {}, order: [], comm: {}, imc: {}, shots: {} };
+const ST = { case: '', picks: {}, links: {}, notes: {}, order: [], comm: {}, imc: {}, shots: {}, found: {} };
 let lastSaved = null, exportedAt = null;
 
 /* ===================================================================== views */
@@ -707,7 +729,7 @@ function renderCases() {
   $$('#caseList [data-case]').forEach((el) => el.addEventListener('click', () => {
     if (ST.case && ST.case !== el.dataset.case
       && !confirm('Changing the case clears what you have classified. Continue?')) return;
-    if (ST.case !== el.dataset.case) { ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.shots = {}; ST.imc = {}; }
+    if (ST.case !== el.dataset.case) { ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.shots = {}; ST.imc = {}; ST.found = {}; }
     ST.case = el.dataset.case;
     renderCases(); renderActs(); renderOrder(); renderIMC(); save();
   }));
@@ -765,9 +787,12 @@ function renderActs() {
         <div><label class="f">Appeal</label>${sel(i + '|appeal', APPEAL, p.appeal)}</div>
         <div><label class="f">Stage</label>${sel(i + '|stage', STAGE, p.stage)}</div>
       </div>
-      <p class="hint" style="margin:14px 0 2px"><b>3. Write it down.</b> One line on why you classified
-        it that way - that line is what you defend in front of the class.</p>
-      <div class="grid2" style="margin-top:4px">
+      <p class="hint" style="margin:14px 0 2px"><b>3. Write it down.</b> The answer you got goes in the
+        first box; the sentence you will defend in front of the class goes in the second, in one line.</p>
+      <label class="f">What we found <span class="hint" style="text-transform:none;letter-spacing:0">
+        - paste the assistant's answer here, or what you saw when you went and looked. Keep the useful part.</span></label>
+      <textarea data-found="${i}" rows="2" placeholder="what this action actually is, where it reaches people, what proves it happened">${esc(ST.found[i] || '')}</textarea>
+      <div class="grid2" style="margin-top:8px">
         <div><label class="f">A better link, if you find one</label>
           <input type="text" data-link="${i}" value="${esc(ST.links[i] || '')}" placeholder="https://..."></div>
         <div><label class="f">Why you classified it that way</label>
@@ -789,6 +814,9 @@ function renderActs() {
   }));
   $$('#acts [data-note]').forEach((inp) => inp.addEventListener('input', () => {
     ST.notes[inp.dataset.note] = inp.value.trim(); save();
+  }));
+  $$('#acts [data-found]').forEach((inp) => inp.addEventListener('input', () => {
+    ST.found[inp.dataset.found] = inp.value; save();
   }));
   $$('#acts [data-shot]').forEach((inp) => inp.addEventListener('change', async () => {
     const f = inp.files[0];
@@ -946,7 +974,7 @@ $('#check').addEventListener('click', () => {
 });
 $('#clear').addEventListener('click', () => {
   if (!confirm('Clear the classification of this case?')) return;
-  ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.imc = {}; ST.shots = {};
+  ST.picks = {}; ST.links = {}; ST.notes = {}; ST.order = []; ST.imc = {}; ST.shots = {}; ST.found = {};
   renderActs(); renderOrder(); renderIMC(); $('#checkOut').innerHTML = ''; save();
 });
 
@@ -994,12 +1022,20 @@ function summary() {
   L.push('- **Feedback loop:** ' + (val('d_fb') || '(write it)'));
   L.push('- **Noise:** ' + (val('d_noise') || '(write it)'));
   L.push('');
-  L.push('## 6. Where we disagree with the key');
+  L.push('## 6. What we found, action by action');
+  ST.order.forEach((idx, pos) => {
+    if (ST.found[idx]) L.push('- **Action ' + (pos + 1) + ':** ' + String(ST.found[idx]).replace(/\n+/g, ' '));
+  });
+  L.push('');
+  L.push('### What the counter-argument said');
+  L.push(val('counter') || '(run the prompt and paste it)');
+  L.push('');
+  L.push('## 7. Where we disagree with the key');
   ST.order.forEach((idx, pos) => {
     if (ST.notes[idx]) L.push('- Action ' + (pos + 1) + ': ' + ST.notes[idx]);
   });
   L.push('');
-  L.push('## 7. The one thing this campaign would lose');
+  L.push('## 8. The one thing this campaign would lose');
   L.push('(pick the action you would not remove, and say what breaks without it)');
   return L.join('\n');
 }
@@ -1135,6 +1171,7 @@ function buildDeck() {
     s.addText('THE ONE ACTION THIS CAMPAIGN COULD NOT LOSE', { x: 0.7, y: 3.62, w: 8.6, h: 0.3, fontSize: 10, bold: true, color: NAVY, fontFace: 'Arial' });
     s.addText('(say it out loud, and say what breaks without it)', { x: 0.7, y: 3.92, w: 8.6, h: 0.5, fontSize: 13, italic: true, color: GREY, fontFace: 'Arial' });
 
+    if (val('script')) p.getSlide(1).addNotes(val('script'));
     const name = ((val('team') || 'group') + ' - ' + c.brand).replace(/[^\w\- ]+/g, '').trim();
     return p.writeFile({ fileName: name + '.pptx' }).then(() => say('six slides downloaded'));
   }).catch((e) => {
@@ -1270,7 +1307,7 @@ function restore(o) {
   if (o._st) {
     ST.case = o._st.case || ''; ST.picks = o._st.picks || {}; ST.links = o._st.links || {};
     ST.notes = o._st.notes || {}; ST.order = o._st.order || []; ST.comm = o._st.comm || {};
-    ST.imc = o._st.imc || {}; ST.shots = o._st.shots || {};
+    ST.imc = o._st.imc || {}; ST.shots = o._st.shots || {}; ST.found = o._st.found || {};
   }
   Object.keys(o).forEach((id) => {
     if (id.charAt(0) === '_') return;
