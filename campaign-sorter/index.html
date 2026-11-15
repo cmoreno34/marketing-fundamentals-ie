@@ -421,7 +421,7 @@ const CASES = {
   "brief": "A forensic artist draws women twice: once from their own description of themselves and once from a stranger's. The two portraits are not the same person.",
   "acts": [
    {
-    "t": "The film with the forensic artist, pushed with paid media on video platforms.",
+    "t": "A three-minute film with a forensic artist, placed in front of other people's videos on the big video platforms.",
     "p": "promotion",
     "tool": "ad",
     "media": "paid",
@@ -488,10 +488,10 @@ const CASES = {
     "appeal": "emotional",
     "stage": "act",
     "why": "One message per person in a channel the brand owns: direct and digital. And the act is opening it.",
-    "vid": "U0KA-rBWAU4",
-    "ch": "Campaign Unpacked",
-    "shows": "the on-platform experience, built by the in-house team",
-    "look": ""
+    "vid": "",
+    "ch": "",
+    "shows": "",
+    "look": "This is the one action in this exercise you already own: it arrives on your phone every December. Open Spotify, find your Wrapped - or the Wrapped page if it is not December - and screenshot three of the cards it gives you. Then look at how it speaks: it says <b>you</b>, it uses your own numbers, and no two people get the same one. That is the thing none of the other three actions can do."
    },
    {
     "t": "Users post their Wrapped cards and compare them with their friends.",
@@ -520,7 +520,7 @@ const CASES = {
     "look": ""
    },
    {
-    "t": "The free tier, paid for by advertising, which is what produces the listening data in the first place.",
+    "t": "The free tier: it costs the listener nothing, the advertisers cover it - and that is also what produces the listening data in the first place.",
     "p": "price",
     "tool": "na",
     "media": "na",
@@ -541,7 +541,7 @@ const CASES = {
   "brief": "The brand filmed its own burger going mouldy over 34 days to announce that it had removed the artificial preservatives.",
   "acts": [
    {
-    "t": "A time-lapse film of the burger going mouldy, bought on television and online.",
+    "t": "A time-lapse film of the burger going mouldy, shown on television and online.",
     "p": "promotion",
     "tool": "ad",
     "media": "paid",
@@ -761,6 +761,7 @@ function renderActs() {
     const [i, f] = s.dataset.pick.split('|');
     ST.picks[i] = ST.picks[i] || {};
     ST.picks[i][f] = s.value;
+    renderOrder();            // the stage column of step 3 is this answer, so redraw it
     save();
   }));
   $$('#acts [data-link]').forEach((inp) => inp.addEventListener('input', () => {
