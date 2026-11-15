@@ -318,7 +318,8 @@ ol.steps li{margin-bottom:4px}
   typed in steps 1 to 5 - this page does the assembling, you do the arguing.</p>
   <div class="note"><b>How this step works</b>
     <ol class="steps">
-      <li><b>Build the slides.</b> <b>This page builds them</b>, here, from what you typed - not the
+      <li><b>Build the slides.</b> <b>This page builds them</b>, here, from what you typed and from the
+        photographs you attached - not the
         assistant, and nothing is uploaded. You get a PowerPoint with nine slides: the cover, the
         campaign in one line, your four actions with the five answers, what you found on each one, your
         order and why, the communication model, where the message could die, what the counter-argument
@@ -328,28 +329,22 @@ ol.steps li{margin-bottom:4px}
         script - who says what, in what order - and the three questions the class will ask you. Paste it
         into <i>The running order</i> <b>before</b> you build the deck, or build the deck again
         afterwards: that text goes into the speaker notes of the first slide.</li>
-      <li><b>Hand in.</b> Export the deck to PDF from PowerPoint (File &rarr; Export), or use
-        <i>Print / save as PDF</i> here for the written summary. And save the draft file so the whole
-        group has it.</li>
+      <li><b>Hand in.</b> Export the deck to PDF from PowerPoint (File &rarr; Export) if a PDF is
+        asked for. And save the draft file so the whole group has the work.</li>
     </ol>
     <p style="margin:6px 0 0">Nothing is uploaded anywhere: the file is built inside your browser and
     saved to your downloads.</p></div>
-  <h3>The deck you present</h3>
+  <h3>The deck you present <span class="hint">- this is the deliverable</span></h3>
+  <p class="sub">Everything you typed ends up on a slide, and <b>every photograph you attached becomes a
+  slide of its own</b>: the parasol in the bar, the shelf, your own Wrapped. Those are the slides nobody
+  else in the room can have. Export it to PDF from PowerPoint if you need to hand one in.</p>
   <div class="row">
     <button class="btn solid" id="deck">Build the slides (.pptx)</button>
     <span class="hint" id="deckState"></span>
   </div>
   <div id="deckReady"></div>
 
-  <h3>The written summary <span class="hint">- optional, and a different thing from the deck</span></h3>
-  <p class="sub">The same work as text: everything you typed, in order, including the parts that do not
-  fit on a slide - what you found on each action, where you disagree with the key, where the message
-  could die. Useful to read through before you present, and to hand in if you are asked for a document.</p>
-  <div class="row">
-    <button class="btn" id="build">Build my summary</button>
-    <button class="btn" id="dl">Download it (.md)</button>
-    <button class="btn" id="print">Print / save as PDF</button>
-  </div>
+
 
   <h3>Your work as a file <span class="hint">- this is how the group shares it</span></h3>
   <p class="sub">Everything on this page, in one small file: the answers, the notes, the photographs you
@@ -1053,11 +1048,7 @@ function summary() {
   L.push('(pick the action you would not remove, and say what breaks without it)');
   return L.join('\n');
 }
-$('#build').addEventListener('click', () => {
-  const md = summary();
-  $('#presentOut').innerHTML = '<div class="card"><pre style="white-space:pre-wrap;font:14px/1.5 \'IBM Plex Mono\',monospace">'
-    + esc(md) + '</pre></div>';
-});
+
 function download(name, text, mime) {
   const b = new Blob([text], { type: mime || 'text/plain;charset=utf-8' });
   const u = URL.createObjectURL(b);
@@ -1065,11 +1056,7 @@ function download(name, text, mime) {
   a.href = u; a.download = name; a.click();
   setTimeout(() => URL.revokeObjectURL(u), 1500);
 }
-$('#dl').addEventListener('click', () => {
-  const c = CASES[ST.case];
-  download((c ? c.brand : 'campaign') + ' - campaign sorter.md', summary(), 'text/markdown');
-});
-$('#print').addEventListener('click', () => { $('#build').click(); showView('present'); setTimeout(() => window.print(), 300); });
+
 
 /* ===================================================================== the deck */
 const NAVY = '1F3864', INK = '15151B', GREY = '5A5A66', SOFT = 'E7ECF5', LINE = 'CFCCC7';
@@ -1200,6 +1187,18 @@ function buildDeck() {
         { x: 0.5, y: 1.2, w: 9.0, h: 0.5, fontSize: 13, italic: true, color: GREY, fontFace: 'Arial' });
     }
     note(s, 'Evidence, not opinion: this is the slide the class will ask about.', 4.5);
+
+    /* the photographs they took */
+    const shots = c.acts.map((a, i) => ({ a, i })).filter(({ i }) => ST.shots[i]);
+    shots.forEach(({ a, i }) => {
+      s = p.addSlide();
+      head(s, 'What we saw');
+      s.addImage({ data: ST.shots[i], x: 0.5, y: 1.05, w: 5.4, h: 3.4, sizing: { type: 'contain', w: 5.4, h: 3.4 } });
+      s.addText(a.t, { x: 6.1, y: 1.05, w: 3.4, h: 1.2, fontSize: 13, bold: true, color: INK, fontFace: 'Arial', valign: 'top' });
+      s.addText(ST.found[i] || ST.notes[i] || '', { x: 6.1, y: 2.3, w: 3.4, h: 2.1, fontSize: 11.5,
+        color: GREY, fontFace: 'Arial', valign: 'top' });
+      note(s, 'Our own photograph - nobody else in the room has this one.', 4.6);
+    });
 
     /* 5 - the order */
     s = p.addSlide();
