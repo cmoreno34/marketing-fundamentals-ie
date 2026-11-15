@@ -319,10 +319,11 @@ ol.steps li{margin-bottom:4px}
   <div class="note"><b>How this step works</b>
     <ol class="steps">
       <li><b>Build the slides.</b> <b>This page builds them</b>, here, from what you typed - not the
-        assistant, and nothing is uploaded. You get a PowerPoint with six slides: the cover, the campaign in one
-        line, your four actions with the five answers, your order and why, the communication model, and
-        what you would defend. It carries the ie logo and it opens in PowerPoint, Keynote or Google
-        Slides, where you change anything you like.</li>
+        assistant, and nothing is uploaded. You get a PowerPoint with nine slides: the cover, the
+        campaign in one line, your four actions with the five answers, what you found on each one, your
+        order and why, the communication model, where the message could die, what the counter-argument
+        said, and what you would defend. Everything you typed ends up on a slide. It carries the ie logo
+        and opens in PowerPoint, Keynote or Google Slides, where you change anything you like.</li>
       <li><b>Rehearse with the prompt below.</b> It carries the whole of your work and comes back with a
         script - who says what, in what order - and the three questions the class will ask you. Paste it
         into <i>The running order</i> <b>before</b> you build the deck, or build the deck again
@@ -1101,6 +1102,11 @@ function deckReady() {
   want.push(['why that order', 'step 3', !!val('why')]);
   want.push(['the one sentence', 'step 4', !!val('imc')]);
   want.push(['the communication model', 'step 5', COMMBOX.filter(([id]) => ST.comm[id]).length >= 5]);
+  want.push(['what the counter-argument said', 'step 6', !!val('counter')]);
+  want.push(['where the message could die', 'step 5',
+    [val('d_enc'), val('d_fb'), val('d_noise')].filter(Boolean).length >= 2]);
+  c.acts.forEach((a, i) => want.push(['action ' + (i + 1) + ': what we found', 'step 2',
+    !!(ST.found[i] || '').trim()]));
   want.push(['the running order for the ten minutes', 'this step', !!val('script')]);
   const missing = want.filter((w) => !w[2]);
   const done = want.length - missing.length;
@@ -1178,7 +1184,24 @@ function buildDeck() {
       valign: 'top', autoPage: false });
     note(s, 'The two we argued about most are marked in our notes.', 4.3);
 
-    /* 4 - the order */
+    /* 4 - what we found */
+    s = p.addSlide();
+    head(s, 'What we found');
+    const found = c.acts.map((a, i) => ({ a, i })).filter(({ i }) => (ST.found[i] || '').trim());
+    if (found.length) {
+      s.addTable([[
+        { text: 'ACTION', options: { bold: true, color: GREY, fontSize: 9 } },
+        { text: 'WHAT WE FOUND, AND WHERE', options: { bold: true, color: GREY, fontSize: 9 } }]]
+        .concat(found.map(({ a, i }) => [a.t, String(ST.found[i]).replace(/\s+/g, ' ')])),
+        { x: 0.5, y: 1.05, w: 9.0, colW: [3.2, 5.8], fontSize: 10, fontFace: 'Arial', color: INK,
+          border: { type: 'solid', color: LINE, pt: 0.5 }, valign: 'top' });
+    } else {
+      s.addText('(use the prompt on each action, and paste what it gives you into “What we found”)',
+        { x: 0.5, y: 1.2, w: 9.0, h: 0.5, fontSize: 13, italic: true, color: GREY, fontFace: 'Arial' });
+    }
+    note(s, 'Evidence, not opinion: this is the slide the class will ask about.', 4.5);
+
+    /* 5 - the order */
     s = p.addSlide();
     head(s, 'The order they reach one person');
     const line = ST.order.map((idx, pos) => (pos + 1) + '.  ' + c.acts[idx].t
@@ -1200,10 +1223,29 @@ function buildDeck() {
     }
     s.addTable(grid, { x: 0.5, y: 1.05, w: 9.0, colW: [3, 3, 3], rowH: 0.95, fontFace: 'Arial',
       border: { type: 'solid', color: LINE, pt: 0.5 }, valign: 'top' });
-    note(s, 'Where this message could die: ' + [val('d_enc'), val('d_fb'), val('d_noise')]
-      .filter(Boolean).join('  ·  ') || 'Where this message could die: (step 5)', 4.2);
+    note(s, 'The three ways it could fail are on the next slide.', 4.5);
 
-    /* 6 - what we would defend */
+    /* 7 - where the message could die */
+    s = p.addSlide();
+    head(s, 'Where this message could die');
+    [['ENCODING IS NOT DECODING', val('d_enc'), 1.1],
+     ['NO FEEDBACK LOOP', val('d_fb'), 2.35],
+     ['NOISE', val('d_noise'), 3.6]].forEach(([lab, txt, y]) => {
+      s.addShape(p.ShapeType.rect, { x: 0.5, y: y, w: 9.0, h: 1.1, fill: { color: SOFT } });
+      s.addText(lab, { x: 0.7, y: y + 0.12, w: 8.6, h: 0.28, fontSize: 10, bold: true, color: NAVY, fontFace: 'Arial' });
+      s.addText(txt || '(step 5)', { x: 0.7, y: y + 0.42, w: 8.6, h: 0.6, fontSize: 12.5,
+        color: txt ? INK : GREY, italic: !txt, fontFace: 'Arial', valign: 'top' });
+    });
+
+    /* 8 - what the counter-argument said */
+    s = p.addSlide();
+    head(s, 'What the counter-argument said');
+    s.addText(val('counter') || '(run the “argue against us” prompt and paste what landed)',
+      { x: 0.5, y: 1.1, w: 9.0, h: 2.6, fontSize: 14, color: val('counter') ? INK : GREY,
+        italic: !val('counter'), fontFace: 'Arial', valign: 'top', lineSpacingMultiple: 1.25 });
+    note(s, 'A classification you defended against an attack is worth more than one nobody questioned.', 4.4);
+
+    /* 9 - what we would defend */
     s = p.addSlide();
     head(s, 'What we would defend');
     const notes = ST.order.map((idx, pos) => ST.notes[idx]
