@@ -522,7 +522,7 @@ const CASES = {
   "brand": "Spotify",
   "name": "Wrapped",
   "year": "every December",
-  "brief": "Once a year the service turns each user's listening data into a personal story they can post, and buys outdoor space to joke about the strangest data it has.",
+  "brief": "Once a year the service turns each user's listening data into a personal story they can post, and puts the strangest data it finds on billboards in big cities.",
   "acts": [
    {
     "t": "The personalised in-app story each user receives, with their own minutes, artists and genres.",
@@ -535,7 +535,7 @@ const CASES = {
     "vid": "",
     "ch": "",
     "shows": "",
-    "look": "This is the one action in this exercise you already own: it arrives on your phone every December. Open Spotify, find your Wrapped - or the Wrapped page if it is not December - and screenshot three of the cards it gives you. Then look at how it speaks: it says <b>you</b>, it uses your own numbers, and no two people get the same one. That is the thing none of the other three actions can do."
+    "look": "This is the one action in this exercise you already own. Wrapped itself appears in the Spotify app, on Home, at the end of November or the beginning of December, and at spotify.com/wrapped. <b>Out of season</b> it is not there: use what is - your <i>Top Songs</i> playlist of last year (search “Top Songs” in the app, or look in Your Library), or any of the <i>Made for you</i> cards on Home. Screenshot three of them. Then look at how they speak: they say <b>you</b>, they use your own numbers, and no two people get the same ones. That is the thing none of the other three actions can do."
    },
    {
     "t": "Users post their Wrapped cards and compare them with their friends.",
@@ -1338,7 +1338,10 @@ function askAbout(i) {
     + `CAMPAIGN: ${c.brand} - ${c.name} (${c.year}).\n${c.brief}\n\n`
     + `THE ONE ACTION I AM ASKING ABOUT:\n"${a.t}"\n\n`
     + `Tell me, in short paragraphs:\n`
-    + `1. What this actually is, concretely - the object, the page, the room, the piece of material.\n`
+    + (a.tool === 'aud'
+      ? `1. What exactly people are posting or saying here, and what it looks like - nobody at the `
+        + `company made this, so describe what the audience produced.\n`
+      : `1. What this actually is, concretely - the object, the page, the room, the piece of material.\n`)
     + `2. How it reaches a customer, and at what moment of their day or their purchase.\n`
     + `3. Where somebody would find it or see it, so I could check it myself.\n`
     + `4. What would count as proof that it happened, and what would be weak evidence.\n`
